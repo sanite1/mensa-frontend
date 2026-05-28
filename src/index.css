@@ -1,0 +1,199 @@
+@import "tailwindcss";
+
+/* ─── Mensa Design Tokens ────────────────────────────────────────────────── */
+@theme {
+  /* Surfaces */
+  --color-cream:   #F6EFE4;
+  --color-paper:   #FFFCF6;
+  --color-blush:   #FEE5EA;
+
+  /* Text & neutrals */
+  --color-ink:       #1A1410;
+  --color-graphite:  #4F433B;
+  --color-mute:      #8A7C70;
+  --color-hairline:  #E7DCCC;
+
+  /* Brand pinks & reds */
+  --color-pink:       #FE718E;
+  --color-pink-deep:  #ED5876;
+  --color-coral:      #FF3A4D;
+  --color-berry:      #8B1F35;
+
+  /* Semantic */
+  --color-ok:   #3D6B47;
+  --color-err:  #B23A3A;
+
+  /* Typography */
+  --font-display: 'Newsreader', Georgia, serif;
+  --font-sans:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'Courier New', monospace;
+
+  /* Spacing scale (8-root) */
+  --spacing-01: 4px;
+  --spacing-02: 8px;
+  --spacing-03: 12px;
+  --spacing-04: 16px;
+  --spacing-06: 24px;
+  --spacing-08: 32px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+
+  /* Radii */
+  --radius-none: 0px;
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   10px;
+  --radius-pill: 9999px;
+
+  /* Elevation */
+  --shadow-lift: 0 1px 0 rgba(26,20,16,.06), 0 8px 24px -16px rgba(26,20,16,.18);
+  --shadow-over: 0 24px 60px -20px rgba(26,20,16,.30);
+}
+
+/* ─── CSS custom properties (runtime, not Tailwind-only) ─────────────────── */
+:root {
+  --cream:         #F6EFE4;
+  --cream-soft:    #FAF4EA;
+  --paper:         #FFFCF6;
+  --blush:         #FEE5EA;
+  --blush-2:       #FCC9D2;
+  --ink:           #1A1410;
+  --graphite:      #4F433B;
+  --mute:          #8A7C70;
+  --hairline:      #E7DCCC;
+  --hairline-soft: #EDE3D5;
+  --pink:          #FE718E;
+  --pink-deep:     #ED5876;
+  --coral:         #FF3A4D;
+  --berry:         #8B1F35;
+  --ok:            #3D6B47;
+  --err:           #B23A3A;
+
+  --font-display: 'Newsreader', Georgia, serif;
+  --font-sans:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'Courier New', monospace;
+}
+
+/* ─── Global reset ───────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ─── Typography utilities ───────────────────────────────────────────────── */
+.t-display-xl {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 128px;
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+}
+
+.t-display-l {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 88px;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+}
+
+.t-h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 48px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.t-h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 36px;
+  line-height: 1.10;
+  letter-spacing: -0.015em;
+}
+
+.t-h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.t-body-l {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.t-body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.t-body-s {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.t-eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.t-micro {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Design canvas reset (used by design artboards) ────────────────────── */
+.m-reset {
+  font-family: var(--font-sans);
+  box-sizing: border-box;
+}
+
+.m-reset * {
+  box-sizing: border-box;
+}
