@@ -1,21 +1,20 @@
 import type { AxiosError } from 'axios'
+import type { ApiErrorBody } from '../api'
 
-export interface ApiErrorShape {
-  code: string
-  message: string
-  details?: Record<string, unknown>
-}
+/**
+ * Extracts a clean error shape from any thrown error. Matches the backend
+ * envelope `{ statusCode, message, details? }`.
+ */
+export function handleApiError(error: unknown): ApiErrorBody {
+  const axiosError = error as AxiosError<ApiErrorBody>
 
-export function handleApiError(error: unknown): ApiErrorShape {
-  const axiosError = error as AxiosError<{ error: ApiErrorShape }>
-
-  if (axiosError.response?.data?.error) {
-    return axiosError.response.data.error
+  if (axiosError.response?.data?.message) {
+    return axiosError.response.data
   }
 
   if (axiosError.message) {
-    return { code: 'NETWORK_ERROR', message: axiosError.message }
+    return { statusCode: 0, message: axiosError.message }
   }
 
-  return { code: 'UNKNOWN_ERROR', message: 'Something went wrong. Please try again.' }
+  return { statusCode: 0, message: 'Something went wrong. Please try again.' }
 }

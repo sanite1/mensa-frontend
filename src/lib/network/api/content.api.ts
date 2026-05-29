@@ -1,7 +1,9 @@
-import { get, getPaginated } from '../api'
+import { api } from '../api'
+import type { Paginated } from '../api'
 import type { ContentPost } from '../types/content.types'
 
 export const contentApi = {
-  list:      (params?: { kind?: 'journal' | 'education'; category?: string }) => getPaginated<ContentPost>('/content', { params }),
-  getBySlug: (slug: string) => get<ContentPost>(`/content/${slug}`),
+  list: (params?: { kind?: 'journal' | 'education'; category?: string }) =>
+    api.get<Paginated<ContentPost>>('/content', { params }),
+  getBySlug: (slug: string) => api.get<ContentPost>(`/content/${slug}`),
 }

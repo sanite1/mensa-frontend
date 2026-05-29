@@ -1,12 +1,12 @@
-import { post } from '../api'
+import { api } from '../api'
 
 export interface ApplyDiscountResult {
-  discountAmount: number  // kobo
+  discountAmount: number // kobo
   description: string
   code: string
 }
 
 export const discountApi = {
   apply: (code: string, cartSubtotal: number) =>
-    post<ApplyDiscountResult>('/checkout/apply-discount', { code, cartSubtotal }),
+    api.post<ApplyDiscountResult>('/checkout/apply-discount', { code, cartSubtotal }),
 }

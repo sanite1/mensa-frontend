@@ -1,0 +1,342 @@
+// ─────────────────────────────────────────────────────────────────────────
+// CartDrawer — slide in from the right when the header bag icon is
+// clicked or after Add to bag. Controlled by useCartStore.isDrawerOpen.
+//
+// Built with plain Tailwind transforms (no Radix Dialog), so it has zero
+// runtime plugin dependencies and behaves consistently in every browser.
+// Mounted once at the platform layout level so it works on every route.
+// ─────────────────────────────────────────────────────────────────────────
+import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { useCartStore, type CartLine } from '@/lib/network/stores/cart.store'
+import { formatNaira } from '@/lib/utils'
+import { Photo } from '@/components/shop/Photo'
+import { IconArrowRight, IconClose } from '@/components/chrome/icons'
+import { features, FREE_DELIVERY_THRESHOLD_KOBO } from '@/lib/features'
+
+export function CartDrawer() {
+  const isOpen = useCartStore((s) => s.isDrawerOpen)
+  const closeDrawer = useCartStore((s) => s.closeDrawer)
+  const lines = useCartStore((s) => s.lines)
+  const subtotalKobo = useCartStore((s) => s.subtotal())
+  const totalItems = useCartStore((s) => s.totalItems())
+
+  // Lock body scroll while open.
+  useEffect(() => {
+    if (isOpen) {
+      const prev = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = prev
+      }
+    }
+  }, [isOpen])
+
+  // Close on Escape.
+  useEffect(() => {
+    if (!isOpen) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeDrawer()
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [isOpen, closeDrawer])
+
+  const remainingToFreeDelivery = Math.max(0, FREE_DELIVERY_THRESHOLD_KOBO - subtotalKobo)
+  const qualifiesForFreeDelivery = subtotalKobo >= FREE_DELIVERY_THRESHOLD_KOBO
+
+  return (
+    <>
+      {/* Overlay */}
+      <div
+        onClick={closeDrawer}
+        aria-hidden="true"
+        className={cn(
+          'fixed inset-0 z-50 bg-black/40 transition-opacity duration-300',
+          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',
+        )}
+      />
+
+      {/* Drawer panel */}
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label="Your bag"
+        className={cn(
+          'fixed top-0 right-0 z-50 h-full w-full sm:max-w-[440px]',
+          'bg-[var(--paper)] border-l border-[var(--hairline-soft)]',
+          'flex flex-col',
+          'transition-transform duration-300 ease-out',
+          isOpen ? 'translate-x-0' : 'translate-x-full',
+        )}
+      >
+        {/* Header */}
+        <div className="px-6 py-5 border-b border-[var(--hairline-soft)] flex items-center justify-between">
+          <div className="flex flex-col items-start gap-0.5">
+            <h2
+              className="m-0 text-[var(--ink)]"
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontStyle: 'italic',
+                fontWeight: 600,
+                fontSize: 28,
+                lineHeight: 1.05,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Your bag
+            </h2>
+            <p className="m-0 text-[11px] text-[var(--mute)] uppercase tracking-[0.12em] font-medium">
+              {totalItems === 0
+                ? 'Empty'
+                : `${totalItems} ${totalItems === 1 ? 'item' : 'items'}`}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={closeDrawer}
+            aria-label="Close cart"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-[var(--ink)] hover:bg-[var(--cream)]"
+          >
+            <IconClose />
+          </button>
+        </div>
+
+        {/* Free delivery progress — only when the promo is active. */}
+        {features.freeDelivery && lines.length > 0 ? (
+          <FreeDeliveryStrip
+            qualifies={qualifiesForFreeDelivery}
+            remaining={remainingToFreeDelivery}
+            subtotal={subtotalKobo}
+          />
+        ) : null}
+
+        {/* Body */}
+        {lines.length === 0 ? (
+          <EmptyState onClose={closeDrawer} />
+        ) : (
+          <div className="flex-1 overflow-y-auto">
+            <ul className="m-0 p-0 list-none">
+              {lines.map((line) => (
+                <LineItem key={line.variantId} line={line} />
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Footer / checkout */}
+        {lines.length > 0 ? (
+          <CartFooter subtotalKobo={subtotalKobo} onContinueShopping={closeDrawer} />
+        ) : null}
+      </aside>
+    </>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────
+function FreeDeliveryStrip({
+  qualifies,
+  remaining,
+  subtotal,
+}: {
+  qualifies: boolean
+  remaining: number
+  subtotal: number
+}) {
+  const progress = qualifies
+    ? 100
+    : Math.min(100, Math.max(0, (subtotal / FREE_DELIVERY_THRESHOLD_KOBO) * 100))
+
+  return (
+    <div className="px-6 py-3 bg-[var(--cream-soft)] border-b border-[var(--hairline-soft)]">
+      <div className="t-body-s text-[var(--graphite)]">
+        {qualifies ? (
+          <>
+            Free delivery in Abuja &amp; Lagos{' '}
+            <strong className="text-[var(--ink)]">unlocked.</strong>
+          </>
+        ) : (
+          <>Add {formatNaira(remaining)} more for free delivery in Abuja &amp; Lagos.</>
+        )}
+      </div>
+      <div
+        className="mt-2 w-full overflow-hidden"
+        style={{ height: 4, background: 'var(--hairline-soft)' }}
+      >
+        <div
+          className="h-full transition-all"
+          style={{
+            width: `${progress}%`,
+            background: qualifies ? 'var(--ok)' : 'var(--pink)',
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────
+function LineItem({ line }: { line: CartLine }) {
+  const updateQty = useCartStore((s) => s.updateQty)
+  const removeItem = useCartStore((s) => s.removeItem)
+  const closeDrawer = useCartStore((s) => s.closeDrawer)
+
+  return (
+    <li className="flex gap-4 px-6 py-5 border-b border-[var(--hairline-soft)]">
+      <Link
+        to={`/shop/${line.slug}`}
+        onClick={closeDrawer}
+        className="flex-shrink-0 no-underline"
+        style={{ width: 72 }}
+        aria-label={`View ${line.productName}`}
+      >
+        <Photo src={line.imageUrl} alt={line.productName} tone="blush" ratio="4/5" />
+      </Link>
+
+      <div className="flex flex-col flex-1 min-w-0 gap-1.5">
+        <div className="flex items-start justify-between gap-2">
+          <Link
+            to={`/shop/${line.slug}`}
+            onClick={closeDrawer}
+            className="text-[var(--ink)] no-underline"
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontStyle: 'italic',
+              fontWeight: 600,
+              fontSize: 18,
+              lineHeight: 1.05,
+              letterSpacing: '-0.015em',
+            }}
+          >
+            {line.productName}
+          </Link>
+          <button
+            type="button"
+            onClick={() => removeItem(line.variantId)}
+            className="text-[var(--mute)] hover:text-[var(--ink)] flex-shrink-0"
+            aria-label={`Remove ${line.productName} from bag`}
+          >
+            <IconClose size={16} />
+          </button>
+        </div>
+
+        <div
+          className="font-mono uppercase text-[var(--mute)]"
+          style={{ fontSize: 10.5, letterSpacing: '0.1em' }}
+        >
+          {line.variantLabel}
+        </div>
+
+        <div className="flex items-center justify-between gap-3 mt-1.5">
+          <div
+            className="inline-flex items-center bg-[var(--paper)]"
+            style={{ border: '1px solid var(--hairline)', borderRadius: 4 }}
+          >
+            <button
+              type="button"
+              onClick={() => updateQty(line.variantId, line.qty - 1)}
+              className="w-8 h-8 text-[15px] text-[var(--ink)] hover:bg-[var(--cream)]"
+              aria-label="Decrease quantity"
+            >
+              −
+            </button>
+            <span
+              className="text-center text-[var(--ink)]"
+              style={{ minWidth: 28, fontSize: 13 }}
+            >
+              {line.qty}
+            </span>
+            <button
+              type="button"
+              onClick={() => updateQty(line.variantId, line.qty + 1)}
+              className="w-8 h-8 text-[15px] text-[var(--ink)] hover:bg-[var(--cream)]"
+              aria-label="Increase quantity"
+            >
+              +
+            </button>
+          </div>
+
+          <div
+            className="font-sans text-[var(--ink)]"
+            style={{ fontWeight: 600, fontSize: 15 }}
+          >
+            {formatNaira(line.unitPrice * line.qty)}
+          </div>
+        </div>
+      </div>
+    </li>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────
+function EmptyState({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
+      <div className="t-eyebrow text-[var(--mute)] mb-3">Your bag is empty</div>
+      <h3
+        className="m-0"
+        style={{
+          fontFamily: 'var(--font-display)',
+          fontStyle: 'italic',
+          fontWeight: 600,
+          fontSize: 28,
+          lineHeight: 1.05,
+          color: 'var(--ink)',
+        }}
+      >
+        Nothing here yet.
+      </h3>
+      <p className="t-body-s mt-3 text-[var(--graphite)] max-w-[300px]">
+        Once you add something to your bag, it will show up here.
+      </p>
+      <Button asChild variant="primary" size="lg" className="mt-6">
+        <Link to="/shop" onClick={onClose}>
+          Shop the collection <IconArrowRight size={16} />
+        </Link>
+      </Button>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────
+function CartFooter({
+  subtotalKobo,
+  onContinueShopping,
+}: {
+  subtotalKobo: number
+  onContinueShopping: () => void
+}) {
+  return (
+    <div className="border-t border-[var(--hairline-soft)] px-6 py-5 bg-[var(--paper)]">
+      <div className="flex items-baseline justify-between mb-1">
+        <span className="text-[11px] text-[var(--mute)] uppercase tracking-[0.12em] font-medium">
+          Subtotal
+        </span>
+        <span
+          className="font-sans text-[var(--ink)]"
+          style={{ fontWeight: 600, fontSize: 22 }}
+        >
+          {formatNaira(subtotalKobo)}
+        </span>
+      </div>
+      <div className="t-body-s text-[var(--mute)] mb-4">
+        Shipping and discounts calculated at checkout.
+      </div>
+
+      <Button asChild variant="primary" size="lg" className="w-full">
+        <Link to="/checkout" onClick={onContinueShopping}>
+          Checkout <IconArrowRight size={16} />
+        </Link>
+      </Button>
+      <button
+        type="button"
+        onClick={onContinueShopping}
+        className="w-full mt-3 text-[14px] text-[var(--ink)] underline underline-offset-2"
+      >
+        Continue shopping
+      </button>
+    </div>
+  )
+}

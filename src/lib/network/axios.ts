@@ -1,8 +1,11 @@
-import axios from 'axios'
+import Axios from 'axios'
 import { queryClient } from './query/client'
+import type { ApiResponse } from './api'
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api/v1',
+// Raw axios instance — use directly for multipart/form-data calls.
+// For typed JSON, prefer the `api` wrapper from `./api`.
+export const axios = Axios.create({
+  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api/v1',
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 })
@@ -16,7 +19,7 @@ function processQueue(error: unknown, token: string | null) {
 }
 
 // Attach access token from store on every request
-api.interceptors.request.use((config) => {
+axios.interceptors.request.use((config) => {
   const raw = localStorage.getItem('mensa-auth')
   if (raw) {
     try {
@@ -31,19 +34,28 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// On 401, attempt a silent token refresh then retry
-api.interceptors.response.use(
+// On 401, attempt a silent token refresh then retry the original request.
+axios.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config as typeof error.config & { _retry?: boolean }
+    const requestUrl = originalRequest?.url ?? ''
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isRefreshCall = requestUrl.includes('/auth/refresh')
+    const isLoginCall = requestUrl.includes('/auth/login')
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isRefreshCall &&
+      !isLoginCall
+    ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({
             resolve: (token) => {
               originalRequest.headers.Authorization = `Bearer ${token}`
-              resolve(api(originalRequest))
+              resolve(axios(originalRequest))
             },
             reject,
           })
@@ -54,10 +66,10 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const { data } = await api.post<{ data: { accessToken: string } }>('/auth/refresh')
-        const newToken = data.data.accessToken
+        const { data } = await axios.post<ApiResponse<{ accessToken: string }>>('/auth/refresh')
+        const newToken = data.data?.accessToken
+        if (!newToken) throw new Error('No access token in refresh response')
 
-        // Update Zustand store
         const raw = localStorage.getItem('mensa-auth')
         if (raw) {
           const parsed = JSON.parse(raw) as { state: Record<string, unknown> }
@@ -67,12 +79,14 @@ api.interceptors.response.use(
 
         processQueue(null, newToken)
         originalRequest.headers.Authorization = `Bearer ${newToken}`
-        return api(originalRequest)
+        return axios(originalRequest)
       } catch (refreshError) {
         processQueue(refreshError, null)
         queryClient.clear()
         localStorage.removeItem('mensa-auth')
-        window.location.href = '/login'
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login'
+        }
         return Promise.reject(refreshError)
       } finally {
         isRefreshing = false
@@ -83,4 +97,4 @@ api.interceptors.response.use(
   },
 )
 
-export default api
+export default axios

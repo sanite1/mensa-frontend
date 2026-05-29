@@ -1,25 +1,18 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { UserData, UserRole } from '../types/auth.types'
 
-export type UserRole = 'customer' | 'admin' | 'b2b_admin' | 'b2b_member'
-
-export interface AuthUser {
-  _id: string
-  name: string
-  email: string
-  phone: string
-  role: UserRole
-  b2bOrgId?: string
-  emailVerifiedAt?: string
-}
+/** Alias kept for legacy imports; canonical shape lives in `auth.types.ts`. */
+export type AuthUser = UserData
+export type { UserRole }
 
 interface AuthState {
   user: AuthUser | null
   accessToken: string | null
-  login: (user: AuthUser, accessToken: string) => void
-  logout: () => void
-  setAccessToken: (token: string) => void
+  setAuth: (user: AuthUser, accessToken: string) => void
   setUser: (user: AuthUser) => void
+  setAccessToken: (token: string) => void
+  logout: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -27,10 +20,10 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       accessToken: null,
-      login: (user, accessToken) => set({ user, accessToken }),
-      logout: () => set({ user: null, accessToken: null }),
-      setAccessToken: (token) => set({ accessToken: token }),
+      setAuth: (user, accessToken) => set({ user, accessToken }),
       setUser: (user) => set({ user }),
+      setAccessToken: (accessToken) => set({ accessToken }),
+      logout: () => set({ user: null, accessToken: null }),
     }),
     {
       name: 'mensa-auth',
@@ -38,3 +31,7 @@ export const useAuthStore = create<AuthState>()(
     },
   ),
 )
+
+/** Selector hook — true when both user and access token are set. */
+export const useIsAuthenticated = () =>
+  useAuthStore((s) => !!s.user && !!s.accessToken)

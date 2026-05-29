@@ -1,21 +1,25 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /* ─── Mensa Design Tokens ────────────────────────────────────────────────── */
 @theme {
   /* Surfaces */
-  --color-cream:   #F6EFE4;
-  --color-paper:   #FFFCF6;
-  --color-blush:   #FEE5EA;
+  --color-cream:        #F6EFE4;
+  --color-cream-soft:   #FAF4EA;
+  --color-paper:        #FFFCF6;
+  --color-blush:        #FEE5EA;
 
   /* Text & neutrals */
-  --color-ink:       #1A1410;
-  --color-graphite:  #4F433B;
-  --color-mute:      #8A7C70;
-  --color-hairline:  #E7DCCC;
+  --color-ink:            #1A1410;
+  --color-graphite:       #4F433B;
+  --color-mute:           #8A7C70;
+  --color-hairline:       #E7DCCC;
+  --color-hairline-soft:  #EDE3D5;
 
   /* Brand pinks & reds */
   --color-pink:       #FE718E;
   --color-pink-deep:  #ED5876;
+  --color-blush-2:    #FCC9D2;
   --color-coral:      #FF3A4D;
   --color-berry:      #8B1F35;
 
@@ -50,6 +54,28 @@
   /* Elevation */
   --shadow-lift: 0 1px 0 rgba(26,20,16,.06), 0 8px 24px -16px rgba(26,20,16,.18);
   --shadow-over: 0 24px 60px -20px rgba(26,20,16,.30);
+
+  /* ── shadcn semantic tokens mapped to Mensa palette ────────────────── */
+  --color-background:          #FFFCF6;
+  --color-foreground:           #1A1410;
+  --color-card:                 #FFFCF6;
+  --color-card-foreground:      #1A1410;
+  --color-popover:              #FFFCF6;
+  --color-popover-foreground:   #1A1410;
+  --color-primary:              #FE718E;
+  --color-primary-foreground:   #FFFCF6;
+  --color-secondary:            #F6EFE4;
+  --color-secondary-foreground: #1A1410;
+  --color-muted:                #F6EFE4;
+  --color-muted-foreground:     #8A7C70;
+  --color-accent:               #FEE5EA;
+  --color-accent-foreground:    #8B1F35;
+  --color-destructive:          #B23A3A;
+  --color-destructive-foreground: #FFFCF6;
+  --color-border:               #E7DCCC;
+  --color-input:                #E7DCCC;
+  --color-ring:                 #FE718E;
+  --radius:                     6px;
 }
 
 /* ─── CSS custom properties (runtime, not Tailwind-only) ─────────────────── */
