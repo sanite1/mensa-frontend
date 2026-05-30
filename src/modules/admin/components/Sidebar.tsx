@@ -31,10 +31,10 @@ interface NavItem {
 
 const items: NavItem[] = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { label: 'Orders', href: '/orders', icon: ShoppingBag, comingSoon: true },
+  { label: 'Orders', href: '/orders', icon: ShoppingBag },
   { label: 'Products', href: '/products', icon: Package },
   { label: 'Customers', href: '/customers', icon: Users, comingSoon: true },
-  { label: 'Discounts', href: '/discounts', icon: Tag, comingSoon: true },
+  { label: 'Discounts', href: '/discounts', icon: Tag },
   { label: 'Content', href: '/content', icon: FileText, comingSoon: true },
   { label: 'Partnerships', href: '/partnerships', icon: Briefcase, comingSoon: true },
 ]

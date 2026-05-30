@@ -8,10 +8,17 @@
 // ═══════════════════════════════════════════════════════════════
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search } from 'lucide-react'
-import { useAdminProducts } from '@/lib/network/api/product.api'
+import { Eye, EyeOff, MoreVertical, PackageX, PackageCheck, Plus, Search } from 'lucide-react'
+import { useAdminProducts, useUpdateProduct } from '@/lib/network/api/product.api'
 import type { Product, ProductCategory } from '@/lib/network/types/product.types'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { formatNaira, cn } from '@/lib/utils'
 
 const CATEGORIES: { id: ProductCategory | 'all'; label: string }[] = [
@@ -139,14 +146,18 @@ export function ProductsListPage() {
 }
 
 // ─────────────────────────────────────────────────────────────────
+// Grid template kept in one place so the header + every row stay
+// in lock-step when columns shift.
+const ROW_TEMPLATE = '2.2fr 1fr 1fr 0.9fr 0.7fr 0.9fr 44px'
+
 function ProductsTable({ products }: { products: Product[] }) {
   return (
     <div className="border border-hairline-soft bg-paper overflow-x-auto">
-      <div className="min-w-[820px]">
+      <div className="min-w-[880px]">
         {/* Header row */}
         <div
           className="grid items-center px-5 py-3 border-b border-hairline-soft bg-cream-soft text-[10px] uppercase tracking-[0.12em] font-medium text-mute font-mono"
-          style={{ gridTemplateColumns: '2.2fr 1fr 1fr 1fr 0.8fr 0.6fr' }}
+          style={{ gridTemplateColumns: ROW_TEMPLATE }}
         >
           <div>Product</div>
           <div>Category</div>
@@ -154,6 +165,7 @@ function ProductsTable({ products }: { products: Product[] }) {
           <div className="text-right">Variants</div>
           <div className="text-right">Stock</div>
           <div className="text-right">Status</div>
+          <div />
         </div>
 
         {products.map((product, i) => (
@@ -170,17 +182,38 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
   const variantCount = variants.length
   const lowStock = variants.some((v) => v.stockCount <= v.lowStockThreshold && v.isActive)
 
+  const update = useUpdateProduct()
+  const busy = update.isPending
+
+  const toggleVisibility = () => {
+    if (busy) return
+    update.mutate({
+      slug: product.slug,
+      payload: { isActive: !product.isActive },
+    })
+  }
+  const toggleSoldOut = () => {
+    if (busy) return
+    update.mutate({
+      slug: product.slug,
+      payload: { isSoldOut: !product.isSoldOut },
+    })
+  }
+
   return (
-    <Link
-      to={`/products/${product.slug}/edit`}
+    <div
       className={cn(
-        'grid items-center px-5 py-4 no-underline transition-colors hover:bg-cream-soft',
+        'grid items-center px-5 py-4 transition-colors hover:bg-cream-soft',
         !isLast && 'border-b border-hairline-soft',
       )}
-      style={{ gridTemplateColumns: '2.2fr 1fr 1fr 1fr 0.8fr 0.6fr' }}
+      style={{ gridTemplateColumns: ROW_TEMPLATE }}
     >
-      {/* Product cell */}
-      <div className="flex items-center gap-3 min-w-0">
+      {/* Product cell — only the name + thumb area navigates. Keeps the
+          actions kebab from fighting the row link for clicks. */}
+      <Link
+        to={`/products/${product.slug}/edit`}
+        className="flex items-center gap-3 min-w-0 no-underline"
+      >
         <div
           className="flex-shrink-0 w-12 h-12 bg-blush flex items-center justify-center overflow-hidden"
           style={{ borderRadius: 2 }}
@@ -192,9 +225,7 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
               className="w-full h-full object-cover"
             />
           ) : (
-            <span
-              className="text-[9px] uppercase tracking-[0.1em] text-berry opacity-60 font-mono"
-            >
+            <span className="text-[9px] uppercase tracking-[0.1em] text-berry opacity-60 font-mono">
               n/a
             </span>
           )}
@@ -215,15 +246,12 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
           </div>
           <div
             className="truncate text-mute font-mono mt-0.5"
-            style={{
-              fontSize: 11,
-              letterSpacing: '0.06em',
-            }}
+            style={{ fontSize: 11, letterSpacing: '0.06em' }}
           >
             {product.slug}
           </div>
         </div>
-      </div>
+      </Link>
 
       {/* Category */}
       <div className="text-[13px] text-graphite">
@@ -256,30 +284,104 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
         </span>
       </div>
 
-      {/* Status */}
-      <div className="text-right">
-        {product.isActive ? (
-          <span
-            className="inline-flex items-center gap-1.5 text-[11px] text-ok font-medium"
-            style={{ letterSpacing: '0.04em' }}
-          >
-            <span className="rounded-full" style={{ width: 6, height: 6, background: 'var(--ok)' }} />
-            Active
-          </span>
-        ) : (
-          <span
-            className="inline-flex items-center gap-1.5 text-[11px] text-mute font-medium"
-            style={{ letterSpacing: '0.04em' }}
-          >
-            <span
-              className="rounded-full"
-              style={{ width: 6, height: 6, background: 'var(--mute)' }}
-            />
-            Archived
-          </span>
-        )}
+      {/* Status — communicates both isActive and isSoldOut. */}
+      <div className="flex flex-col items-end gap-1">
+        <StatusPill
+          tone={product.isActive ? 'ok' : 'mute'}
+          label={product.isActive ? 'Visible' : 'Hidden'}
+        />
+        {product.isSoldOut ? (
+          <StatusPill tone="coral" label="Sold out" />
+        ) : null}
       </div>
-    </Link>
+
+      {/* Row actions */}
+      <div className="flex justify-end">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              aria-label="Open product actions"
+              disabled={busy}
+              className={cn(
+                'inline-flex h-8 w-8 items-center justify-center text-graphite hover:bg-cream rounded-sm',
+                busy && 'opacity-50 cursor-not-allowed',
+              )}
+            >
+              <MoreVertical size={16} strokeWidth={1.6} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="bg-paper border border-hairline-soft min-w-[220px]"
+          >
+            <DropdownMenuItem
+              onSelect={() => toggleVisibility()}
+              className="text-[13px] text-ink"
+            >
+              {product.isActive ? (
+                <>
+                  <EyeOff size={14} strokeWidth={1.6} />
+                  Hide from storefront
+                </>
+              ) : (
+                <>
+                  <Eye size={14} strokeWidth={1.6} />
+                  Show on storefront
+                </>
+              )}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => toggleSoldOut()}
+              className="text-[13px] text-ink"
+            >
+              {product.isSoldOut ? (
+                <>
+                  <PackageCheck size={14} strokeWidth={1.6} />
+                  Mark as in stock
+                </>
+              ) : (
+                <>
+                  <PackageX size={14} strokeWidth={1.6} />
+                  Mark as sold out
+                </>
+              )}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-hairline-soft" />
+            <DropdownMenuItem asChild className="text-[13px] text-ink">
+              <Link to={`/products/${product.slug}/edit`}>Edit product</Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  )
+}
+
+function StatusPill({
+  tone,
+  label,
+}: {
+  tone: 'ok' | 'mute' | 'coral'
+  label: string
+}) {
+  const color =
+    tone === 'ok'
+      ? 'var(--ok)'
+      : tone === 'coral'
+        ? 'var(--coral)'
+        : 'var(--mute)'
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 text-[11px] font-medium"
+      style={{ letterSpacing: '0.04em', color }}
+    >
+      <span
+        className="rounded-full"
+        style={{ width: 6, height: 6, background: color }}
+      />
+      {label}
+    </span>
   )
 }
 

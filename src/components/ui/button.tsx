@@ -26,8 +26,14 @@ const buttonVariants = cva(
         primary: 'bg-pink text-paper hover:bg-pink-deep',
         ink: 'bg-ink text-paper hover:bg-graphite',
         coral: 'bg-coral text-paper hover:opacity-90',
+        // Arbitrary-value CSS vars deliberately. Theme-token classes
+        // (`text-ink` + `hover:text-paper`) lost a specificity tie in
+        // production builds — base `text-ink` won on hover, leaving
+        // ink text on the ink hover background (invisible). Arbitrary
+        // value syntax forces Tailwind to mint a unique class name per
+        // utility, so the cascade resolves correctly.
         secondary:
-          'border border-ink bg-transparent text-ink hover:bg-ink hover:text-paper',
+          'border border-[var(--ink)] bg-transparent text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--paper)]',
         soft: 'bg-blush text-berry hover:bg-blush-2',
         ghost: 'bg-transparent text-ink hover:bg-cream',
       },

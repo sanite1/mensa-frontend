@@ -113,9 +113,15 @@ function ProductView({ product }: { product: Product }) {
   const hasSale = product.salePrice != null && product.salePrice < product.basePriceB2C
   const savings = hasSale ? product.basePriceB2C - (product.salePrice ?? 0) : 0
 
-  const isOutOfStock = !selectedVariant || selectedVariant.stockCount <= 0
+  // Admin-controlled sold-out override forces the storefront into the same
+  // state as a true zero-stock variant, without touching inventory.
+  const isOutOfStock =
+    product.isSoldOut || !selectedVariant || selectedVariant.stockCount <= 0
   const isLowStock =
-    !!selectedVariant && selectedVariant.stockCount > 0 && selectedVariant.stockCount <= 5
+    !product.isSoldOut &&
+    !!selectedVariant &&
+    selectedVariant.stockCount > 0 &&
+    selectedVariant.stockCount <= 5
   const heroImage = images.find((img) => img.order === 0) ?? images[0] ?? null
 
   const openCartDrawer = useCartStore((s) => s.openDrawer)

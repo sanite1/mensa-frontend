@@ -82,7 +82,13 @@ export interface Product {
   accordions: ProductAccordion[]
   trustLines: ProductTrustLine[]
   metadata: ProductMetadata
+  /** When false, the product is hidden from the public storefront. Admin
+   *  still sees it (acts as a soft delete / pause). */
   isActive: boolean
+  /** When true, the product stays visible on the storefront but Add to bag
+   *  is disabled and a "Sold out" treatment renders — regardless of variant
+   *  stockCount. Lets admin pause sales without zeroing inventory. */
+  isSoldOut: boolean
   createdAt: string
   updatedAt: string
 }
@@ -138,6 +144,7 @@ export interface CreateProductInput {
   trustLines?: ProductTrustLineInput[]
   metadata?: ProductMetadata
   isActive?: boolean
+  isSoldOut?: boolean
 }
 
 export type UpdateProductInput = Partial<CreateProductInput>

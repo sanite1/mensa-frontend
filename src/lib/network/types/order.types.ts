@@ -1,78 +1,189 @@
-export type OrderSource = 'web' | 'manual' | 'imported'
-export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded' | 'partially_refunded'
-export type FulfilmentStatus = 'unfulfilled' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'returned'
-export type ShippingMethod = 'inhouse' | 'sendbox'
+// ═══════════════════════════════════════════════════════════════
+// order.types.ts
+//
+// Mirror of the backend IOrder + checkout DTOs. All monetary
+// values are kobo (₦1 = 100 kobo) stored as integers — never floats.
+// ═══════════════════════════════════════════════════════════════
 
-export interface Address {
-  label: string
-  recipient: string
+import type { Pagination } from './common.types'
+
+// ── Status enums ─────────────────────────────────────────────────
+export type PaymentStatus =
+  | 'pending'
+  | 'paid'
+  | 'failed'
+  | 'refunded'
+  | 'partial_refund'
+
+export type FulfilmentStatus =
+  | 'pending'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+
+export type ShippingMethod = 'inhouse' | 'sendbox'
+export type OrderSource = 'web' | 'manual' | 'imported'
+
+// ── Order document shape ─────────────────────────────────────────
+export interface OrderLine {
+  _id?: string
+  productId: string
+  variantId: string
+  sku: string
+  productName: string
+  variantLabel: string
+  imageUrl?: string
+  slug: string
+  /** Unit price in kobo at order time. */
+  unitPrice: number
+  qty: number
+  /** unitPrice * qty, in kobo. */
+  lineTotal: number
+}
+
+export interface OrderAddress {
+  _id?: string
+  fullName: string
   phone: string
   line1: string
   line2?: string
   city: string
   state: string
-  postcode?: string
-  isDefault?: boolean
+  country: string
+  postal?: string
 }
 
-export interface OrderLine {
-  productId: string
-  variantId: string
-  productName: string
-  variantLabel: string
-  unitPrice: number  // kobo
-  qty: number
-  subtotal: number   // kobo
+export interface OrderTotals {
+  /** Sum of line totals in kobo. */
+  subtotal: number
+  /** Selected shipping rate in kobo. */
+  shipping: number
+  /** Discount applied in kobo. */
+  discount: number
+  /** subtotal + shipping − discount. */
+  total: number
+}
+
+export interface OrderPayment {
+  status: PaymentStatus
+  reference: string
+  accessCode?: string
+  authorizationUrl?: string
+  paidAt?: string
+}
+
+export interface OrderFulfilment {
+  status: FulfilmentStatus
+  shippingMethod: ShippingMethod
+  trackingCode?: string
+  trackingUrl?: string
+  shippedAt?: string
+  deliveredAt?: string
 }
 
 export interface Order {
   _id: string
   orderNumber: string
   source: OrderSource
-  userId?: string
-  b2bOrgId?: string
-  email: string
-  phone: string
-  shippingAddress: Address
+  userId: string | null
+  customerEmail: string
+  customerPhone: string
   lines: OrderLine[]
-  subtotal: number
-  discountTotal: number
-  shippingTotal: number
-  taxTotal: number
-  grandTotal: number
-  currency: 'NGN'
-  appliedDiscountCodes: string[]
-  shippingMethod: ShippingMethod
-  shippingProvider?: string
-  trackingNumber?: string
-  paymentStatus: PaymentStatus
-  fulfilmentStatus: FulfilmentStatus
-  paystackReference?: string
+  address: OrderAddress
+  totals: OrderTotals
+  payment: OrderPayment
+  fulfilment: OrderFulfilment
+  discountCode?: string
   createdAt: string
   updatedAt: string
 }
 
-export interface ShippingOption {
-  serviceId: string
-  name: string
-  provider: string
-  fee: number       // kobo
-  etaMin: number    // days
-  etaMax: number
-  method: ShippingMethod
+// ── Checkout DTOs ────────────────────────────────────────────────
+export interface CheckoutLineInput {
+  productId: string
+  variantId: string
+  qty: number
 }
 
-export interface ShippingRatesPayload {
-  address: Pick<Address, 'state' | 'city'>
-  items: Array<{ variantId: string; qty: number }>
-}
-
-export interface CheckoutPayload {
-  email: string
+export interface CheckoutAddressInput {
+  fullName: string
   phone: string
-  shippingAddress: Omit<Address, 'label' | 'isDefault'>
-  lines: Array<{ variantId: string; qty: number }>
-  shippingServiceId: string
-  discountCodes: string[]
-  saveAddress?: boolean
+  line1: string
+  line2?: string
+  city: string
+  state: string
+  country: string
+  postal?: string
+}
+
+export interface ShippingRatesInput {
+  lines: CheckoutLineInput[]
+  destination: {
+    city: string
+    state: string
+    country: string
+    postal?: string
+  }
+}
+
+export interface ShippingRateOption {
+  method: ShippingMethod
+  name: string
+  /** Plain English lead time, e.g. "1 to 2 days". */
+  eta: string
+  /** Cost in kobo. */
+  amount: number
+}
+
+export interface ShippingRatesResponseData {
+  options: ShippingRateOption[]
+}
+
+export interface InitializeCheckoutInput {
+  lines: CheckoutLineInput[]
+  address: CheckoutAddressInput
+  customerEmail: string
+  customerPhone: string
+  shippingMethod: ShippingMethod
+  /** Must match an option amount returned by /checkout/shipping-rates. */
+  shippingAmount: number
+  discountCode?: string
+}
+
+export interface InitializeCheckoutResponseData {
+  orderNumber: string
+  reference: string
+  accessCode: string
+  authorizationUrl: string
+  /** Charge amount in kobo. */
+  amount: number
+  /** Paystack public key, surfaced so the client doesn't need its own env var. */
+  publicKey: string
+}
+
+// ── List endpoint response ───────────────────────────────────────
+export interface ListOrdersParams {
+  paymentStatus?: PaymentStatus
+  fulfilmentStatus?: FulfilmentStatus
+  page?: number
+  pageSize?: number
+}
+
+export interface ListOrdersResponseData {
+  items: Order[]
+  pagination: Pagination
+}
+
+export interface OrderResponseData {
+  order: Order
+}
+
+// ── Admin fulfilment update ──────────────────────────────────────
+export interface UpdateOrderFulfilmentInput {
+  status: FulfilmentStatus
+  trackingCode?: string
+  trackingUrl?: string
+  /** Admin-only note appended to internalNotes with timestamp + author. */
+  note?: string
 }

@@ -9,6 +9,9 @@ import { AdminLoginPage } from '@/modules/admin/pages/auth/AdminLoginPage'
 import { DashboardPage } from '@/modules/admin/pages/DashboardPage'
 import { ProductsListPage } from '@/modules/admin/pages/products/ProductsListPage'
 import { ProductFormPage } from '@/modules/admin/pages/products/ProductFormPage'
+import { OrdersListPage } from '@/modules/admin/pages/orders/OrdersListPage'
+import { OrderDetailPage } from '@/modules/admin/pages/orders/OrderDetailPage'
+import { DiscountsPage } from '@/modules/admin/pages/discounts/DiscountsPage'
 
 export function AdminRoutes() {
   return (
@@ -32,9 +35,13 @@ export function AdminRoutes() {
               <Route path="/products" element={<ProductsListPage />} />
               <Route path="/products/new" element={<ProductFormPage />} />
               <Route path="/products/:slug/edit" element={<ProductFormPage />} />
+
               {/* Sprint 3 — orders */}
-              {/* <Route path="/orders" element={<OrdersPage />} /> */}
-              {/* <Route path="/orders/:id" element={<OrderDetailPage />} /> */}
+              <Route path="/orders" element={<OrdersListPage />} />
+              <Route path="/orders/:id" element={<OrderDetailPage />} />
+
+              {/* Sprint 4 — discounts */}
+              <Route path="/discounts" element={<DiscountsPage />} />
               {/* Sprint 4 — admin proper */}
               {/* <Route path="/customers" element={<CustomersPage />} /> */}
               {/* <Route path="/discounts" element={<DiscountsPage />} /> */}

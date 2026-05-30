@@ -37,6 +37,8 @@ export function ShopCard({ product }: ShopCardProps) {
     product.salePrice != null && product.salePrice < product.basePriceB2C
   const savings = hasSale ? product.basePriceB2C - (product.salePrice ?? 0) : 0
 
+  const isSoldOut = product.isSoldOut
+
   return (
     <Link
       to={`/shop/${product.slug}`}
@@ -44,7 +46,10 @@ export function ShopCard({ product }: ShopCardProps) {
     >
       {/* Image + badge */}
       <div className="relative overflow-hidden">
-        <div className="transition-transform duration-500 ease-out group-hover:scale-[1.03]">
+        <div
+          className="transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+          style={isSoldOut ? { filter: 'grayscale(0.6)', opacity: 0.65 } : undefined}
+        >
           <Photo
             src={heroImage?.url}
             alt={heroImage?.alt ?? product.name}
@@ -52,7 +57,7 @@ export function ShopCard({ product }: ShopCardProps) {
             ratio="4/5"
           />
         </div>
-        {metadata.badge ? (
+        {metadata.badge && !isSoldOut ? (
           <span
             className="absolute font-sans uppercase"
             style={{
@@ -68,6 +73,24 @@ export function ShopCard({ product }: ShopCardProps) {
             }}
           >
             {metadata.badge}
+          </span>
+        ) : null}
+        {isSoldOut ? (
+          <span
+            className="absolute font-sans uppercase"
+            style={{
+              top: 12,
+              left: 12,
+              padding: '5px 10px',
+              background: 'var(--ink)',
+              color: '#fff',
+              fontSize: 10.5,
+              fontWeight: 500,
+              letterSpacing: '0.08em',
+              borderRadius: 999,
+            }}
+          >
+            Sold out
           </span>
         ) : null}
       </div>

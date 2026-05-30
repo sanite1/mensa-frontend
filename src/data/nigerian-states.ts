@@ -1,0 +1,46 @@
+// Canonical list of Nigerian states + FCT for delivery dropdowns.
+// "FCT" sits at the top alongside the major commercial hubs so the most
+// likely choices for our customer base require less scrolling.
+
+export const NG_STATES: readonly string[] = [
+  'FCT',
+  'Lagos',
+  'Abuja',
+  'Abia',
+  'Adamawa',
+  'Akwa Ibom',
+  'Anambra',
+  'Bauchi',
+  'Bayelsa',
+  'Benue',
+  'Borno',
+  'Cross River',
+  'Delta',
+  'Ebonyi',
+  'Edo',
+  'Ekiti',
+  'Enugu',
+  'Gombe',
+  'Imo',
+  'Jigawa',
+  'Kaduna',
+  'Kano',
+  'Katsina',
+  'Kebbi',
+  'Kogi',
+  'Kwara',
+  'Nasarawa',
+  'Niger',
+  'Ogun',
+  'Ondo',
+  'Osun',
+  'Oyo',
+  'Plateau',
+  'Rivers',
+  'Sokoto',
+  'Taraba',
+  'Yobe',
+  'Zamfara',
+] as const
+
+export type NigerianState = (typeof NG_STATES)[number]

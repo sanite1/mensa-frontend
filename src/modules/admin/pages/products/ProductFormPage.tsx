@@ -113,6 +113,7 @@ const formSchema = z.object({
   accordions: z.array(accordionSchema).default([]),
   trustLines: z.array(trustLineSchema).default([]),
   isActive: z.boolean().default(true),
+  isSoldOut: z.boolean().default(false),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -155,6 +156,7 @@ const defaultValues: FormValues = {
   accordions: [],
   trustLines: [],
   isActive: true,
+  isSoldOut: false,
 }
 
 // ── SKU helper ─────────────────────────────────────────────────────────
@@ -313,6 +315,7 @@ export function ProductFormPage() {
         text: t.text,
       })),
       isActive: product.isActive,
+      isSoldOut: product.isSoldOut ?? false,
     })
     slugManuallyEdited.current = true
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -369,6 +372,7 @@ export function ProductFormPage() {
         ? { badge: values.badge.trim(), badgeTone: values.badgeTone }
         : {},
       isActive: values.isActive,
+      isSoldOut: values.isSoldOut,
     }
 
     if (isEditMode && slugParam) {
@@ -548,17 +552,44 @@ export function ProductFormPage() {
                 name="isActive"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>Visibility</FormLabel>
                     <FormControl>
                       <SelectInput
                         value={field.value ? 'active' : 'archived'}
                         onChange={(v) => field.onChange(v === 'active')}
                         options={[
-                          { value: 'active', label: 'Active (visible)' },
-                          { value: 'archived', label: 'Archived (hidden)' },
+                          { value: 'active', label: 'Visible on storefront' },
+                          { value: 'archived', label: 'Hidden from storefront' },
                         ]}
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="isSoldOut"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Stock state</FormLabel>
+                    <FormControl>
+                      <SelectInput
+                        value={field.value ? 'sold_out' : 'available'}
+                        onChange={(v) => field.onChange(v === 'sold_out')}
+                        options={[
+                          { value: 'available', label: 'Available to buy' },
+                          {
+                            value: 'sold_out',
+                            label: 'Mark as sold out (inventory unchanged)',
+                          },
+                        ]}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Forces a sold out treatment on the storefront without
+                      touching the variant stock counts.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
