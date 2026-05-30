@@ -11,11 +11,7 @@ import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
 
 import { useAdminOrders } from '@/lib/network/api/order.api'
-import type {
-  FulfilmentStatus,
-  Order,
-  PaymentStatus,
-} from '@/lib/network/types/order.types'
+import type { FulfilmentStatus, Order, PaymentStatus } from '@/lib/network/types/order.types'
 import { formatNaira, cn } from '@/lib/utils'
 
 const PAYMENT_FILTERS: { id: PaymentStatus | 'all'; label: string }[] = [
@@ -50,7 +46,7 @@ export function OrdersListPage() {
     paymentStatus: payment === 'all' ? undefined : payment,
     pageSize: 100,
   })
-  const orders = query.data?.data?.items ?? []
+  const orders: Order[] = query.data?.data?.items ?? []
 
   const visible = useMemo(() => {
     if (!search.trim()) return orders
@@ -64,35 +60,24 @@ export function OrdersListPage() {
   }, [orders, search])
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-[1280px]">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-7xl">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap mb-6 md:mb-8">
         <div className="min-w-0">
           <div className="t-eyebrow text-mute mb-3">Operations</div>
-          <h1
-            className="m-0"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontStyle: 'italic',
-              fontWeight: 600,
-              fontSize: 'clamp(32px, 5vw, 48px)',
-              lineHeight: 1.02,
-              letterSpacing: '-0.025em',
-              color: 'var(--ink)',
-            }}
-          >
+          <h1 className="m-0 font-display italic font-semibold text-[clamp(32px,5vw,48px)] leading-[1.02] tracking-tight text-ink">
             Orders
           </h1>
           <p className="t-body-s mt-2 text-graphite">
-            Every order placed through Mensa. Filter by payment status or search by
-            number, email, or name.
+            Every order placed through Mensa. Filter by payment status or search by number, email,
+            or name.
           </p>
         </div>
       </div>
 
       {/* Toolbar */}
       <div className="flex items-center gap-3 md:gap-4 flex-wrap mb-5 md:mb-6">
-        <div className="relative flex-1 min-w-full sm:min-w-[240px] max-w-full sm:max-w-[420px]">
+        <div className="relative flex-1 min-w-full sm:min-w-60 max-w-full sm:max-w-105">
           <Search
             size={16}
             strokeWidth={1.6}
@@ -147,11 +132,8 @@ export function OrdersListPage() {
 function OrdersTable({ orders }: { orders: Order[] }) {
   return (
     <div className="border border-hairline-soft bg-paper overflow-x-auto">
-      <div className="min-w-[860px]">
-        <div
-          className="grid items-center px-5 py-3 border-b border-hairline-soft bg-cream-soft text-[10px] uppercase tracking-[0.12em] font-medium text-mute font-mono"
-          style={{ gridTemplateColumns: '1.4fr 1.6fr 1fr 1fr 1fr 0.8fr' }}
-        >
+      <div className="min-w-215">
+        <div className="grid grid-cols-[1.4fr_1.6fr_1fr_1fr_1fr_0.8fr] items-center px-5 py-3 border-b border-hairline-soft bg-cream-soft text-[10px] uppercase tracking-[0.12em] font-medium text-mute font-mono">
           <div>Order</div>
           <div>Customer</div>
           <div>Placed</div>
@@ -179,16 +161,12 @@ function Row({ order, isLast }: { order: Order; isLast: boolean }) {
     <Link
       to={`/orders/${order._id}`}
       className={cn(
-        'grid items-center px-5 py-4 no-underline transition-colors hover:bg-cream-soft text-ink',
+        'grid grid-cols-[1.4fr_1.6fr_1fr_1fr_1fr_0.8fr] items-center px-5 py-4 no-underline transition-colors hover:bg-cream-soft text-ink',
         !isLast && 'border-b border-hairline-soft',
       )}
-      style={{ gridTemplateColumns: '1.4fr 1.6fr 1fr 1fr 1fr 0.8fr' }}
     >
       <div className="min-w-0">
-        <div
-          className="truncate text-ink font-mono"
-          style={{ fontSize: 13, letterSpacing: '0.04em' }}
-        >
+        <div className="truncate text-ink font-mono text-[13px] tracking-[0.04em]">
           {order.orderNumber}
         </div>
         <div className="text-[12px] text-mute mt-0.5">
@@ -198,9 +176,7 @@ function Row({ order, isLast }: { order: Order; isLast: boolean }) {
 
       <div className="min-w-0">
         <div className="text-[14px] text-ink truncate">{order.address.fullName}</div>
-        <div className="text-[12px] text-mute truncate mt-0.5">
-          {order.customerEmail}
-        </div>
+        <div className="text-[12px] text-mute truncate mt-0.5">{order.customerEmail}</div>
       </div>
 
       <div className="text-[13px] text-graphite">{placed}</div>
@@ -213,25 +189,29 @@ function Row({ order, isLast }: { order: Order; isLast: boolean }) {
         <StatusChip status={order.payment.status} />
       </div>
 
-      <div className="text-[12px] text-graphite">
-        {FULFILMENT_LABEL[order.fulfilment.status]}
-      </div>
+      <div className="text-[12px] text-graphite">{FULFILMENT_LABEL[order.fulfilment.status]}</div>
     </Link>
   )
 }
 
 function StatusChip({ status }: { status: PaymentStatus }) {
-  const tone =
+  // Tone class lookup keeps the chip Tailwind-only. The hex fallbacks
+  // from the old inline style are preserved as arbitrary-value classes
+  // so any environment without the CSS vars still renders the right
+  // colours.
+  const toneClass =
     status === 'paid'
-      ? { bg: 'var(--ok-soft, #E5F1E1)', fg: 'var(--ok, #2F6B3A)' }
+      ? 'bg-[#E5F1E1] text-[#2F6B3A]'
       : status === 'failed'
-        ? { bg: 'var(--coral-soft, #FBE4E4)', fg: 'var(--coral, #B14242)' }
-        : { bg: 'var(--cream-soft)', fg: 'var(--mute)' }
+        ? 'bg-[#FBE4E4] text-[#B14242]'
+        : 'bg-cream-soft text-mute'
 
   return (
     <span
-      className="inline-flex items-center text-[11px] uppercase tracking-[0.1em] font-medium px-2 py-1"
-      style={{ background: tone.bg, color: tone.fg }}
+      className={cn(
+        'inline-flex items-center text-[11px] uppercase tracking-widest font-medium px-2 py-1',
+        toneClass,
+      )}
     >
       {PAYMENT_LABEL[status]}
     </span>
@@ -261,22 +241,13 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="border border-hairline-soft bg-paper p-12 text-center">
       <div className="t-eyebrow text-err mb-3">Something went wrong</div>
-      <h3
-        className="m-0"
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontStyle: 'italic',
-          fontWeight: 600,
-          fontSize: 24,
-          color: 'var(--ink)',
-        }}
-      >
+      <h3 className="m-0 font-display italic font-semibold text-[24px] text-ink">
         We couldn't load the orders.
       </h3>
       <button
         type="button"
         onClick={onRetry}
-        className="mt-5 inline-block text-[var(--ink)] underline underline-offset-2"
+        className="mt-5 inline-block text-ink underline underline-offset-2"
       >
         Try again
       </button>
@@ -287,19 +258,8 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 function EmptyState({ hasFilter }: { hasFilter: boolean }) {
   return (
     <div className="border border-hairline-soft bg-paper p-12 text-center">
-      <div className="t-eyebrow text-mute mb-3">
-        {hasFilter ? 'No matches' : 'No orders yet'}
-      </div>
-      <h3
-        className="m-0"
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontStyle: 'italic',
-          fontWeight: 600,
-          fontSize: 24,
-          color: 'var(--ink)',
-        }}
-      >
+      <div className="t-eyebrow text-mute mb-3">{hasFilter ? 'No matches' : 'No orders yet'}</div>
+      <h3 className="m-0 font-display italic font-semibold text-[24px] text-ink">
         {hasFilter
           ? 'Nothing matches that filter.'
           : 'Once customers start placing orders, they will show up here.'}

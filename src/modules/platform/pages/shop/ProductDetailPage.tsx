@@ -28,11 +28,7 @@ import {
   IconStar,
   IconTruck,
 } from '@/components/chrome/icons'
-import type {
-  Product,
-  ProductVariant,
-  TrustIcon,
-} from '@/lib/network/types/product.types'
+import type { Product, ProductVariant, TrustIcon } from '@/lib/network/types/product.types'
 import type { ComponentType } from 'react'
 import { features, FREE_DELIVERY_THRESHOLD_LABEL } from '@/lib/features'
 
@@ -78,8 +74,7 @@ function ProductView({ product }: { product: Product }) {
   // Default selection: pull options from the first in stock variant.
   const defaultOptions = useMemo(() => {
     const seed: Record<string, string> = {}
-    const seedVariant =
-      variants.find((v) => v.isActive && v.stockCount > 0) ?? variants[0] ?? null
+    const seedVariant = variants.find((v) => v.isActive && v.stockCount > 0) ?? variants[0] ?? null
     if (seedVariant) {
       for (const type of optionTypes) {
         seed[type] = seedVariant.options?.[type] ?? ''
@@ -89,8 +84,7 @@ function ProductView({ product }: { product: Product }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product.id])
 
-  const [selectedOptions, setSelectedOptions] =
-    useState<Record<string, string>>(defaultOptions)
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(defaultOptions)
   const [qty, setQty] = useState(1)
 
   // Resolve the current option selection to a specific variant.
@@ -98,9 +92,7 @@ function ProductView({ product }: { product: Product }) {
     if (optionTypes.length === 0) return variants[0] ?? null
     return (
       variants.find((v) =>
-        optionTypes.every(
-          (t) => (v.options?.[t] ?? '') === (selectedOptions[t] ?? ''),
-        ),
+        optionTypes.every((t) => (v.options?.[t] ?? '') === (selectedOptions[t] ?? '')),
       ) ?? null
     )
   }, [variants, optionTypes, selectedOptions])
@@ -115,8 +107,7 @@ function ProductView({ product }: { product: Product }) {
 
   // Admin-controlled sold-out override forces the storefront into the same
   // state as a true zero-stock variant, without touching inventory.
-  const isOutOfStock =
-    product.isSoldOut || !selectedVariant || selectedVariant.stockCount <= 0
+  const isOutOfStock = product.isSoldOut || !selectedVariant || selectedVariant.stockCount <= 0
   const isLowStock =
     !product.isSoldOut &&
     !!selectedVariant &&
@@ -155,13 +146,10 @@ function ProductView({ product }: { product: Product }) {
     : null
 
   return (
-    <div className="bg-[var(--paper)] pb-24 md:pb-0">
+    <div className="bg-(--paper) pb-24 md:pb-0">
       {/* Breadcrumb */}
-      <nav
-        className="border-b border-[var(--hairline-soft)] bg-[var(--paper)] font-sans"
-        style={{ padding: '12px 20px', fontSize: 12 }}
-      >
-        <div className="flex items-center gap-2.5 flex-wrap text-[var(--mute)]">
+      <nav className="border-b border-hairline-soft bg-paper font-sans py-3 px-5 text-[12px]">
+        <div className="flex items-center gap-2.5 flex-wrap text-(--mute)">
           <Link to="/" className="text-inherit no-underline">
             Mensa
           </Link>
@@ -170,9 +158,9 @@ function ProductView({ product }: { product: Product }) {
             Shop
           </Link>
           <IconChevronRight size={11} />
-          <span className="text-[var(--ink)]">{CATEGORY_LABEL[product.category]}</span>
+          <span className="text-(--ink)">{CATEGORY_LABEL[product.category]}</span>
           <IconChevronRight size={11} />
-          <span className="text-[var(--ink)]">{product.name}</span>
+          <span className="text-(--ink)">{product.name}</span>
         </div>
       </nav>
 
@@ -248,49 +236,30 @@ function ProductInfo({
     <div className="flex flex-col gap-5 md:gap-6">
       {/* Title block */}
       <div>
-        <div className="t-eyebrow text-[var(--coral)]">
+        <div className="t-eyebrow text-(--coral)">
           {CATEGORY_LABEL[product.category]}
           {metadata.badge ? <> · {metadata.badge}</> : null}
         </div>
-        <h1
-          className="m-0 mt-2.5"
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontStyle: 'italic',
-            fontWeight: 600,
-            fontSize: 'clamp(36px, 5vw, 56px)',
-            lineHeight: 0.98,
-            letterSpacing: '-0.025em',
-            color: 'var(--ink)',
-          }}
-        >
+        <h1 className="m-0 mt-2.5 font-display italic font-semibold text-[clamp(36px,5vw,56px)] leading-[0.98] tracking-tight text-ink">
           {product.name}
         </h1>
 
         <div className="flex items-baseline gap-2.5 flex-wrap mt-1.5">
           {product.subheading ? (
-            <span
-              className="font-mono uppercase text-[var(--mute)]"
-              style={{ fontSize: 12, letterSpacing: '0.1em' }}
-            >
+            <span className="font-mono uppercase text-mute text-[12px] tracking-widest">
               {product.subheading}
             </span>
           ) : null}
           {typeof metadata.rating === 'number' ? (
             <>
               {product.subheading ? (
-                <span
-                  className="rounded-full opacity-50"
-                  style={{ width: 4, height: 4, background: 'var(--mute)' }}
-                />
+                <span className="rounded-full opacity-50 w-1 h-1 bg-mute" />
               ) : null}
               <div className="inline-flex items-center gap-1.5">
                 <Stars value={metadata.rating} size={13} />
-                <span className="text-[13px] text-[var(--graphite)]">
+                <span className="text-[13px] text-(--graphite)">
                   {metadata.rating.toFixed(1)}
-                  {metadata.reviewCount != null ? (
-                    <> ({metadata.reviewCount} reviews)</>
-                  ) : null}
+                  {metadata.reviewCount != null ? <> ({metadata.reviewCount} reviews)</> : null}
                 </span>
               </div>
             </>
@@ -300,29 +269,15 @@ function ProductInfo({
 
       {/* Price */}
       <div className="flex items-baseline gap-3 flex-wrap">
-        <div
-          className="font-sans text-[var(--ink)]"
-          style={{ fontWeight: 600, fontSize: 32, lineHeight: 1 }}
-        >
+        <div className="font-sans text-ink font-semibold text-[32px] leading-none">
           {formatNaira(effectivePrice)}
         </div>
         {hasSale ? (
           <>
-            <div className="text-[16px] text-[var(--mute)] line-through">
+            <div className="text-[16px] text-mute line-through">
               {formatNaira(product.basePriceB2C)}
             </div>
-            <span
-              className="font-sans"
-              style={{
-                padding: '3px 8px',
-                borderRadius: 4,
-                background: 'var(--blush)',
-                color: 'var(--berry)',
-                fontSize: 11.5,
-                fontWeight: 500,
-                letterSpacing: '0.04em',
-              }}
-            >
+            <span className="font-sans px-2 py-0.5 rounded-sm bg-blush text-berry text-[11.5px] font-medium tracking-[0.04em]">
               Save {formatNaira(savings)}
             </span>
           </>
@@ -331,7 +286,7 @@ function ProductInfo({
 
       {/* Description */}
       {product.shortDescription ? (
-        <p className="t-body m-0 text-[var(--graphite)]">{product.shortDescription}</p>
+        <p className="t-body m-0 text-(--graphite)">{product.shortDescription}</p>
       ) : null}
 
       {/* Option picker (Size, Color, etc.) */}
@@ -341,7 +296,7 @@ function ProductInfo({
             <div className="flex items-baseline justify-end mb-3">
               <Link
                 to="/size-guide"
-                className="text-[13px] font-medium text-[var(--ink)] border-b border-[var(--ink)] pb-0.5 no-underline"
+                className="text-[13px] font-medium text-(--ink) border-b border-(--ink) pb-0.5 no-underline"
               >
                 Size guide →
               </Link>
@@ -355,18 +310,18 @@ function ProductInfo({
           />
           {/* Stock note */}
           {isOutOfStock ? (
-            <div className="inline-flex items-center gap-2 mt-3 text-[13px] text-[var(--err)]">
-              <span className="rounded-full" style={{ width: 8, height: 8, background: 'var(--err)' }} />
+            <div className="inline-flex items-center gap-2 mt-3 text-[13px] text-(--err)">
+              <span className="rounded-full w-2 h-2 bg-err" />
               Out of stock. Try another option or come back soon.
             </div>
           ) : isLowStock ? (
-            <div className="inline-flex items-center gap-2 mt-3 text-[13px] text-[var(--coral)]">
-              <span className="rounded-full" style={{ width: 8, height: 8, background: 'var(--coral)' }} />
+            <div className="inline-flex items-center gap-2 mt-3 text-[13px] text-(--coral)">
+              <span className="rounded-full w-2 h-2 bg-coral" />
               Only {selectedVariant?.stockCount} left.
             </div>
           ) : (
-            <div className="inline-flex items-center gap-2 mt-3 text-[13px] text-[var(--ok)]">
-              <span className="rounded-full" style={{ width: 8, height: 8, background: 'var(--ok)' }} />
+            <div className="inline-flex items-center gap-2 mt-3 text-[13px] text-(--ok)">
+              <span className="rounded-full w-2 h-2 bg-ok" />
               In stock. Ships in 2 to 3 days.
             </div>
           )}
@@ -375,13 +330,13 @@ function ProductInfo({
         // Single variant — no picker, just show stock status.
         <div>
           {isOutOfStock ? (
-            <div className="inline-flex items-center gap-2 text-[13px] text-[var(--err)]">
-              <span className="rounded-full" style={{ width: 8, height: 8, background: 'var(--err)' }} />
+            <div className="inline-flex items-center gap-2 text-[13px] text-(--err)">
+              <span className="rounded-full w-2 h-2 bg-err" />
               Out of stock.
             </div>
           ) : (
-            <div className="inline-flex items-center gap-2 text-[13px] text-[var(--ok)]">
-              <span className="rounded-full" style={{ width: 8, height: 8, background: 'var(--ok)' }} />
+            <div className="inline-flex items-center gap-2 text-[13px] text-(--ok)">
+              <span className="rounded-full w-2 h-2 bg-ok" />
               In stock. Ships in 2 to 3 days.
             </div>
           )}
@@ -390,28 +345,20 @@ function ProductInfo({
 
       {/* Qty + CTA */}
       <div className="flex gap-2.5 items-stretch">
-        <div
-          className="inline-flex items-center bg-[var(--paper)]"
-          style={{ border: '1px solid var(--hairline)', borderRadius: 4 }}
-        >
+        <div className="inline-flex items-center bg-paper border border-hairline rounded-sm">
           <button
             type="button"
             onClick={() => onQtyChange(Math.max(1, qty - 1))}
-            className="w-11 h-12 text-[17px] text-[var(--ink)] hover:bg-[var(--cream)]"
+            className="w-11 h-12 text-[17px] text-(--ink) hover:bg-(--cream)"
             aria-label="Decrease quantity"
           >
             −
           </button>
-          <span
-            className="text-center text-[var(--ink)]"
-            style={{ minWidth: 32, fontSize: 15 }}
-          >
-            {qty}
-          </span>
+          <span className="text-center text-ink min-w-8 text-[15px]">{qty}</span>
           <button
             type="button"
             onClick={() => onQtyChange(qty + 1)}
-            className="w-11 h-12 text-[17px] text-[var(--ink)] hover:bg-[var(--cream)]"
+            className="w-11 h-12 text-[17px] text-(--ink) hover:bg-(--cream)"
             aria-label="Increase quantity"
           >
             +
@@ -466,13 +413,10 @@ function ProductInfo({
         const hasDescription = !!product.description?.trim()
         if (accordions.length === 0 && !hasDescription) return null
         return (
-          <div className="border-t border-[var(--hairline)] mt-2">
+          <div className="border-t border-(--hairline) mt-2">
             {hasDescription ? (
               <Acc label="Product details" defaultOpen>
-                <div
-                  className="text-[var(--graphite)] whitespace-pre-line"
-                  style={{ fontSize: 14.5, lineHeight: 1.6 }}
-                >
+                <div className="text-graphite whitespace-pre-line text-[14.5px] leading-[1.6]">
                   {product.description}
                 </div>
               </Acc>
@@ -483,10 +427,7 @@ function ProductInfo({
                 label={section.heading}
                 defaultOpen={!hasDescription && i === 0}
               >
-                <div
-                  className="m-0 text-[var(--graphite)] whitespace-pre-line"
-                  style={{ fontSize: 14.5, lineHeight: 1.6 }}
-                >
+                <div className="m-0 text-graphite whitespace-pre-line text-[14.5px] leading-[1.6]">
                   {section.body}
                 </div>
               </Acc>
@@ -509,20 +450,12 @@ function Acc({
   defaultOpen?: boolean
 }) {
   return (
-    <details
-      open={defaultOpen ? true : undefined}
-      className="border-b border-[var(--hairline)]"
-    >
-      <summary
-        className="list-none cursor-pointer flex items-center justify-between text-[var(--ink)] font-sans font-medium"
-        style={{ padding: '18px 0', fontSize: 15 }}
-      >
+    <details open={defaultOpen ? true : undefined} className="border-b border-(--hairline)">
+      <summary className="list-none cursor-pointer flex items-center justify-between text-ink font-sans font-medium py-4.5 text-[15px]">
         {label}
         <IconChevronDown size={16} />
       </summary>
-      <div className="pb-[18px]" style={{ fontSize: 14.5 }}>
-        {children}
-      </div>
+      <div className="pb-4.5 text-[14.5px]">{children}</div>
     </details>
   )
 }
@@ -542,10 +475,10 @@ function StickyAddToBag({
   onAddToBag: () => void
 }) {
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-[var(--paper)] border-t border-[var(--hairline)] px-4 py-3 flex items-center gap-3">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-(--paper) border-t border-(--hairline) px-4 py-3 flex items-center gap-3">
       <div className="flex flex-col flex-1 min-w-0">
-        <span className="text-[13px] truncate text-[var(--graphite)]">{product.name}</span>
-        <span className="text-[15px] font-semibold text-[var(--ink)]">
+        <span className="text-[13px] truncate text-(--graphite)">{product.name}</span>
+        <span className="text-[15px] font-semibold text-(--ink)">
           {formatNaira(effectivePrice)}
         </span>
       </div>
@@ -565,14 +498,14 @@ function StickyAddToBag({
 // ─────────────────────────────────────────────────────────────────
 function LoadingState() {
   return (
-    <div className="bg-[var(--paper)]">
+    <div className="bg-(--paper)">
       <div className="px-5 md:px-10 lg:px-16 py-10 grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14">
-        <div className="w-full bg-[var(--cream-soft)] animate-pulse" style={{ aspectRatio: '4/5' }} />
+        <div className="w-full bg-cream-soft animate-pulse aspect-4/5" />
         <div className="flex flex-col gap-4">
-          <div className="h-3 w-32 bg-[var(--cream-soft)] animate-pulse" />
-          <div className="h-12 w-3/4 bg-[var(--cream-soft)] animate-pulse" />
-          <div className="h-3 w-1/2 bg-[var(--cream-soft)] animate-pulse" />
-          <div className="h-8 w-32 bg-[var(--cream-soft)] animate-pulse mt-4" />
+          <div className="h-3 w-32 bg-(--cream-soft) animate-pulse" />
+          <div className="h-12 w-3/4 bg-(--cream-soft) animate-pulse" />
+          <div className="h-3 w-1/2 bg-(--cream-soft) animate-pulse" />
+          <div className="h-8 w-32 bg-(--cream-soft) animate-pulse mt-4" />
         </div>
       </div>
     </div>
@@ -582,25 +515,16 @@ function LoadingState() {
 function NotFoundState() {
   return (
     <section className="px-5 md:px-10 lg:px-16 py-32 text-center">
-      <div className="t-eyebrow text-[var(--mute)] mb-4">404</div>
-      <h1
-        className="m-0"
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontStyle: 'italic',
-          fontWeight: 600,
-          fontSize: 56,
-          color: 'var(--ink)',
-        }}
-      >
+      <div className="t-eyebrow text-(--mute) mb-4">404</div>
+      <h1 className="m-0 font-display italic font-semibold text-[56px] text-ink">
         We can't find that one.
       </h1>
-      <p className="t-body mt-3 text-[var(--graphite)] max-w-[420px] mx-auto">
+      <p className="t-body mt-3 text-(--graphite) max-w-105 mx-auto">
         It may have been archived or moved. Everything else is still in the shop.
       </p>
       <Link
         to="/shop"
-        className="mt-6 inline-flex items-center gap-2 text-[var(--ink)] text-[14px] font-medium border-b border-[var(--ink)] pb-0.5 no-underline"
+        className="mt-6 inline-flex items-center gap-2 text-(--ink) text-[14px] font-medium border-b border-(--ink) pb-0.5 no-underline"
       >
         Back to shop <IconArrowRight size={14} />
       </Link>

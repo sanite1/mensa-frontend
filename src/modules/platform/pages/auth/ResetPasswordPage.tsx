@@ -62,8 +62,7 @@ export function ResetPasswordPage() {
     )
   }
 
-  const onSubmit = (values: ResetValues) =>
-    reset.mutate({ token, password: values.password })
+  const onSubmit = (values: ResetValues) => reset.mutate({ token, password: values.password })
 
   return (
     <AuthShell
@@ -73,7 +72,7 @@ export function ResetPasswordPage() {
       footer={
         <>
           Remembered it?{' '}
-          <Link to="/login" className="text-[var(--ink)] underline underline-offset-2">
+          <Link to="/login" className="text-(--ink) underline underline-offset-2">
             Back to sign in
           </Link>
         </>

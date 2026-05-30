@@ -24,7 +24,7 @@ export function NavIconBtn({
   className,
 }: NavIconBtnProps) {
   const base = cn(
-    'relative inline-flex h-10 w-10 items-center justify-center rounded-sm bg-transparent text-[var(--ink)] hover:bg-[var(--cream)] transition-colors',
+    'relative inline-flex h-10 w-10 items-center justify-center rounded-sm bg-transparent text-ink hover:bg-cream transition-colors',
     className,
   )
 
@@ -32,10 +32,7 @@ export function NavIconBtn({
     <>
       {children}
       {badge != null && badge > 0 ? (
-        <span
-          className="absolute top-0.5 right-0.5 inline-flex items-center justify-center rounded-full bg-[var(--coral)] text-white font-sans font-semibold"
-          style={{ minWidth: 16, height: 16, padding: '0 4px', fontSize: 10, lineHeight: 1 }}
-        >
+        <span className="absolute top-0.5 right-0.5 inline-flex items-center justify-center rounded-full bg-coral text-white font-sans font-semibold min-w-4 h-4 px-1 text-[10px] leading-none">
           {badge}
         </span>
       ) : null}

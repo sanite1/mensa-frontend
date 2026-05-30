@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
  *
  * Variants use Tailwind theme tokens (text-paper, bg-ink, …) which are
  * defined in src/index.css @theme. This is more robust than arbitrary
- * value syntax (`text-[var(--paper)]`) which can lose specificity when
+ * value syntax (`text-(--paper)`) which can lose specificity when
  * the Button is rendered via Radix Slot onto a child like <Link>.
  */
 const buttonVariants = cva(
@@ -33,7 +33,7 @@ const buttonVariants = cva(
         // value syntax forces Tailwind to mint a unique class name per
         // utility, so the cascade resolves correctly.
         secondary:
-          'border border-[var(--ink)] bg-transparent text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--paper)]',
+          'border border-(--ink) bg-transparent text-(--ink) hover:bg-(--ink) hover:text-(--paper)',
         soft: 'bg-blush text-berry hover:bg-blush-2',
         ghost: 'bg-transparent text-ink hover:bg-cream',
       },
@@ -52,8 +52,7 @@ const buttonVariants = cva(
 )
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 

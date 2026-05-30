@@ -29,13 +29,7 @@ import { UtilityStrip } from './UtilityStrip'
 import { NavIconBtn } from './NavIconBtn'
 import { MegaMenu } from './MegaMenu'
 import { MobileDrawer } from './MobileDrawer'
-import {
-  IconSearch,
-  IconUser,
-  IconBag,
-  IconMenu,
-  IconChevronDown,
-} from './icons'
+import { IconSearch, IconUser, IconBag, IconMenu, IconChevronDown } from './icons'
 
 interface NavLinkSpec {
   label: string
@@ -79,7 +73,7 @@ export function Header() {
   }
 
   return (
-    <header className="bg-[var(--paper)] border-b border-[var(--hairline-soft)] sticky top-0 z-40">
+    <header className="bg-(--paper) border-b border-(--hairline-soft) sticky top-0 z-40">
       {/* Mobile: slim banner. Desktop/Tablet: utility strip. */}
       <div className="hidden md:block">
         <UtilityStrip />
@@ -138,10 +132,7 @@ function MobileBanner() {
   // header doesn't surface a promo we aren't honoring.
   if (!features.freeDelivery) return null
   return (
-    <div
-      className="md:hidden bg-[var(--ink)] text-[var(--paper)] text-center"
-      style={{ padding: '7px 16px', fontSize: 11.5, letterSpacing: '0.04em' }}
-    >
+    <div className="md:hidden bg-ink text-paper text-center py-1.75 px-4 text-[11.5px] tracking-[0.04em]">
       Free delivery in Abuja &amp; Lagos over {FREE_DELIVERY_THRESHOLD_LABEL}
     </div>
   )
@@ -162,20 +153,13 @@ function DesktopRow({
   onCartClick: () => void
 }) {
   return (
-    <div
-      className="hidden lg:grid items-center"
-      style={{
-        gridTemplateColumns: '1fr auto 1fr',
-        padding: '20px 48px',
-        gap: 32,
-      }}
-    >
+    <div className="hidden lg:grid items-center grid-cols-[1fr_auto_1fr] py-5 px-12 gap-8">
       <div className="flex items-center">
         <Link to="/" aria-label="Mensa home">
           <MensaWordmark height={36} />
         </Link>
       </div>
-      <nav className="flex items-center" style={{ gap: 36 }}>
+      <nav className="flex items-center gap-9">
         {navLinks.map((link) => (
           <DesktopNavLink
             key={link.label}
@@ -222,11 +206,10 @@ function DesktopNavLink({
         onMouseLeave={onShopLeave}
         onClick={onShopLeave}
         className={cn(
-          'inline-flex items-center gap-1 text-[14.5px] font-medium text-[var(--ink)] py-2.5 no-underline transition-colors',
+          'inline-flex items-center gap-1 text-[14.5px] font-medium text-ink py-2.5 no-underline transition-colors tracking-[0.01em]',
           'border-b-[1.5px]',
-          activeMenu || isCurrent ? 'border-[var(--ink)]' : 'border-transparent',
+          activeMenu || isCurrent ? 'border-ink' : 'border-transparent',
         )}
-        style={{ letterSpacing: '0.01em' }}
       >
         {link.label}
         <IconChevronDown size={14} />
@@ -238,11 +221,10 @@ function DesktopNavLink({
     <Link
       to={link.href}
       className={cn(
-        'inline-flex items-center gap-1 text-[14.5px] font-medium text-[var(--ink)] py-2.5 no-underline transition-colors',
+        'inline-flex items-center gap-1 text-[14.5px] font-medium text-ink py-2.5 no-underline transition-colors tracking-[0.01em]',
         'border-b-[1.5px]',
-        isCurrent ? 'border-[var(--ink)]' : 'border-transparent hover:border-[var(--hairline)]',
+        isCurrent ? 'border-ink' : 'border-transparent hover:border-hairline',
       )}
-      style={{ letterSpacing: '0.01em' }}
     >
       {link.label}
       {link.hasMenu ? <IconChevronDown size={14} /> : null}
@@ -261,19 +243,12 @@ function TabletRow({
   onCartClick: () => void
 }) {
   return (
-    <div
-      className="hidden md:grid lg:hidden items-center"
-      style={{
-        gridTemplateColumns: 'auto 1fr auto',
-        padding: '16px 24px',
-        gap: 16,
-      }}
-    >
+    <div className="hidden md:grid lg:hidden items-center grid-cols-[auto_1fr_auto] py-4 px-6 gap-4">
       <button
         type="button"
         onClick={onMenuClick}
         aria-label="Open menu"
-        className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-[var(--ink)] hover:bg-[var(--cream)]"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-(--ink) hover:bg-(--cream)"
       >
         <IconMenu />
       </button>
@@ -306,19 +281,12 @@ function MobileRow({
   onCartClick: () => void
 }) {
   return (
-    <div
-      className="grid md:hidden items-center"
-      style={{
-        gridTemplateColumns: 'auto 1fr auto auto',
-        padding: '12px 14px',
-        gap: 4,
-      }}
-    >
+    <div className="grid md:hidden items-center grid-cols-[auto_1fr_auto_auto] py-3 px-3.5 gap-1">
       <button
         type="button"
         onClick={onMenuClick}
         aria-label="Open menu"
-        className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-[var(--ink)]"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-(--ink)"
       >
         <IconMenu />
       </button>
@@ -357,34 +325,34 @@ function AccountIcon() {
         <button
           type="button"
           aria-label="Account menu"
-          className="relative inline-flex h-10 w-10 items-center justify-center rounded-sm bg-transparent text-[var(--ink)] hover:bg-[var(--cream)]"
+          className="relative inline-flex h-10 w-10 items-center justify-center rounded-sm bg-transparent text-(--ink) hover:bg-(--cream)"
         >
           <IconUser />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="bg-[var(--paper)] border border-[var(--hairline)] rounded-none min-w-[200px]"
+        className="bg-(--paper) border border-(--hairline) rounded-none min-w-50"
       >
-        <DropdownMenuLabel className="text-[var(--mute)] uppercase text-[11px] tracking-[0.12em] font-medium">
+        <DropdownMenuLabel className="text-(--mute) uppercase text-[11px] tracking-[0.12em] font-medium">
           Signed in as
         </DropdownMenuLabel>
-        <div className="px-2 pb-2 text-[14px] text-[var(--ink)] truncate">{user.email}</div>
-        <DropdownMenuSeparator className="bg-[var(--hairline-soft)]" />
+        <div className="px-2 pb-2 text-[14px] text-(--ink) truncate">{user.email}</div>
+        <DropdownMenuSeparator className="bg-(--hairline-soft)" />
         <DropdownMenuItem asChild>
-          <Link to="/account" className="text-[var(--ink)] text-[14px]">
+          <Link to="/account" className="text-(--ink) text-[14px]">
             My account
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/account/orders" className="text-[var(--ink)] text-[14px]">
+          <Link to="/account/orders" className="text-(--ink) text-[14px]">
             Orders
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-[var(--hairline-soft)]" />
+        <DropdownMenuSeparator className="bg-(--hairline-soft)" />
         <DropdownMenuItem
           onClick={() => logout.mutate()}
-          className="text-[var(--ink)] text-[14px] cursor-pointer"
+          className="text-(--ink) text-[14px] cursor-pointer"
         >
           Sign out
         </DropdownMenuItem>

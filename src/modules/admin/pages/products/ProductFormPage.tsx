@@ -38,9 +38,13 @@ import {
 } from '@/lib/network/api/product.api'
 import type {
   CreateProductInput,
+  ProductAccordion,
   ProductAccordionInput,
   ProductCategory,
+  // ProductImage,
+  ProductTrustLine,
   ProductTrustLineInput,
+  ProductVariant,
   ProductVariantInput,
   TrustIcon,
 } from '@/lib/network/types/product.types'
@@ -53,10 +57,7 @@ const accordionSchema = z.object({
     .string()
     .min(1, 'Heading is required.')
     .max(80, 'Heading must be 80 characters or fewer.'),
-  body: z
-    .string()
-    .min(1, 'Body is required.')
-    .max(4000, 'Body must be 4000 characters or fewer.'),
+  body: z.string().min(1, 'Body is required.').max(4000, 'Body must be 4000 characters or fewer.'),
 })
 
 const trustLineSchema = z.object({
@@ -95,10 +96,7 @@ const formSchema = z.object({
     .string()
     .min(1, 'Slug is required.')
     .max(120)
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      'Slug must be lowercase letters, numbers, and dashes.',
-    ),
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase letters, numbers, and dashes.'),
   category: z.enum(['pants', 'pads', 'bundles', 'education']),
   subheading: z.string().max(220).default(''),
   shortDescription: z.string().max(280).default(''),
@@ -170,15 +168,11 @@ function skuToken(value: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-function previewSku(
-  slug: string,
-  optionTypes: string[],
-  options: Record<string, string>,
-): string {
+function previewSku(slug: string, optionTypes: string[], options: Record<string, string>): string {
   const slugPart = skuToken(slug || 'PRODUCT')
   if (optionTypes.length === 0) return slugPart
   const valueParts = optionTypes
-    .map((t) => options[t])
+    .map((t: string) => options[t])
     .filter((v): v is string => typeof v === 'string' && v.trim().length > 0)
     .map(skuToken)
   if (valueParts.length === 0) return slugPart
@@ -213,29 +207,24 @@ export function ProductFormPage() {
 
   // Pending image files for create mode. Held in local state with object URL
   // previews until the product exists and they can be uploaded to Cloudinary.
-  const [pendingImages, setPendingImages] = useState<
-    { file: File; preview: string }[]
-  >([])
+  const [pendingImages, setPendingImages] = useState<{ file: File; preview: string }[]>([])
 
   // Revoke object URLs on unmount to avoid memory leaks.
   useEffect(() => {
     return () => {
-      pendingImages.forEach((p) => URL.revokeObjectURL(p.preview))
+      pendingImages.forEach((p: { file: File; preview: string }) => URL.revokeObjectURL(p.preview))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const addPendingImage = (file: File) => {
-    setPendingImages((prev) => [
-      ...prev,
-      { file, preview: URL.createObjectURL(file) },
-    ])
+    setPendingImages((prev) => [...prev, { file, preview: URL.createObjectURL(file) }])
   }
 
   const removePendingImage = (index: number) => {
-    setPendingImages((prev) => {
+    setPendingImages((prev: { file: File; preview: string }[]) => {
       URL.revokeObjectURL(prev[index].preview)
-      return prev.filter((_, i) => i !== index)
+      return prev.filter((_: { file: File; preview: string }, i: number) => i !== index)
     })
   }
 
@@ -293,23 +282,21 @@ export function ProductFormPage() {
       badge: product.metadata?.badge ?? '',
       badgeTone: product.metadata?.badgeTone ?? 'pink',
       optionTypes: product.optionTypes ?? [],
-      variants: (product.variants ?? []).map((v) => ({
+      variants: (product.variants ?? []).map((v: ProductVariant) => ({
         _id: v._id,
         options: v.options ?? {},
         stockCount: v.stockCount,
         lowStockThreshold: v.lowStockThreshold,
-        b2cPriceOverrideNaira:
-          v.b2cPriceOverride != null ? koboToNaira(v.b2cPriceOverride) : null,
-        b2bPriceOverrideNaira:
-          v.b2bPriceOverride != null ? koboToNaira(v.b2bPriceOverride) : null,
+        b2cPriceOverrideNaira: v.b2cPriceOverride != null ? koboToNaira(v.b2cPriceOverride) : null,
+        b2bPriceOverrideNaira: v.b2bPriceOverride != null ? koboToNaira(v.b2bPriceOverride) : null,
         isActive: v.isActive,
       })),
-      accordions: (product.accordions ?? []).map((a) => ({
+      accordions: (product.accordions ?? []).map((a: ProductAccordion) => ({
         _id: a._id,
         heading: a.heading,
         body: a.body,
       })),
-      trustLines: (product.trustLines ?? []).map((t) => ({
+      trustLines: (product.trustLines ?? []).map((t: ProductTrustLine) => ({
         _id: t._id,
         icon: t.icon,
         text: t.text,
@@ -323,35 +310,41 @@ export function ProductFormPage() {
 
   // ── Submit ──────────────────────────────────────────────────────────
   const onSubmit = (values: FormValues) => {
-    const variants: ProductVariantInput[] = values.variants.map((v) => {
-      // Strip any option keys that aren't in the product's option types,
-      // and trim values, so the payload matches what the backend expects.
-      const cleanedOptions: Record<string, string> = {}
-      for (const type of values.optionTypes) {
-        const raw = v.options?.[type]
-        if (typeof raw === 'string' && raw.trim()) cleanedOptions[type] = raw.trim()
-      }
-      return {
-        options: cleanedOptions,
-        stockCount: v.stockCount,
-        lowStockThreshold: v.lowStockThreshold,
-        b2cPriceOverride:
-          v.b2cPriceOverrideNaira != null ? nairaToKobo(v.b2cPriceOverrideNaira) : null,
-        b2bPriceOverride:
-          v.b2bPriceOverrideNaira != null ? nairaToKobo(v.b2bPriceOverrideNaira) : null,
-        isActive: v.isActive,
-      }
-    })
+    const variants: ProductVariantInput[] = values.variants.map(
+      (v: FormValues['variants'][number]) => {
+        // Strip any option keys that aren't in the product's option types,
+        // and trim values, so the payload matches what the backend expects.
+        const cleanedOptions: Record<string, string> = {}
+        for (const type of values.optionTypes) {
+          const raw = v.options?.[type]
+          if (typeof raw === 'string' && raw.trim()) cleanedOptions[type] = raw.trim()
+        }
+        return {
+          options: cleanedOptions,
+          stockCount: v.stockCount,
+          lowStockThreshold: v.lowStockThreshold,
+          b2cPriceOverride:
+            v.b2cPriceOverrideNaira != null ? nairaToKobo(v.b2cPriceOverrideNaira) : null,
+          b2bPriceOverride:
+            v.b2bPriceOverrideNaira != null ? nairaToKobo(v.b2bPriceOverrideNaira) : null,
+          isActive: v.isActive,
+        }
+      },
+    )
 
-    const accordions: ProductAccordionInput[] = values.accordions.map((a) => ({
-      heading: a.heading.trim(),
-      body: a.body.trim(),
-    }))
+    const accordions: ProductAccordionInput[] = values.accordions.map(
+      (a: FormValues['accordions'][number]) => ({
+        heading: a.heading.trim(),
+        body: a.body.trim(),
+      }),
+    )
 
-    const trustLines: ProductTrustLineInput[] = values.trustLines.map((t) => ({
-      icon: t.icon,
-      text: t.text.trim(),
-    }))
+    const trustLines: ProductTrustLineInput[] = values.trustLines.map(
+      (t: FormValues['trustLines'][number]) => ({
+        icon: t.icon,
+        text: t.text.trim(),
+      }),
+    )
 
     const payload: CreateProductInput = {
       slug: values.slug,
@@ -362,8 +355,7 @@ export function ProductFormPage() {
       category: values.category,
       basePriceB2C: nairaToKobo(values.basePriceB2CNaira),
       basePriceB2B: nairaToKobo(values.basePriceB2BNaira),
-      salePrice:
-        values.salePriceNaira != null ? nairaToKobo(values.salePriceNaira) : null,
+      salePrice: values.salePriceNaira != null ? nairaToKobo(values.salePriceNaira) : null,
       optionTypes: values.optionTypes,
       variants,
       accordions,
@@ -407,7 +399,9 @@ export function ProductFormPage() {
               }
             }
             // Clear local previews — the real images are now on the product.
-            pendingImages.forEach((p) => URL.revokeObjectURL(p.preview))
+            pendingImages.forEach((p: { file: File; preview: string }) =>
+              URL.revokeObjectURL(p.preview),
+            )
             setPendingImages([])
           }
 
@@ -449,7 +443,7 @@ export function ProductFormPage() {
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-[960px]">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-240">
       {/* Header */}
       <div className="flex items-start justify-between gap-6 flex-wrap mb-8">
         <div>
@@ -459,27 +453,11 @@ export function ProductFormPage() {
           >
             ← Catalogue
           </Link>
-          <h1
-            className="m-0"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontStyle: 'italic',
-              fontWeight: 600,
-              fontSize: 'clamp(28px, 5vw, 48px)',
-              lineHeight: 1.02,
-              letterSpacing: '-0.025em',
-              color: 'var(--ink)',
-            }}
-          >
-            {isEditMode ? product?.name ?? 'Edit product' : 'New product'}
+          <h1 className="m-0 font-display italic font-semibold text-[clamp(28px,5vw,48px)] leading-[1.02] tracking-tight text-ink">
+            {isEditMode ? (product?.name ?? 'Edit product') : 'New product'}
           </h1>
           {isEditMode ? (
-            <p
-              className="t-body-s mt-2 text-mute font-mono"
-              style={{ letterSpacing: '0.06em' }}
-            >
-              {product?.slug}
-            </p>
+            <p className="t-body-s mt-2 text-mute font-mono tracking-[0.06em]">{product?.slug}</p>
           ) : null}
         </div>
       </div>
@@ -587,8 +565,8 @@ export function ProductFormPage() {
                       />
                     </FormControl>
                     <FormDescription>
-                      Forces a sold out treatment on the storefront without
-                      touching the variant stock counts.
+                      Forces a sold out treatment on the storefront without touching the variant
+                      stock counts.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -685,11 +663,7 @@ export function ProductFormPage() {
                   <FormItem>
                     <FormLabel>Sale price (₦, optional)</FormLabel>
                     <FormControl>
-                      <NairaInput
-                        value={field.value}
-                        onChange={field.onChange}
-                        allowEmpty
-                      />
+                      <NairaInput value={field.value} onChange={field.onChange} allowEmpty />
                     </FormControl>
                     <FormDescription>Leave blank when not on sale.</FormDescription>
                     <FormMessage />
@@ -741,12 +715,7 @@ export function ProductFormPage() {
           </Section>
 
           {/* ── Variants ────────────────────────────────────────────── */}
-          <VariantsSection
-            form={form}
-            fields={fields}
-            append={append}
-            remove={remove}
-          />
+          <VariantsSection form={form} fields={fields} append={append} remove={remove} />
 
           {/* ── Detail sections (accordions) ──────────────────────── */}
           <Section
@@ -807,8 +776,8 @@ export function ProductFormPage() {
             {trustLineFields.fields.length === 0 ? (
               <div className="border border-dashed border-hairline bg-cream-soft py-8 px-6 text-center">
                 <p className="t-body-s text-mute mb-1">
-                  No trust lines yet. Add one liners with icons that go above the accordion
-                  block on the PDP.
+                  No trust lines yet. Add one liners with icons that go above the accordion block on
+                  the PDP.
                 </p>
                 <p className="t-body-s text-mute">
                   Common picks: shipping time, comfort guarantee, longevity.
@@ -864,12 +833,7 @@ export function ProductFormPage() {
               <Button asChild variant="secondary" size="default">
                 <Link to="/products">Cancel</Link>
               </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                size="default"
-                disabled={isSubmitting}
-              >
+              <Button type="submit" variant="primary" size="default" disabled={isSubmitting}>
                 {isSubmitting
                   ? isEditMode
                     ? 'Saving…'
@@ -905,16 +869,7 @@ function Section({
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
           <div className="t-eyebrow text-mute mb-1">{eyebrow}</div>
-          <h2
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontStyle: 'italic',
-              fontWeight: 600,
-              fontSize: 24,
-              lineHeight: 1.1,
-              color: 'var(--ink)',
-            }}
-          >
+          <h2 className="font-display italic font-semibold text-[24px] leading-[1.1] text-ink">
             {title}
           </h2>
         </div>
@@ -965,11 +920,7 @@ function VariantsSection({
           size="sm"
           onClick={() => append(blankVariant())}
           disabled={!addVariantEnabled}
-          title={
-            !addVariantEnabled
-              ? 'Define an option type above first.'
-              : undefined
-          }
+          title={!addVariantEnabled ? 'Define an option type above first.' : undefined}
         >
           <Plus size={14} strokeWidth={2} />
           Add variant
@@ -994,16 +945,15 @@ function VariantsSection({
             <p className="t-body-s text-mute mb-2 font-medium">No variants yet.</p>
             {hasOptionTypes ? (
               <p className="t-body-s text-mute mb-3">
-                Click <strong className="text-ink">Add variant</strong> to create the first
-                one. Each variant gets a field per option type
-                ({optionTypes.join(', ')}).
+                Click <strong className="text-ink">Add variant</strong> to create the first one.
+                Each variant gets a field per option type ({optionTypes.join(', ')}).
               </p>
             ) : (
               <>
                 <p className="t-body-s text-mute mb-3">
                   Define option types above (Size, Color, etc.), then click{' '}
-                  <strong className="text-ink">Add variant</strong>. Each variant gets one
-                  field per option type.
+                  <strong className="text-ink">Add variant</strong>. Each variant gets one field per
+                  option type.
                 </p>
                 <button
                   type="button"
@@ -1018,9 +968,7 @@ function VariantsSection({
         )}
 
         {form.formState.errors.variants?.root ? (
-          <p className="t-body-s text-err">
-            {form.formState.errors.variants.root.message}
-          </p>
+          <p className="t-body-s text-err">{form.formState.errors.variants.root.message}</p>
         ) : null}
       </div>
     </Section>
@@ -1049,7 +997,7 @@ function OptionTypesField({ form }: { form: ReturnType<typeof useForm<FormValues
   const commit = () => {
     const parsed = text
       .split(',')
-      .map((t) => t.trim())
+      .map((t: string) => t.trim())
       .filter(Boolean)
     form.setValue('optionTypes', parsed, { shouldDirty: true })
   }
@@ -1066,9 +1014,9 @@ function OptionTypesField({ form }: { form: ReturnType<typeof useForm<FormValues
         onChange={(e) => setText(e.target.value)}
         onBlur={commit}
       />
-      <p className="text-[12.5px] text-[var(--mute)] leading-relaxed">
-        Comma separated. Leave blank for single variant products. Each variant below gets one
-        input per option type, and the SKU is computed from your slug plus the option values.
+      <p className="text-[12.5px] text-(--mute) leading-relaxed">
+        Comma separated. Leave blank for single variant products. Each variant below gets one input
+        per option type, and the SKU is computed from your slug plus the option values.
       </p>
     </div>
   )
@@ -1096,12 +1044,9 @@ function VariantRow({
   return (
     <div className="border border-hairline-soft bg-cream-soft p-4">
       <div className="flex items-center justify-between mb-3">
-        <div className="t-eyebrow text-mute" style={{ letterSpacing: '0.12em' }}>
+        <div className="t-eyebrow text-mute tracking-[0.12em]">
           Variant {index + 1}
-          <span
-            className="ml-3 text-mute font-mono"
-            style={{ fontSize: 10.5, letterSpacing: '0.06em', textTransform: 'none' }}
-          >
+          <span className="ml-3 text-mute font-mono text-[10.5px] tracking-[0.06em] normal-case">
             SKU · {computedSku}
           </span>
         </div>
@@ -1124,7 +1069,7 @@ function VariantRow({
           no FormField context for these dynamic field names. */}
       {optionTypes.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-          {optionTypes.map((type) => (
+          {optionTypes.map((type: string) => (
             <div key={type} className="flex flex-col gap-2">
               <Label>{type}</Label>
               <Input
@@ -1228,9 +1173,7 @@ function AccordionRow({
   return (
     <div className="border border-hairline-soft bg-cream-soft p-4">
       <div className="flex items-center justify-between mb-3">
-        <div className="t-eyebrow text-mute" style={{ letterSpacing: '0.12em' }}>
-          Section {index + 1}
-        </div>
+        <div className="t-eyebrow text-mute tracking-[0.12em]">Section {index + 1}</div>
         <button
           type="button"
           onClick={onRemove}
@@ -1275,20 +1218,25 @@ function AccordionRow({
 // ═══════════════════════════════════════════════════════════════
 //  Images section
 // ═══════════════════════════════════════════════════════════════
+type ImgItem = { _id: string; url: string; alt: string; order: number }
+
 function ImagesSection({
   slug,
   images,
   eyebrow = '06',
 }: {
   slug: string
-  images: { _id: string; url: string; alt: string; order: number }[]
+  images: ImgItem[]
   eyebrow?: string
 }) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const uploadMutation = useUploadProductImage()
   const removeMutation = useRemoveProductImage()
 
-  const sortedImages = useMemo(() => [...images].sort((a, b) => a.order - b.order), [images])
+  const sortedImages = useMemo(
+    () => [...images].sort((a: ImgItem, b: ImgItem) => a.order - b.order),
+    [images],
+  )
 
   const onPick = () => fileRef.current?.click()
 
@@ -1321,13 +1269,7 @@ function ImagesSection({
         </Button>
       }
     >
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        onChange={onChange}
-        className="hidden"
-      />
+      <input ref={fileRef} type="file" accept="image/*" onChange={onChange} className="hidden" />
       {sortedImages.length === 0 ? (
         <div className="border border-dashed border-hairline bg-cream-soft py-10 text-center">
           <p className="t-body-s text-mute mb-3">No images yet.</p>
@@ -1344,26 +1286,18 @@ function ImagesSection({
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {sortedImages.map((img, i) => (
+          {sortedImages.map((img: ImgItem, i: number) => (
             <div key={img._id} className="relative group">
               <div
                 className={cn(
-                  'overflow-hidden bg-blush',
+                  'overflow-hidden bg-blush aspect-4/5',
                   i === 0 ? 'ring-2 ring-pink' : '',
                 )}
-                style={{ aspectRatio: '4/5' }}
               >
-                <img
-                  src={img.url}
-                  alt={img.alt}
-                  className="w-full h-full object-cover"
-                />
+                <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
               </div>
               {i === 0 ? (
-                <span
-                  className="absolute top-2 left-2 px-2 py-0.5 bg-pink text-paper font-mono uppercase tracking-[0.1em]"
-                  style={{ fontSize: 9, borderRadius: 2 }}
-                >
+                <span className="absolute top-2 left-2 px-2 py-0.5 bg-pink text-paper font-mono uppercase tracking-widest text-[9px] rounded-xs">
                   Hero
                 </span>
               ) : null}
@@ -1371,8 +1305,7 @@ function ImagesSection({
                 type="button"
                 onClick={() => removeMutation.mutate({ slug, imageId: img._id })}
                 disabled={removeMutation.isPending}
-                className="absolute top-2 right-2 w-7 h-7 bg-paper border border-hairline hover:bg-err hover:text-paper inline-flex items-center justify-center"
-                style={{ borderRadius: 2 }}
+                className="absolute top-2 right-2 w-7 h-7 bg-paper border border-hairline hover:bg-err hover:text-paper inline-flex items-center justify-center rounded-xs"
                 aria-label="Remove image"
               >
                 <X size={14} strokeWidth={1.6} />
@@ -1400,9 +1333,7 @@ function TrustLineRow({
   return (
     <div className="border border-hairline-soft bg-cream-soft p-4">
       <div className="flex items-center justify-between mb-3">
-        <div className="t-eyebrow text-mute" style={{ letterSpacing: '0.12em' }}>
-          Trust line {index + 1}
-        </div>
+        <div className="t-eyebrow text-mute tracking-[0.12em]">Trust line {index + 1}</div>
         <button
           type="button"
           onClick={onRemove}
@@ -1437,10 +1368,7 @@ function TrustLineRow({
             <FormItem>
               <Label>Text</Label>
               <FormControl>
-                <Input
-                  placeholder="Ships nationwide in 2 to 5 days."
-                  {...field}
-                />
+                <Input placeholder="Ships nationwide in 2 to 5 days." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -1519,38 +1447,29 @@ function PendingImagesSection({
       ) : (
         <>
           <p className="t-body-s text-mute mb-4">
-            {pending.length} image{pending.length === 1 ? '' : 's'} queued. They will upload
-            after you submit the form.
+            {pending.length} image{pending.length === 1 ? '' : 's'} queued. They will upload after
+            you submit the form.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {pending.map((p, i) => (
+            {pending.map((p: { file: File; preview: string }, i: number) => (
               <div key={p.preview} className="relative group">
                 <div
                   className={cn(
-                    'overflow-hidden bg-blush',
+                    'overflow-hidden bg-blush aspect-4/5',
                     i === 0 ? 'ring-2 ring-pink' : '',
                   )}
-                  style={{ aspectRatio: '4/5' }}
                 >
-                  <img
-                    src={p.preview}
-                    alt={p.file.name}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={p.preview} alt={p.file.name} className="w-full h-full object-cover" />
                 </div>
                 {i === 0 ? (
-                  <span
-                    className="absolute top-2 left-2 px-2 py-0.5 bg-pink text-paper font-mono uppercase tracking-[0.1em]"
-                    style={{ fontSize: 9, borderRadius: 2 }}
-                  >
+                  <span className="absolute top-2 left-2 px-2 py-0.5 bg-pink text-paper font-mono uppercase tracking-widest text-[9px] rounded-xs">
                     Hero
                   </span>
                 ) : null}
                 <button
                   type="button"
                   onClick={() => onRemove(i)}
-                  className="absolute top-2 right-2 w-7 h-7 bg-paper border border-hairline hover:bg-err hover:text-paper inline-flex items-center justify-center"
-                  style={{ borderRadius: 2 }}
+                  className="absolute top-2 right-2 w-7 h-7 bg-paper border border-hairline hover:bg-err hover:text-paper inline-flex items-center justify-center rounded-xs"
                   aria-label="Remove image"
                 >
                   <X size={14} strokeWidth={1.6} />
@@ -1580,12 +1499,7 @@ function NairaInput({
   const display = value == null ? '' : String(value)
   return (
     <div className="relative">
-      <span
-        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-mute"
-        style={{ fontSize: 14 }}
-      >
-        ₦
-      </span>
+      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-mute text-[14px]">₦</span>
       <input
         type="number"
         inputMode="numeric"
@@ -1607,13 +1521,7 @@ function NairaInput({
   )
 }
 
-function NumberInput({
-  value,
-  onChange,
-}: {
-  value: number
-  onChange: (v: number) => void
-}) {
+function NumberInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   return (
     <input
       type="number"
@@ -1644,7 +1552,7 @@ function SelectInput({
       onChange={(e) => onChange(e.target.value)}
       className="flex h-11 w-full border border-hairline bg-paper px-3.5 py-2 text-[15px] text-ink focus-visible:outline-none focus-visible:border-ink"
     >
-      {options.map((o) => (
+      {options.map((o: { value: string; label: string }) => (
         <option key={o.value} value={o.value}>
           {o.label}
         </option>
@@ -1671,8 +1579,7 @@ function TextArea({
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="w-full border border-hairline bg-paper px-3.5 py-3 text-[15px] text-ink placeholder:text-mute focus-visible:outline-none focus-visible:border-ink resize-y"
-      style={{ minHeight: 100 }}
+      className="w-full min-h-25 border border-hairline bg-paper px-3.5 py-3 text-[15px] text-ink placeholder:text-mute focus-visible:outline-none focus-visible:border-ink resize-y"
       {...props}
     />
   )

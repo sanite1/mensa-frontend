@@ -10,8 +10,8 @@ interface TrustLineProps {
 
 export function TrustLine({ icon, children }: TrustLineProps) {
   return (
-    <div className="flex items-center gap-3 text-[13.5px] text-[var(--graphite)]">
-      <span className="text-[var(--coral)]">{icon}</span>
+    <div className="flex items-center gap-3 text-[13.5px] text-(--graphite)">
+      <span className="text-(--coral)">{icon}</span>
       {children}
     </div>
   )

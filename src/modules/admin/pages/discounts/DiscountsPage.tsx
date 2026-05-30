@@ -29,12 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 import {
   useAdminDiscounts,
@@ -62,10 +57,7 @@ const formSchema = z
       .trim()
       .min(2, 'At least 2 characters.')
       .max(40)
-      .regex(
-        /^[A-Za-z0-9_-]+$/,
-        'Letters, numbers, dash, underscore only.',
-      ),
+      .regex(/^[A-Za-z0-9_-]+$/, 'Letters, numbers, dash, underscore only.'),
     type: z.enum(['percent', 'fixed']),
     value: z.number().min(1, 'Must be at least 1.'),
     expiresAt: z.string().optional().or(z.literal('')),
@@ -73,13 +65,10 @@ const formSchema = z
     isActive: z.boolean().default(true),
     description: z.string().max(200).default(''),
   })
-  .refine(
-    (data) => data.type !== 'percent' || data.value <= 100,
-    {
-      message: 'Percent discounts cap at 100.',
-      path: ['value'],
-    },
-  )
+  .refine((data) => data.type !== 'percent' || data.value <= 100, {
+    message: 'Percent discounts cap at 100.',
+    path: ['value'],
+  })
 
 type FormValues = z.infer<typeof formSchema>
 
@@ -110,33 +99,21 @@ const blank: FormValues = {
 
 export function DiscountsPage() {
   const query = useAdminDiscounts({ pageSize: 100 })
-  const items = query.data?.data?.items ?? []
+  const items: Discount[] = query.data?.data?.items ?? []
 
   const [editing, setEditing] = useState<Discount | 'new' | null>(null)
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-[1280px]">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-7xl">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap mb-6 md:mb-8">
         <div className="min-w-0">
           <div className="t-eyebrow text-mute mb-3">Promotions</div>
-          <h1
-            className="m-0"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontStyle: 'italic',
-              fontWeight: 600,
-              fontSize: 'clamp(32px, 5vw, 48px)',
-              lineHeight: 1.02,
-              letterSpacing: '-0.025em',
-              color: 'var(--ink)',
-            }}
-          >
+          <h1 className="m-0 font-display italic font-semibold text-[clamp(32px,5vw,48px)] leading-[1.02] tracking-tight text-ink">
             Discount codes
           </h1>
           <p className="t-body-s mt-2 text-graphite">
-            Percentage or fixed-amount codes. Cap usage with an expiry date or
-            a total-uses limit.
+            Percentage or fixed-amount codes. Cap usage with an expiry date or a total-uses limit.
           </p>
         </div>
         <Button variant="primary" size="lg" onClick={() => setEditing('new')}>
@@ -163,19 +140,8 @@ export function DiscountsPage() {
           className="w-full sm:max-w-md bg-paper border-l border-hairline overflow-y-auto"
         >
           <SheetHeader>
-            <SheetTitle
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontStyle: 'italic',
-                fontSize: 28,
-                color: 'var(--ink)',
-              }}
-            >
-              {editing === 'new'
-                ? 'New discount'
-                : editing
-                  ? `Edit ${editing.code}`
-                  : ''}
+            <SheetTitle className="font-display italic text-[28px] text-ink">
+              {editing === 'new' ? 'New discount' : editing ? `Edit ${editing.code}` : ''}
             </SheetTitle>
           </SheetHeader>
           {editing ? (
@@ -194,21 +160,17 @@ export function DiscountsPage() {
 // ─────────────────────────────────────────────────────────────────
 // Table
 // ─────────────────────────────────────────────────────────────────
-const TABLE_TEMPLATE = '1.4fr 1fr 1fr 1fr 1fr 0.9fr 44px'
+const TABLE_COLS = 'grid-cols-[1.4fr_1fr_1fr_1fr_1fr_0.9fr_44px]'
 
-function DiscountsTable({
-  items,
-  onEdit,
-}: {
-  items: Discount[]
-  onEdit: (d: Discount) => void
-}) {
+function DiscountsTable({ items, onEdit }: { items: Discount[]; onEdit: (d: Discount) => void }) {
   return (
     <div className="border border-hairline-soft bg-paper overflow-x-auto">
-      <div className="min-w-[820px]">
+      <div className="min-w-205">
         <div
-          className="grid items-center px-5 py-3 border-b border-hairline-soft bg-cream-soft text-[10px] uppercase tracking-[0.12em] font-medium text-mute font-mono"
-          style={{ gridTemplateColumns: TABLE_TEMPLATE }}
+          className={cn(
+            'grid items-center px-5 py-3 border-b border-hairline-soft bg-cream-soft text-[10px] uppercase tracking-[0.12em] font-medium text-mute font-mono',
+            TABLE_COLS,
+          )}
         >
           <div>Code</div>
           <div>Type</div>
@@ -219,27 +181,14 @@ function DiscountsTable({
           <div />
         </div>
         {items.map((d, i) => (
-          <Row
-            key={d._id}
-            d={d}
-            isLast={i === items.length - 1}
-            onEdit={() => onEdit(d)}
-          />
+          <Row key={d._id} d={d} isLast={i === items.length - 1} onEdit={() => onEdit(d)} />
         ))}
       </div>
     </div>
   )
 }
 
-function Row({
-  d,
-  isLast,
-  onEdit,
-}: {
-  d: Discount
-  isLast: boolean
-  onEdit: () => void
-}) {
+function Row({ d, isLast, onEdit }: { d: Discount; isLast: boolean; onEdit: () => void }) {
   const update = useUpdateDiscount()
   const del = useDeleteDiscount()
   const expires = d.expiresAt
@@ -254,25 +203,14 @@ function Row({
     <div
       className={cn(
         'grid items-center px-5 py-4 transition-colors hover:bg-cream-soft',
+        TABLE_COLS,
         !isLast && 'border-b border-hairline-soft',
       )}
-      style={{ gridTemplateColumns: TABLE_TEMPLATE }}
     >
-      <button
-        type="button"
-        onClick={onEdit}
-        className="text-left min-w-0 bg-transparent"
-      >
-        <div
-          className="font-mono text-ink truncate"
-          style={{ fontSize: 14, letterSpacing: '0.04em' }}
-        >
-          {d.code}
-        </div>
+      <button type="button" onClick={onEdit} className="text-left min-w-0 bg-transparent">
+        <div className="font-mono text-ink truncate text-[14px] tracking-[0.04em]">{d.code}</div>
         {d.description ? (
-          <div className="text-[12px] text-mute mt-0.5 truncate">
-            {d.description}
-          </div>
+          <div className="text-[12px] text-mute mt-0.5 truncate">{d.description}</div>
         ) : null}
       </button>
       <div className="text-[13px] text-graphite capitalize">{d.type}</div>
@@ -286,20 +224,12 @@ function Row({
       <div className="text-[13px] text-graphite">{expires}</div>
       <div className="text-right">
         <span
-          className="inline-flex items-center gap-1.5 text-[11px] font-medium"
-          style={{
-            letterSpacing: '0.04em',
-            color: d.isActive ? 'var(--ok)' : 'var(--mute)',
-          }}
+          className={cn(
+            'inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.04em]',
+            d.isActive ? 'text-ok' : 'text-mute',
+          )}
         >
-          <span
-            className="rounded-full"
-            style={{
-              width: 6,
-              height: 6,
-              background: d.isActive ? 'var(--ok)' : 'var(--mute)',
-            }}
-          />
+          <span className={cn('rounded-full w-1.5 h-1.5', d.isActive ? 'bg-ok' : 'bg-mute')} />
           {d.isActive ? 'Active' : 'Paused'}
         </span>
       </div>
@@ -316,12 +246,9 @@ function Row({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="bg-paper border border-hairline-soft min-w-[200px]"
+            className="bg-paper border border-hairline-soft min-w-50"
           >
-            <DropdownMenuItem
-              onSelect={() => onEdit()}
-              className="text-[13px] text-ink"
-            >
+            <DropdownMenuItem onSelect={() => onEdit()} className="text-[13px] text-ink">
               <Pencil size={14} strokeWidth={1.6} /> Edit
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -354,7 +281,7 @@ function Row({
                   del.mutate(d._id)
                 }
               }}
-              className="text-[13px] text-[var(--err)]"
+              className="text-[13px] text-(--err)"
             >
               <Trash2 size={14} strokeWidth={1.6} /> Delete
             </DropdownMenuItem>
@@ -368,13 +295,7 @@ function Row({
 // ─────────────────────────────────────────────────────────────────
 // Form
 // ─────────────────────────────────────────────────────────────────
-function DiscountForm({
-  initial,
-  onDone,
-}: {
-  initial: Discount | null
-  onDone: () => void
-}) {
+function DiscountForm({ initial, onDone }: { initial: Discount | null; onDone: () => void }) {
   const isEdit = !!initial
   const create = useCreateDiscount()
   const update = useUpdateDiscount()
@@ -386,10 +307,7 @@ function DiscountForm({
           code: initial.code,
           type: initial.type,
           // For fixed, show value as naira in the input — easier on the eye.
-          value:
-            initial.type === 'fixed'
-              ? koboToNaira(initial.value)
-              : initial.value,
+          value: initial.type === 'fixed' ? koboToNaira(initial.value) : initial.value,
           expiresAt: initial.expiresAt
             ? initial.expiresAt.slice(0, 10) // yyyy-mm-dd
             : '',
@@ -413,18 +331,14 @@ function DiscountForm({
     const payload: CreateDiscountInput = {
       code: values.code.trim(),
       type: values.type,
-      value:
-        values.type === 'fixed' ? nairaToKobo(values.value) : values.value,
+      value: values.type === 'fixed' ? nairaToKobo(values.value) : values.value,
       expiresAt: values.expiresAt ? values.expiresAt : null,
       maxUses: values.maxUses ?? null,
       isActive: values.isActive,
       description: values.description?.trim() ?? '',
     }
     if (isEdit && initial) {
-      update.mutate(
-        { id: initial._id, payload },
-        { onSuccess: () => onDone() },
-      )
+      update.mutate({ id: initial._id, payload }, { onSuccess: () => onDone() })
     } else {
       create.mutate(payload, { onSuccess: () => onDone() })
     }
@@ -434,10 +348,7 @@ function DiscountForm({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="mt-6 flex flex-col gap-5"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-5">
         <FormField
           control={form.control}
           name="code"
@@ -469,10 +380,8 @@ function DiscountForm({
                 <FormControl>
                   <select
                     {...field}
-                    className="flex h-11 w-full border border-[var(--hairline)] bg-[var(--paper)] px-3 text-[15px] text-[var(--ink)] focus-visible:outline-none focus-visible:border-[var(--ink)]"
-                    onChange={(e) =>
-                      field.onChange(e.target.value as DiscountType)
-                    }
+                    className="flex h-11 w-full border border-(--hairline) bg-(--paper) px-3 text-[15px] text-(--ink) focus-visible:outline-none focus-visible:border-(--ink)"
+                    onChange={(e) => field.onChange(e.target.value as DiscountType)}
                   >
                     <option value="percent">Percent</option>
                     <option value="fixed">Fixed (naira)</option>
@@ -499,9 +408,7 @@ function DiscountForm({
                     {...field}
                     value={field.value ?? ''}
                     onChange={(e) =>
-                      field.onChange(
-                        e.target.value === '' ? 0 : Number(e.target.value),
-                      )
+                      field.onChange(e.target.value === '' ? 0 : Number(e.target.value))
                     }
                   />
                 </FormControl>
@@ -519,11 +426,7 @@ function DiscountForm({
               <FormItem className="space-y-2">
                 <FormLabel>Expires</FormLabel>
                 <FormControl>
-                  <Input
-                    type="date"
-                    {...field}
-                    value={field.value ?? ''}
-                  />
+                  <Input type="date" {...field} value={field.value ?? ''} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -537,9 +440,7 @@ function DiscountForm({
               // API), surface it as an extra option so editing doesn't
               // silently change the value.
               const current = field.value ?? null
-              const hasCurrent = MAX_USES_OPTIONS.some(
-                (o) => o.value === current,
-              )
+              const hasCurrent = MAX_USES_OPTIONS.some((o) => o.value === current)
               const options = hasCurrent
                 ? MAX_USES_OPTIONS
                 : [
@@ -551,12 +452,10 @@ function DiscountForm({
                   <FormLabel>Max uses</FormLabel>
                   <FormControl>
                     <select
-                      className="flex h-11 w-full border border-[var(--hairline)] bg-[var(--paper)] px-3 text-[15px] text-[var(--ink)] focus-visible:outline-none focus-visible:border-[var(--ink)]"
+                      className="flex h-11 w-full border border-(--hairline) bg-(--paper) px-3 text-[15px] text-(--ink) focus-visible:outline-none focus-visible:border-(--ink)"
                       value={current === null ? '' : String(current)}
                       onChange={(e) =>
-                        field.onChange(
-                          e.target.value === '' ? null : Number(e.target.value),
-                        )
+                        field.onChange(e.target.value === '' ? null : Number(e.target.value))
                       }
                     >
                       {options.map((o) => (
@@ -583,10 +482,7 @@ function DiscountForm({
             <FormItem className="space-y-2">
               <FormLabel>Description (internal only)</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Launch promo · April 2026"
-                />
+                <Input {...field} placeholder="Launch promo · April 2026" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -601,7 +497,7 @@ function DiscountForm({
               <FormLabel>Status</FormLabel>
               <FormControl>
                 <select
-                  className="flex h-11 w-full border border-[var(--hairline)] bg-[var(--paper)] px-3 text-[15px] text-[var(--ink)] focus-visible:outline-none focus-visible:border-[var(--ink)]"
+                  className="flex h-11 w-full border border-(--hairline) bg-(--paper) px-3 text-[15px] text-(--ink) focus-visible:outline-none focus-visible:border-(--ink)"
                   value={field.value ? 'active' : 'paused'}
                   onChange={(e) => field.onChange(e.target.value === 'active')}
                 >
@@ -618,13 +514,7 @@ function DiscountForm({
           <Button type="submit" variant="primary" size="lg" disabled={busy}>
             {busy ? 'Saving…' : isEdit ? 'Save changes' : 'Create code'}
           </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            size="lg"
-            disabled={busy}
-            onClick={onDone}
-          >
+          <Button type="button" variant="secondary" size="lg" disabled={busy} onClick={onDone}>
             Cancel
           </Button>
         </div>
@@ -664,16 +554,7 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
   return (
     <div className="border border-hairline-soft bg-paper p-12 text-center">
       <div className="t-eyebrow text-mute mb-3">Nothing yet</div>
-      <h3
-        className="m-0"
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontStyle: 'italic',
-          fontWeight: 600,
-          fontSize: 24,
-          color: 'var(--ink)',
-        }}
-      >
+      <h3 className="m-0 font-display italic font-semibold text-[24px] text-ink">
         No discount codes yet.
       </h3>
       <Button variant="primary" size="default" className="mt-5" onClick={onCreate}>

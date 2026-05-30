@@ -13,7 +13,7 @@
 
 import type { Order } from '@/lib/network/types/order.types'
 import { Photo } from '@/components/shop/Photo'
-import { formatNaira } from '@/lib/utils'
+import { formatNaira, cn } from '@/lib/utils'
 
 const PAYMENT_LABELS: Record<Order['payment']['status'], string> = {
   pending: 'Awaiting payment',
@@ -31,40 +31,34 @@ const FULFILMENT_LABELS: Record<Order['fulfilment']['status'], string> = {
   cancelled: 'Cancelled',
 }
 
-function statusTone(payment: Order['payment']['status']): {
-  bg: string
-  fg: string
-} {
+function statusToneClass(payment: Order['payment']['status']): string {
   switch (payment) {
     case 'paid':
-      return { bg: 'var(--ok-soft, #E5F1E1)', fg: 'var(--ok, #2F6B3A)' }
+      return 'bg-[#E5F1E1] text-[#2F6B3A]'
     case 'failed':
-      return { bg: 'var(--coral-soft, #FBE4E4)', fg: 'var(--coral, #B14242)' }
+      return 'bg-[#FBE4E4] text-[#B14242]'
     case 'refunded':
     case 'partial_refund':
-      return { bg: 'var(--cream-soft)', fg: 'var(--ink)' }
+      return 'bg-cream-soft text-ink'
     default:
-      return { bg: 'var(--cream-soft)', fg: 'var(--mute)' }
+      return 'bg-cream-soft text-mute'
   }
 }
 
 export function OrderSummaryCard({ order }: { order: Order }) {
-  const tone = statusTone(order.payment.status)
-
   return (
-    <div className="border border-[var(--hairline)] bg-[var(--paper)] p-6 lg:p-8 flex flex-col gap-6">
+    <div className="border border-hairline bg-paper p-6 lg:p-8 flex flex-col gap-6">
       {/* Status chips */}
       <div className="flex flex-wrap items-center gap-2">
         <span
-          className="text-[11px] uppercase tracking-[0.12em] font-medium px-2.5 py-1"
-          style={{ background: tone.bg, color: tone.fg }}
+          className={cn(
+            'text-[11px] uppercase tracking-[0.12em] font-medium px-2.5 py-1',
+            statusToneClass(order.payment.status),
+          )}
         >
           {PAYMENT_LABELS[order.payment.status]}
         </span>
-        <span
-          className="text-[11px] uppercase tracking-[0.12em] font-medium px-2.5 py-1"
-          style={{ background: 'var(--cream-soft)', color: 'var(--ink)' }}
-        >
+        <span className="text-[11px] uppercase tracking-[0.12em] font-medium px-2.5 py-1 bg-cream-soft text-ink">
           {FULFILMENT_LABELS[order.fulfilment.status]}
         </span>
       </div>
@@ -74,21 +68,21 @@ export function OrderSummaryCard({ order }: { order: Order }) {
         {order.lines.map((l) => (
           <li
             key={`${l.variantId}`}
-            className="flex gap-4 py-4 border-b border-[var(--hairline-soft)] last:border-b-0"
+            className="flex gap-4 py-4 border-b border-(--hairline-soft) last:border-b-0"
           >
-            <div className="w-16 flex-shrink-0">
+            <div className="w-16 shrink-0">
               <Photo src={l.imageUrl} alt={l.productName} tone="blush" ratio="4/5" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[15px] text-[var(--ink)] font-medium leading-tight">
+              <div className="text-[15px] text-(--ink) font-medium leading-tight">
                 {l.productName}
               </div>
-              <div className="text-[12px] uppercase tracking-[0.1em] text-[var(--mute)] mt-1">
+              <div className="text-[12px] uppercase tracking-widest text-(--mute) mt-1">
                 {l.variantLabel}
               </div>
-              <div className="text-[13px] text-[var(--graphite)] mt-1">Qty {l.qty}</div>
+              <div className="text-[13px] text-(--graphite) mt-1">Qty {l.qty}</div>
             </div>
-            <div className="text-[14px] text-[var(--ink)] font-semibold whitespace-nowrap">
+            <div className="text-[14px] text-(--ink) font-semibold whitespace-nowrap">
               {formatNaira(l.lineTotal)}
             </div>
           </li>
@@ -96,7 +90,7 @@ export function OrderSummaryCard({ order }: { order: Order }) {
       </ul>
 
       {/* Totals */}
-      <div className="flex flex-col gap-2 text-[14px] text-[var(--graphite)] border-t border-[var(--hairline-soft)] pt-4">
+      <div className="flex flex-col gap-2 text-[14px] text-(--graphite) border-t border-(--hairline-soft) pt-4">
         <div className="flex justify-between">
           <span>Subtotal</span>
           <span>{formatNaira(order.totals.subtotal)}</span>
@@ -112,22 +106,22 @@ export function OrderSummaryCard({ order }: { order: Order }) {
           </div>
         ) : null}
       </div>
-      <div className="flex justify-between items-baseline border-t border-[var(--hairline)] pt-4">
-        <span className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium">
+      <div className="flex justify-between items-baseline border-t border-(--hairline) pt-4">
+        <span className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
           Total
         </span>
-        <span className="text-2xl font-semibold text-[var(--ink)]">
+        <span className="text-2xl font-semibold text-(--ink)">
           {formatNaira(order.totals.total)}
         </span>
       </div>
 
       {/* Address + tracking */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 border-t border-[var(--hairline-soft)]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 border-t border-(--hairline-soft)">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium pt-4">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium pt-4">
             Delivering to
           </div>
-          <p className="mt-2 text-[14px] text-[var(--ink)] leading-relaxed m-0">
+          <p className="mt-2 text-[14px] text-(--ink) leading-relaxed m-0">
             {order.address.fullName}
             <br />
             {order.address.line1}
@@ -139,28 +133,28 @@ export function OrderSummaryCard({ order }: { order: Order }) {
           </p>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium pt-4">
+          <div className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium pt-4">
             Shipping
           </div>
-          <p className="mt-2 text-[14px] text-[var(--ink)] leading-relaxed m-0">
+          <p className="mt-2 text-[14px] text-(--ink) leading-relaxed m-0">
             {order.fulfilment.shippingMethod === 'inhouse'
               ? 'In house rider'
               : 'Sendbox nationwide'}
           </p>
           {order.fulfilment.trackingCode ? (
-            <div className="mt-3 text-[13px] text-[var(--graphite)]">
+            <div className="mt-3 text-[13px] text-(--graphite)">
               Tracking{' '}
               {order.fulfilment.trackingUrl ? (
                 <a
                   href={order.fulfilment.trackingUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[var(--ink)] underline underline-offset-2"
+                  className="text-(--ink) underline underline-offset-2"
                 >
                   {order.fulfilment.trackingCode}
                 </a>
               ) : (
-                <span className="text-[var(--ink)]">{order.fulfilment.trackingCode}</span>
+                <span className="text-(--ink)">{order.fulfilment.trackingCode}</span>
               )}
             </div>
           ) : null}

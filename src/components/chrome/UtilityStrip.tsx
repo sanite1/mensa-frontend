@@ -6,6 +6,7 @@
 // `features.freeDelivery` flag so it can be flipped on per environment
 // without editing this file.
 // ─────────────────────────────────────────────────────────────────────────
+import { cn } from '@/lib/utils'
 import { IconChevronDown, IconTruck } from './icons'
 import {
   features,
@@ -19,12 +20,10 @@ interface UtilityStripProps {
 export function UtilityStrip({ compact = false }: UtilityStripProps) {
   return (
     <div
-      className="flex items-center justify-between bg-[var(--ink)] text-[var(--paper)] font-sans"
-      style={{
-        padding: compact ? '8px 24px' : '10px 48px',
-        fontSize: 12.5,
-        letterSpacing: '0.04em',
-      }}
+      className={cn(
+        'flex items-center justify-between bg-ink text-paper font-sans text-[12.5px] tracking-[0.04em]',
+        compact ? 'py-2 px-6' : 'py-2.5 px-12',
+      )}
     >
       <div className="flex items-center gap-2.5 opacity-[0.92]">
         {features.freeDelivery ? (
@@ -38,7 +37,7 @@ export function UtilityStrip({ compact = false }: UtilityStripProps) {
           <span>Reusable period products. Made in Abuja.</span>
         )}
       </div>
-      <div className="flex items-center gap-[22px] opacity-85">
+      <div className="flex items-center gap-5.5 opacity-85">
         <a href="/track" className="text-inherit no-underline">
           Track order
         </a>
@@ -49,12 +48,8 @@ export function UtilityStrip({ compact = false }: UtilityStripProps) {
         <span className="opacity-40">·</span>
         <span className="inline-flex items-center gap-1.5">
           <span
-            className="inline-block rounded-[1px]"
-            style={{
-              width: 14,
-              height: 9,
-              background: 'linear-gradient(to right,#008751 50%,#fff 50%)',
-            }}
+            aria-hidden
+            className="inline-block rounded-px w-3.5 h-2.25 bg-ng-flag"
           />
           NGN
           <IconChevronDown size={12} />

@@ -15,7 +15,7 @@ export function Stars({
   mutedColor = 'var(--hairline)',
 }: StarsProps) {
   return (
-    <span style={{ display: 'inline-flex', gap: 2 }}>
+    <span className="inline-flex gap-0.5">
       {[0, 1, 2, 3, 4].map((i) => (
         <svg
           key={i}

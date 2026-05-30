@@ -45,11 +45,7 @@ export function TrackOrderPage() {
     defaultValues: { orderNumber: '', email: '' },
   })
 
-  const trackQuery = useTrackOrder(
-    submitted?.orderNumber,
-    submitted?.email,
-    !!submitted,
-  )
+  const trackQuery = useTrackOrder(submitted?.orderNumber, submitted?.email, !!submitted)
   const order = trackQuery.data?.data?.order
 
   const onSubmit = (values: LookupValues) => setSubmitted(values)
@@ -57,19 +53,17 @@ export function TrackOrderPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 lg:py-16">
       <header className="mb-8">
-        <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium">
+        <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
           Track your order
         </p>
-        <h1 className="mt-2 font-serif italic text-4xl text-[var(--ink)]">
-          Look up an order.
-        </h1>
-        <p className="mt-3 text-[15px] text-[var(--graphite)] max-w-xl">
-          Enter your order number and the email you used at checkout. Both came in your
-          confirmation email.
+        <h1 className="mt-2 font-serif italic text-4xl text-(--ink)">Look up an order.</h1>
+        <p className="mt-3 text-[15px] text-(--graphite) max-w-xl">
+          Enter your order number and the email you used at checkout. Both came in your confirmation
+          email.
         </p>
       </header>
 
-      <div className="border border-[var(--hairline)] bg-[var(--paper)] p-6 lg:p-8 mb-10">
+      <div className="border border-(--hairline) bg-(--paper) p-6 lg:p-8 mb-10">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -122,9 +116,8 @@ export function TrackOrderPage() {
       </div>
 
       {submitted && trackQuery.isError ? (
-        <div className="border border-[var(--coral)] bg-[var(--coral-soft)] px-4 py-5 text-[14px] text-[var(--ink)]">
-          No order matches that number and email combination. Double check both and try
-          again.
+        <div className="border border-(--coral) bg-(--coral-soft) px-4 py-5 text-[14px] text-(--ink)">
+          No order matches that number and email combination. Double check both and try again.
         </div>
       ) : null}
 

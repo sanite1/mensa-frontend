@@ -27,13 +27,8 @@ const registerSchema = z.object({
     .string()
     .min(2, 'Name must be at least 2 characters.')
     .max(80, 'Name cannot be longer than 80 characters.'),
-  email: z
-    .string()
-    .min(1, 'Email is required.')
-    .email('Please enter a valid email address.'),
-  phone: z
-    .string()
-    .regex(/^\+?[0-9\s-]{7,20}$/, 'Please enter a valid phone number.'),
+  email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
+  phone: z.string().regex(/^\+?[0-9\s-]{7,20}$/, 'Please enter a valid phone number.'),
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters.')
@@ -60,7 +55,7 @@ export function RegisterPage() {
       footer={
         <>
           Already have an account?{' '}
-          <Link to="/login" className="text-[var(--ink)] underline underline-offset-2">
+          <Link to="/login" className="text-(--ink) underline underline-offset-2">
             Sign in
           </Link>
         </>
@@ -88,7 +83,12 @@ export function RegisterPage() {
               <FormItem className="space-y-2">
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" autoComplete="email" placeholder="you@example.com" {...field} />
+                  <Input
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -101,12 +101,7 @@ export function RegisterPage() {
               <FormItem className="space-y-2">
                 <FormLabel>Phone</FormLabel>
                 <FormControl>
-                  <Input
-                    type="tel"
-                    autoComplete="tel"
-                    placeholder="+234 801 234 5678"
-                    {...field}
-                  />
+                  <Input type="tel" autoComplete="tel" placeholder="+234 801 234 5678" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -130,13 +125,13 @@ export function RegisterPage() {
             )}
           />
 
-          <p className="t-body-s text-[var(--mute)] -mt-1">
+          <p className="t-body-s text-(--mute) -mt-1">
             By creating an account you agree to our{' '}
-            <Link to="/terms" className="text-[var(--ink)] underline underline-offset-2">
+            <Link to="/terms" className="text-(--ink) underline underline-offset-2">
               terms
             </Link>{' '}
             and{' '}
-            <Link to="/privacy" className="text-[var(--ink)] underline underline-offset-2">
+            <Link to="/privacy" className="text-(--ink) underline underline-offset-2">
               privacy policy
             </Link>
             .

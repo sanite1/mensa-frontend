@@ -23,10 +23,7 @@ import { useForgotPassword } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 
 const forgotSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email is required.')
-    .email('Please enter a valid email address.'),
+  email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
 })
 
 type ForgotValues = z.infer<typeof forgotSchema>
@@ -56,7 +53,7 @@ export function ForgotPasswordPage() {
                 forgot.reset()
                 form.reset()
               }}
-              className="text-[var(--ink)] underline underline-offset-2"
+              className="text-(--ink) underline underline-offset-2"
             >
               Try again
             </button>
@@ -79,7 +76,7 @@ export function ForgotPasswordPage() {
       footer={
         <>
           Remembered it?{' '}
-          <Link to="/login" className="text-[var(--ink)] underline underline-offset-2">
+          <Link to="/login" className="text-(--ink) underline underline-offset-2">
             Back to sign in
           </Link>
         </>
@@ -94,7 +91,12 @@ export function ForgotPasswordPage() {
               <FormItem className="space-y-2">
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" autoComplete="email" placeholder="you@example.com" {...field} />
+                  <Input
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

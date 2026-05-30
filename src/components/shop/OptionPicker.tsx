@@ -44,9 +44,9 @@ export function OptionPicker({
           <div key={type}>
             <div className="flex items-baseline justify-between mb-3">
               <div className="flex items-baseline gap-2.5">
-                <span className="t-body-s text-[var(--ink)] font-semibold">{type}</span>
+                <span className="t-body-s text-ink font-semibold">{type}</span>
                 {selectedOptions[type] ? (
-                  <span className="t-body-s text-[var(--graphite)]">
+                  <span className="t-body-s text-graphite">
                     {selectedOptions[type]}
                   </span>
                 ) : null}
@@ -56,7 +56,7 @@ export function OptionPicker({
               {values.map((value) => {
                 const isSelected = selectedOptions[type] === value
                 // Combine this candidate with the rest of the current
-                // selection. If no active in stock variant matches, mark
+                // selection. If no active in-stock variant matches, mark
                 // it visually as out of stock.
                 const candidate = { ...selectedOptions, [type]: value }
                 const matching = variants.find(
@@ -75,21 +75,13 @@ export function OptionPicker({
                     type="button"
                     onClick={() => onChange({ ...selectedOptions, [type]: value })}
                     className={cn(
-                      'relative font-sans font-medium transition-colors',
-                    )}
-                    style={{
-                      minWidth: 56,
-                      padding: '12px 16px',
-                      background: isSelected ? 'var(--ink)' : 'var(--paper)',
-                      color: isSelected
-                        ? 'var(--paper)'
+                      'relative font-sans font-medium transition-colors min-w-14 py-3 px-4 rounded-sm text-[14px] border',
+                      isSelected
+                        ? 'bg-ink text-paper border-ink'
                         : isOutOfStock
-                          ? 'var(--mute)'
-                          : 'var(--ink)',
-                      border: `1px solid ${isSelected ? 'var(--ink)' : 'var(--hairline)'}`,
-                      borderRadius: 4,
-                      fontSize: 14,
-                    }}
+                          ? 'bg-paper text-mute border-hairline'
+                          : 'bg-paper text-ink border-hairline',
+                    )}
                     aria-label={
                       isOutOfStock ? `${value} (out of stock)` : String(value)
                     }
@@ -97,15 +89,8 @@ export function OptionPicker({
                     {value}
                     {isOutOfStock && !isSelected ? (
                       <span
-                        className="absolute pointer-events-none"
-                        style={{
-                          top: '50%',
-                          left: 8,
-                          right: 8,
-                          borderTop: '1px solid var(--mute)',
-                          transform: 'rotate(-12deg)',
-                          opacity: 0.5,
-                        }}
+                        aria-hidden
+                        className="absolute pointer-events-none top-1/2 left-2 right-2 border-t border-mute -rotate-12 opacity-50"
                       />
                     ) : null}
                   </button>

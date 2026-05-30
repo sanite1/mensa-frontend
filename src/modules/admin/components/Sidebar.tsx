@@ -63,13 +63,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           // Desktop: in-flow, fixed width, always visible
           'lg:static lg:translate-x-0 lg:z-auto lg:flex',
           // Mobile: fixed position, slide in from left, drawer behaviour
-          'fixed inset-y-0 left-0 z-50 w-[260px] transition-transform duration-300 ease-out',
+          'fixed inset-y-0 left-0 z-50 w-65 transition-transform duration-300 ease-out',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
           // Shared styling
           'shrink-0 bg-ink text-paper flex flex-col border-r border-white/10',
         )}
       >
-        <div className="h-[68px] flex items-center justify-between px-6 border-b border-white/10">
+        <div className="h-17 flex items-center justify-between px-6 border-b border-white/10">
           <MensaWordmark height={28} tone="paper" />
           {/* Close button — mobile only */}
           <button
@@ -89,16 +89,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               return (
                 <div
                   key={item.label}
-                  className="px-6 py-3 flex items-center gap-3 text-white/35 cursor-not-allowed select-none"
-                  style={{ fontSize: 14 }}
+                  className="px-6 py-3 flex items-center gap-3 text-white/35 cursor-not-allowed select-none text-[14px]"
                   title="Available in a later sprint"
                 >
                   <Icon size={18} strokeWidth={1.6} />
                   <span>{item.label}</span>
-                  <span
-                    className="ml-auto text-[10px] uppercase tracking-[0.12em] text-white/35"
-                    style={{ fontFamily: 'var(--font-mono)' }}
-                  >
+                  <span className="ml-auto text-[10px] uppercase tracking-[0.12em] text-white/35 font-mono">
                     Soon
                   </span>
                 </div>
@@ -112,13 +108,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 onClick={onClose}
                 className={({ isActive }) =>
                   cn(
-                    'px-6 py-3 flex items-center gap-3 transition-colors border-l-2 no-underline',
+                    'px-6 py-3 flex items-center gap-3 text-[14px] transition-colors border-l-2 no-underline',
                     isActive
                       ? 'border-pink text-paper bg-white/5'
                       : 'border-transparent text-white/70 hover:text-paper hover:bg-white/5',
                   )
                 }
-                style={{ fontSize: 14 }}
               >
                 <Icon size={18} strokeWidth={1.6} />
                 <span>{item.label}</span>
@@ -128,10 +123,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         <div className="p-6 border-t border-white/10">
-          <div
-            className="text-[10px] uppercase tracking-[0.12em] text-white/45"
-            style={{ fontFamily: 'var(--font-mono)' }}
-          >
+          <div className="text-[10px] uppercase tracking-[0.12em] text-white/45 font-mono">
             Mensa admin · v0.1
           </div>
         </div>

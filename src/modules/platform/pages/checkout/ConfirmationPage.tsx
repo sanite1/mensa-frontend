@@ -150,13 +150,11 @@ export function ConfirmationPage() {
     return (
       <div className="mx-auto max-w-md px-4 py-16">
         <header className="mb-6">
-          <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium">
+          <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
             Order {orderNumber}
           </p>
-          <h1 className="mt-2 font-serif italic text-3xl text-[var(--ink)]">
-            Confirm the email.
-          </h1>
-          <p className="mt-2 text-[14px] text-[var(--graphite)]">
+          <h1 className="mt-2 font-serif italic text-3xl text-(--ink)">Confirm the email.</h1>
+          <p className="mt-2 text-[14px] text-(--graphite)">
             Enter the email you used at checkout so we can pull up your order.
           </p>
         </header>
@@ -191,7 +189,7 @@ export function ConfirmationPage() {
 
   if (trackQuery.isLoading) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center text-[14px] text-[var(--mute)]">
+      <div className="mx-auto max-w-2xl px-4 py-16 text-center text-[14px] text-(--mute)">
         Looking up order {orderNumber}…
       </div>
     )
@@ -200,18 +198,18 @@ export function ConfirmationPage() {
   if (trackQuery.isError || !order) {
     return (
       <div className="mx-auto max-w-md px-4 py-16">
-        <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium">
+        <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
           Order {orderNumber}
         </p>
-        <h1 className="mt-2 font-serif italic text-3xl text-[var(--ink)]">
+        <h1 className="mt-2 font-serif italic text-3xl text-(--ink)">
           We could not find that order.
         </h1>
-        <p className="mt-2 text-[14px] text-[var(--graphite)]">
-          Double check the email you used at checkout, or paste the link from the
-          confirmation we sent you.
+        <p className="mt-2 text-[14px] text-(--graphite)">
+          Double check the email you used at checkout, or paste the link from the confirmation we
+          sent you.
         </p>
         <Button
-          variant="outline"
+          variant="secondary"
           size="lg"
           className="mt-6 w-full"
           onClick={() => {
@@ -232,17 +230,17 @@ export function ConfirmationPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 lg:py-16">
       <header className="mb-8 text-center">
-        <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium">
+        <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
           Order {order.orderNumber}
         </p>
-        <h1 className="mt-2 font-serif italic text-4xl text-[var(--ink)]">
+        <h1 className="mt-2 font-serif italic text-4xl text-(--ink)">
           {paid
             ? `Thank you, ${order.address.fullName.split(' ')[0]}.`
             : failed
               ? 'Payment did not go through.'
               : 'Almost there…'}
         </h1>
-        <p className="mt-3 text-[15px] text-[var(--graphite)] max-w-xl mx-auto">
+        <p className="mt-3 text-[15px] text-(--graphite) max-w-xl mx-auto">
           {paid
             ? 'Your order is confirmed. We are getting it ready and will email a tracking link the moment it leaves our studio.'
             : failed
@@ -250,46 +248,26 @@ export function ConfirmationPage() {
               : 'We are checking with Paystack to confirm your payment. This usually takes a few seconds.'}
         </p>
         {!paid && !failed ? (
-          <div
-            className="mt-8 mx-auto flex flex-col items-center gap-5 px-6 py-7 max-w-md"
-            style={{
-              background: 'var(--cream-soft)',
-              border: '1px solid var(--hairline-soft)',
-            }}
-          >
+          <div className="mt-8 mx-auto flex flex-col items-center gap-5 px-6 py-7 max-w-md bg-cream-soft border border-hairline-soft">
             {/* Spinner — paper ring with a pink quadrant rotating on top.
                 Tailwind's animate-spin handles the rotation; the border
-                trick gives us a tidy spinner without an SVG dependency. */}
+                trick gives us a tidy spinner without an SVG dependency.
+                The border-top-color uses an arbitrary class because we
+                need it scoped to the top edge only, which has no shorthand. */}
             <div
-              className="relative animate-spin"
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: '9999px',
-                border: '3px solid var(--hairline)',
-                borderTopColor: 'var(--pink)',
-              }}
+              className="relative animate-spin w-12 h-12 rounded-full border-[3px] border-hairline border-t-pink"
               aria-hidden="true"
             />
             <div className="flex flex-col items-center gap-1.5 text-center">
-              <p className="m-0 text-[11px] uppercase tracking-[0.14em] font-medium text-[var(--pink-deep)]">
+              <p className="m-0 text-[11px] uppercase tracking-[0.14em] font-medium text-pink-deep">
                 {checking ? 'Verifying with Paystack' : 'Awaiting confirmation'}
               </p>
-              <p
-                className="m-0 text-[var(--ink)]"
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontStyle: 'italic',
-                  fontSize: 22,
-                  lineHeight: 1.2,
-                  letterSpacing: '-0.01em',
-                }}
-              >
+              <p className="m-0 text-ink font-display italic text-[22px] leading-[1.2] tracking-[-0.01em]">
                 Hold tight — confirming your payment.
               </p>
-              <p className="m-0 mt-1 text-[13px] text-[var(--graphite)] max-w-sm">
-                This usually takes a second or two. You can leave this page
-                open; we will update it the moment Paystack responds.
+              <p className="m-0 mt-1 text-[13px] text-(--graphite) max-w-sm">
+                This usually takes a second or two. You can leave this page open; we will update it
+                the moment Paystack responds.
               </p>
             </div>
             <button
@@ -300,7 +278,7 @@ export function ConfirmationPage() {
                 }
               }}
               disabled={verify.isPending}
-              className="text-[12px] uppercase tracking-[0.12em] font-medium text-[var(--ink)] underline underline-offset-4 disabled:opacity-50"
+              className="text-[12px] uppercase tracking-[0.12em] font-medium text-(--ink) underline underline-offset-4 disabled:opacity-50"
             >
               {verify.isPending ? 'Checking…' : 'Check again now'}
             </button>
@@ -316,11 +294,11 @@ export function ConfirmationPage() {
             <Link to="/checkout">Return to checkout</Link>
           </Button>
         ) : null}
-        <Button asChild variant="outline" size="lg">
+        <Button asChild variant="secondary" size="lg">
           <Link to="/shop">Continue shopping</Link>
         </Button>
         {user ? (
-          <Button asChild variant="outline" size="lg">
+          <Button asChild variant="secondary" size="lg">
             <Link to="/account/orders">View all orders</Link>
           </Button>
         ) : null}

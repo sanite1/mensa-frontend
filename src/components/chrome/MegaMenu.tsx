@@ -46,19 +46,17 @@ function Column({
 }) {
   return (
     <div>
-      <div className="t-eyebrow mb-[18px] text-[var(--mute)]">{title}</div>
+      <div className="t-eyebrow mb-4.5 text-(--mute)">{title}</div>
       <ul className="m-0 flex list-none flex-col gap-3 p-0">
         {links.map((link) => (
           <li key={link.label}>
             <Link
               to={link.href}
               onClick={onLinkClick}
-              className="flex items-baseline gap-2 text-[15px] text-[var(--ink)] no-underline font-sans hover:text-[var(--pink-deep)]"
+              className="flex items-baseline gap-2 text-[15px] text-(--ink) no-underline font-sans hover:text-(--pink-deep)"
             >
               {link.label}
-              {link.hint ? (
-                <span className="text-[13px] text-[var(--mute)]">· {link.hint}</span>
-              ) : null}
+              {link.hint ? <span className="text-[13px] text-(--mute)">· {link.hint}</span> : null}
             </Link>
           </li>
         ))}
@@ -76,41 +74,21 @@ interface MegaMenuProps {
 
 export function MegaMenu({ onLinkClick }: MegaMenuProps = {}) {
   return (
-    <div
-      className="grid bg-[var(--paper)] border-t border-[var(--hairline-soft)]"
-      style={{
-        padding: '40px 48px 44px',
-        gridTemplateColumns: '1.2fr 1.2fr 1.2fr 1.6fr',
-        gap: 48,
-      }}
-    >
+    <div className="grid bg-paper border-t border-hairline-soft pt-10 px-12 pb-11 grid-cols-[1.2fr_1.2fr_1.2fr_1.6fr] gap-12">
       <Column title="Period pants" links={periodPants} onLinkClick={onLinkClick} />
       <Column title="Reusable pads" links={reusablePads} onLinkClick={onLinkClick} />
       <Column title="Education" links={education} onLinkClick={onLinkClick} />
 
       {/* Feature card */}
-      <div
-        className="relative overflow-hidden bg-[var(--blush)]"
-        style={{ borderRadius: 8, padding: 24 }}
-      >
-        <div className="t-eyebrow text-[var(--berry)]">New this season</div>
-        <h3
-          className="mt-2 text-[var(--berry)]"
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontStyle: 'italic',
-            fontWeight: 600,
-            fontSize: 30,
-            lineHeight: 1.1,
-            letterSpacing: '-0.015em',
-          }}
-        >
+      <div className="relative overflow-hidden bg-blush rounded-lg p-6">
+        <div className="t-eyebrow text-berry">New this season</div>
+        <h3 className="mt-2 text-berry font-display italic font-semibold text-[30px] leading-[1.1] tracking-[-0.015em]">
           The starter set
         </h3>
-        <p className="mt-2 text-[14px] max-w-[220px] text-[var(--graphite)]">
+        <p className="mt-2 text-[14px] max-w-55 text-graphite">
           3 pants + 5 reusable pads. Everything you need to switch.
         </p>
-        <div className="mt-[18px] relative z-10">
+        <div className="mt-4.5 relative z-10">
           <Button asChild variant="primary" size="sm">
             <Link to="/shop/starter-set" onClick={onLinkClick}>
               Shop the set · ₦22,500
@@ -118,21 +96,11 @@ export function MegaMenu({ onLinkClick }: MegaMenuProps = {}) {
             </Link>
           </Button>
         </div>
-        {/* Placeholder until we have a real hero image for the starter set. */}
-        <div
-          className="absolute opacity-70 flex items-end"
-          style={{
-            right: -30,
-            top: -10,
-            width: 140,
-            height: 180,
-            background:
-              'repeating-linear-gradient(45deg, var(--blush-2) 0 8px, var(--blush) 8px 16px)',
-            borderRadius: 6,
-            padding: 8,
-          }}
-        >
-          <span className="t-micro text-[var(--berry)] opacity-70">product</span>
+        {/* Placeholder until we have a real hero image for the starter set.
+            The blush stripe is an arbitrary background-image — no theme
+            token has a gradient equivalent. */}
+        <div className="absolute -right-7.5 -top-2.5 w-35 h-45 opacity-70 flex items-end rounded-md p-2 bg-blush-stripe">
+          <span className="t-micro text-berry opacity-70">product</span>
         </div>
       </div>
     </div>

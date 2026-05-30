@@ -11,6 +11,8 @@ import { ResetPasswordPage } from '@/modules/platform/pages/auth/ResetPasswordPa
 import { AccountPage } from '@/modules/platform/pages/account/AccountPage'
 import { OrdersPage } from '@/modules/platform/pages/account/OrdersPage'
 import { OrderDetailPage } from '@/modules/platform/pages/account/OrderDetailPage'
+import { AddressesPage } from '@/modules/platform/pages/account/AddressesPage'
+import { AboutPage } from '@/modules/platform/pages/AboutPage'
 import { ShopPage } from '@/modules/platform/pages/shop/ShopPage'
 import { ProductDetailPage } from '@/modules/platform/pages/shop/ProductDetailPage'
 import { CheckoutPage } from '@/modules/platform/pages/checkout/CheckoutPage'
@@ -42,8 +44,8 @@ export function PlatformRoutes() {
             <Route path="/account" element={<AccountPage />} />
             <Route path="/account/orders" element={<OrdersPage />} />
             <Route path="/account/orders/:id" element={<OrderDetailPage />} />
+            <Route path="/account/addresses" element={<AddressesPage />} />
             {/* Sprint 4 adds these:
-              <Route path="/account/addresses" element={<AddressesPage />} />
               <Route path="/account/preferences" element={<PreferencesPage />} />
             */}
           </Route>
@@ -51,6 +53,9 @@ export function PlatformRoutes() {
           {/* Phase 2 — Product layer */}
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/shop/:slug" element={<ProductDetailPage />} />
+
+          {/* Editorial / brand pages */}
+          <Route path="/about" element={<AboutPage />} />
 
           {/* Phase 3 — Checkout (guest-friendly, no auth guard) */}
           <Route path="/checkout" element={<CheckoutPage />} />

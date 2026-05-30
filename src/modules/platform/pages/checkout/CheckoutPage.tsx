@@ -17,7 +17,7 @@
 //                     surface a toast.
 // ═══════════════════════════════════════════════════════════════
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -39,16 +39,12 @@ import { AddressForm, addressSchema } from '@/modules/platform/components/Addres
 
 import { useCartStore } from '@/lib/network/stores/cart.store'
 import { useAuthStore } from '@/lib/network/stores/auth.store'
-import {
-  useInitializeCheckout,
-  useShippingRates,
-} from '@/lib/network/api/order.api'
+import { useInitializeCheckout, useShippingRates } from '@/lib/network/api/order.api'
 import { useApplyDiscount } from '@/lib/network/api/discount.api'
 import type { ApplyDiscountResponseData } from '@/lib/network/types/discount.types'
-import type {
-  ShippingMethod,
-  ShippingRateOption,
-} from '@/lib/network/types/order.types'
+import { useAddMyAddress, useMyAddresses } from '@/lib/network/api/user.api'
+import type { UserAddress } from '@/lib/network/types/user.types'
+import type { ShippingMethod, ShippingRateOption } from '@/lib/network/types/order.types'
 import { formatNaira } from '@/lib/utils'
 import { handleApiError } from '@/lib/network/helpers/handleApiError'
 
@@ -93,6 +89,17 @@ export function CheckoutPage() {
   const [discountError, setDiscountError] = useState<string | null>(null)
   const applyDiscount = useApplyDiscount()
 
+  // ── Saved addresses (signed-in customers only) ──────────────────
+  //
+  // We fetch the address book up-front so the picker can render
+  // synchronously alongside the form. Selecting one prefills the
+  // form fields; tapping "Enter a new address" reverts to a blank
+  // form (selectedAddressId=null) without touching saved entries.
+  const addressesQuery = useMyAddresses(isAuthenticated)
+  const savedAddresses: UserAddress[] = addressesQuery.data?.data?.addresses ?? []
+  const [selectedAddressId, setSelectedAddressId] = useState<string | 'new' | null>(null)
+  const addAddress = useAddMyAddress({ silent: true })
+
   // ── Redirect empty cart back to /shop ──
   useEffect(() => {
     if (lines.length === 0) {
@@ -100,6 +107,26 @@ export function CheckoutPage() {
       navigate('/shop', { replace: true })
     }
   }, [lines.length, navigate])
+
+  // ── Auto-pick the default saved address on first load ───────────
+  //
+  // Runs exactly once when the addresses query resolves. After that
+  // selectedAddressId is the customer's responsibility — switching
+  // saved addresses, or jumping to "Enter a new address", is a
+  // deliberate action they have to take.
+  const autoPickedRef = useRef(false)
+  useEffect(() => {
+    if (!isAuthenticated || autoPickedRef.current) return
+    if (!addressesQuery.data) return
+    autoPickedRef.current = true
+    if (savedAddresses.length === 0) {
+      setSelectedAddressId('new')
+      return
+    }
+    const def = savedAddresses.find((a) => a.isDefault) ?? savedAddresses[0]
+    setSelectedAddressId(def._id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addressesQuery.data, isAuthenticated])
 
   // ── Form ──
   const form = useForm<CheckoutValues>({
@@ -120,6 +147,26 @@ export function CheckoutPage() {
       saveAddress: true,
     },
   })
+
+  // Prefill the form whenever a saved address is selected.
+  useEffect(() => {
+    if (!selectedAddressId || selectedAddressId === 'new') return
+    const picked = savedAddresses.find((a) => a._id === selectedAddressId)
+    if (!picked) return
+    form.setValue('address', {
+      fullName: picked.fullName,
+      phone: picked.phone,
+      line1: picked.line1,
+      line2: picked.line2 ?? '',
+      city: picked.city,
+      state: picked.state,
+      country: picked.country || 'NG',
+      postal: picked.postal ?? '',
+    })
+    // Don't reset customerEmail / customerPhone — those live on the
+    // user record, not the address.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAddressId])
 
   // Watch the destination so shipping rates refetch when it changes.
   const watchedState = form.watch('address.state')
@@ -177,9 +224,7 @@ export function CheckoutPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subtotalKobo])
 
-  const discountKobo = applied
-    ? Math.min(applied.discountKobo, subtotalKobo)
-    : 0
+  const discountKobo = applied ? Math.min(applied.discountKobo, subtotalKobo) : 0
   const totalKobo = Math.max(0, subtotalKobo + shippingKobo - discountKobo)
 
   // ── Submit ──
@@ -224,12 +269,21 @@ export function CheckoutPage() {
       // immediately when Paystack redirects the customer back, without
       // making them retype it. Scoped to this tab via sessionStorage.
       try {
-        sessionStorage.setItem(
-          `mensa-checkout-email:${data.orderNumber}`,
-          values.customerEmail,
-        )
+        sessionStorage.setItem(`mensa-checkout-email:${data.orderNumber}`, values.customerEmail)
       } catch {
         // sessionStorage can throw in private modes; not worth blocking on.
+      }
+
+      // Save the new address to the customer's book if they opted in.
+      // Fire-and-forget: we don't await it because the customer's about
+      // to leave the page for Paystack, and the address backend dedupes
+      // on line1+city+state+postal so a duplicate save is a no-op.
+      const enteredNewAddress = selectedAddressId === 'new'
+      if (isAuthenticated && values.saveAddress && enteredNewAddress) {
+        addAddress.mutate({
+          ...values.address,
+          // First saved address becomes default; backend enforces.
+        })
       }
 
       // Hand off to Paystack's hosted checkout. Their page handles every
@@ -245,14 +299,12 @@ export function CheckoutPage() {
   if (lines.length === 0) return null
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-10 py-10 lg:py-16">
+    <div className="mx-auto max-w-300 px-4 sm:px-6 lg:px-10 py-10 lg:py-16">
       <header className="mb-8">
-        <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium">
+        <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
           Checkout
         </p>
-        <h1 className="mt-2 font-serif italic text-4xl lg:text-5xl text-[var(--ink)]">
-          Almost yours.
-        </h1>
+        <h1 className="mt-2 font-serif italic text-4xl lg:text-5xl text-(--ink)">Almost yours.</h1>
       </header>
 
       <Form {...form}>
@@ -263,9 +315,7 @@ export function CheckoutPage() {
           {/* ── Left column ──────────────────────────────────────── */}
           <div className="flex flex-col gap-10">
             <section className="flex flex-col gap-5">
-              <h2 className="font-serif italic text-2xl text-[var(--ink)]">
-                Contact
-              </h2>
+              <h2 className="font-serif italic text-2xl text-(--ink)">Contact</h2>
 
               <FormField
                 control={form.control}
@@ -293,12 +343,7 @@ export function CheckoutPage() {
                   <FormItem className="space-y-2">
                     <FormLabel>Phone</FormLabel>
                     <FormControl>
-                      <Input
-                        type="tel"
-                        autoComplete="tel"
-                        placeholder="0801 234 5678"
-                        {...field}
-                      />
+                      <Input type="tel" autoComplete="tel" placeholder="0801 234 5678" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -306,12 +351,9 @@ export function CheckoutPage() {
               />
 
               {!isAuthenticated ? (
-                <p className="text-[13px] text-[var(--mute)]">
+                <p className="text-[13px] text-(--mute)">
                   Have an account?{' '}
-                  <Link
-                    to="/login"
-                    className="text-[var(--ink)] underline underline-offset-2"
-                  >
+                  <Link to="/login" className="text-(--ink) underline underline-offset-2">
                     Sign in
                   </Link>{' '}
                   to autofill your details.
@@ -319,13 +361,91 @@ export function CheckoutPage() {
               ) : null}
             </section>
 
-            <AddressForm form={form} namePrefix="address" heading="Delivery address" />
+            {/* Saved address picker. Only shown to authenticated customers
+                with at least one saved address. Tapping a row prefills the
+                AddressForm below; tapping "Enter a new address" leaves the
+                form blank and turns on the "Save this address" checkbox. */}
+            {isAuthenticated && savedAddresses.length > 0 ? (
+              <section className="flex flex-col gap-3">
+                <h2 className="font-serif italic text-2xl text-(--ink)">Delivery address</h2>
+                <div className="flex flex-col gap-2">
+                  {savedAddresses.map((a) => {
+                    const isSelected = selectedAddressId === a._id
+                    return (
+                      <button
+                        type="button"
+                        key={a._id}
+                        onClick={() => setSelectedAddressId(a._id)}
+                        className={`text-left border px-4 py-3 transition-colors ${
+                          isSelected
+                            ? 'border-(--ink) bg-(--cream-soft)'
+                            : 'border-(--hairline) hover:border-(--ink)'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[14px] text-(--ink) font-medium">
+                            {a.label || a.fullName}
+                          </span>
+                          {a.isDefault ? (
+                            <span className="text-[10px] uppercase tracking-[0.12em] font-medium px-1.5 py-0.5 bg-blush text-berry">
+                              Default
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="m-0 text-[12.5px] text-(--graphite) leading-snug">
+                          {a.line1}
+                          {a.line2 ? `, ${a.line2}` : ''} · {a.city}, {a.state}
+                        </p>
+                      </button>
+                    )
+                  })}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedAddressId('new')
+                      form.setValue('address', {
+                        fullName: user?.name ?? '',
+                        phone: user?.phone ?? '',
+                        line1: '',
+                        line2: '',
+                        city: '',
+                        state: '',
+                        country: 'NG',
+                        postal: '',
+                      })
+                      form.setValue('saveAddress', true)
+                    }}
+                    className={`text-left border border-dashed px-4 py-3 transition-colors ${
+                      selectedAddressId === 'new'
+                        ? 'border-(--ink) bg-(--cream-soft)'
+                        : 'border-(--hairline) text-(--graphite) hover:border-(--ink)'
+                    }`}
+                  >
+                    <span className="text-[14px] font-medium text-(--ink)">
+                      Enter a new address
+                    </span>
+                  </button>
+                </div>
+              </section>
+            ) : null}
 
-            {isAuthenticated ? (
-              <label className="flex items-center gap-3 text-[14px] text-[var(--ink)] cursor-pointer">
+            {/* Show the fieldset only when entering a new address, or when
+                the customer is a guest (no saved book to pick from). */}
+            {!isAuthenticated || savedAddresses.length === 0 || selectedAddressId === 'new' ? (
+              <AddressForm
+                form={form}
+                namePrefix="address"
+                heading={
+                  isAuthenticated && savedAddresses.length === 0 ? 'Delivery address' : undefined
+                }
+              />
+            ) : null}
+
+            {isAuthenticated && selectedAddressId === 'new' ? (
+              <label className="flex items-center gap-3 text-[14px] text-(--ink) cursor-pointer">
                 <input
                   type="checkbox"
-                  className="h-4 w-4 border border-[var(--hairline)] accent-[var(--ink)]"
+                  className="h-4 w-4 border border-(--hairline) accent-(--ink)"
                   {...form.register('saveAddress')}
                 />
                 Save this address to my account for next time.
@@ -333,24 +453,22 @@ export function CheckoutPage() {
             ) : null}
 
             <section className="flex flex-col gap-4">
-              <h2 className="font-serif italic text-2xl text-[var(--ink)]">
-                Shipping
-              </h2>
+              <h2 className="font-serif italic text-2xl text-(--ink)">Shipping</h2>
 
               {!watchedState || !watchedCity ? (
-                <div className="border border-dashed border-[var(--hairline)] bg-[var(--cream-soft)] px-4 py-5 text-[14px] text-[var(--mute)]">
+                <div className="border border-dashed border-(--hairline) bg-(--cream-soft) px-4 py-5 text-[14px] text-(--mute)">
                   Enter your delivery address to see shipping options.
                 </div>
               ) : ratesQuery.isLoading ? (
-                <div className="border border-[var(--hairline)] px-4 py-5 text-[14px] text-[var(--mute)]">
+                <div className="border border-(--hairline) px-4 py-5 text-[14px] text-(--mute)">
                   Looking up rates for {watchedState}…
                 </div>
               ) : ratesQuery.isError ? (
-                <div className="border border-[var(--coral)] bg-[var(--coral-soft)] px-4 py-5 text-[14px] text-[var(--ink)]">
+                <div className="border border-(--coral) bg-(--coral-soft) px-4 py-5 text-[14px] text-(--ink)">
                   Could not load shipping rates. Try a different state or refresh.
                 </div>
               ) : rateOptions.length === 0 ? (
-                <div className="border border-[var(--hairline)] px-4 py-5 text-[14px] text-[var(--mute)]">
+                <div className="border border-(--hairline) px-4 py-5 text-[14px] text-(--mute)">
                   No shipping options available for that destination.
                 </div>
               ) : (
@@ -364,20 +482,18 @@ export function CheckoutPage() {
                         onClick={() => setSelectedMethod(opt.method)}
                         className={`text-left border px-4 py-4 transition-colors ${
                           isSelected
-                            ? 'border-[var(--ink)] bg-[var(--cream-soft)]'
-                            : 'border-[var(--hairline)] hover:border-[var(--ink)]'
+                            ? 'border-(--ink) bg-(--cream-soft)'
+                            : 'border-(--hairline) hover:border-(--ink)'
                         }`}
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div>
-                            <div className="text-[15px] text-[var(--ink)] font-medium">
-                              {opt.name}
-                            </div>
-                            <div className="text-[12px] uppercase tracking-[0.1em] text-[var(--mute)] mt-1">
+                            <div className="text-[15px] text-(--ink) font-medium">{opt.name}</div>
+                            <div className="text-[12px] uppercase tracking-widest text-(--mute) mt-1">
                               {opt.eta}
                             </div>
                           </div>
-                          <div className="text-[15px] text-[var(--ink)] font-semibold">
+                          <div className="text-[15px] text-(--ink) font-semibold">
                             {formatNaira(opt.amount)}
                           </div>
                         </div>
@@ -391,26 +507,24 @@ export function CheckoutPage() {
 
           {/* ── Right column: order summary ──────────────────────── */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="border border-[var(--hairline)] bg-[var(--paper)] p-6 flex flex-col gap-5">
-              <h2 className="font-serif italic text-2xl text-[var(--ink)]">
-                Order summary
-              </h2>
+            <div className="border border-(--hairline) bg-(--paper) p-6 flex flex-col gap-5">
+              <h2 className="font-serif italic text-2xl text-(--ink)">Order summary</h2>
 
-              <ul className="flex flex-col gap-4 m-0 p-0 list-none border-t border-[var(--hairline-soft)] pt-4">
+              <ul className="flex flex-col gap-4 m-0 p-0 list-none border-t border-(--hairline-soft) pt-4">
                 {lines.map((l) => (
                   <li key={l.variantId} className="flex gap-3">
-                    <div className="w-16 flex-shrink-0">
+                    <div className="w-16 shrink-0">
                       <Photo src={l.imageUrl} alt={l.productName} tone="blush" ratio="4/5" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[14px] text-[var(--ink)] font-medium leading-tight">
+                      <div className="text-[14px] text-(--ink) font-medium leading-tight">
                         {l.productName}
                       </div>
-                      <div className="text-[12px] text-[var(--mute)] mt-1">
+                      <div className="text-[12px] text-(--mute) mt-1">
                         {l.variantLabel} · Qty {l.qty}
                       </div>
                     </div>
-                    <div className="text-[14px] text-[var(--ink)] font-semibold whitespace-nowrap">
+                    <div className="text-[14px] text-(--ink) font-semibold whitespace-nowrap">
                       {formatNaira(l.unitPrice * l.qty)}
                     </div>
                   </li>
@@ -452,30 +566,28 @@ export function CheckoutPage() {
                 }}
               />
 
-              <div className="border-t border-[var(--hairline-soft)] pt-4 flex flex-col gap-2 text-[14px] text-[var(--graphite)]">
+              <div className="border-t border-(--hairline-soft) pt-4 flex flex-col gap-2 text-[14px] text-(--graphite)">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span>{formatNaira(subtotalKobo)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span>
-                    {selectedRate ? formatNaira(shippingKobo) : '—'}
-                  </span>
+                  <span>{selectedRate ? formatNaira(shippingKobo) : '—'}</span>
                 </div>
                 {discountKobo > 0 ? (
-                  <div className="flex justify-between text-[var(--berry)]">
+                  <div className="flex justify-between text-(--berry)">
                     <span>Discount ({applied?.code})</span>
                     <span>− {formatNaira(discountKobo)}</span>
                   </div>
                 ) : null}
               </div>
 
-              <div className="border-t border-[var(--hairline)] pt-4 flex justify-between items-baseline">
-                <span className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium">
+              <div className="border-t border-(--hairline) pt-4 flex justify-between items-baseline">
+                <span className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
                   Total
                 </span>
-                <span className="text-2xl font-semibold text-[var(--ink)]">
+                <span className="text-2xl font-semibold text-(--ink)">
                   {formatNaira(totalKobo)}
                 </span>
               </div>
@@ -492,7 +604,7 @@ export function CheckoutPage() {
                   : `Pay ${formatNaira(totalKobo)}`}
               </Button>
 
-              <p className="text-[12px] text-[var(--mute)] text-center">
+              <p className="text-[12px] text-(--mute) text-center">
                 Secure payment by Paystack. We never store your card.
               </p>
             </div>
@@ -533,19 +645,19 @@ function DiscountEntry({
 
   if (applied) {
     return (
-      <div className="border-t border-[var(--hairline-soft)] pt-4 flex items-center justify-between gap-3">
+      <div className="border-t border-(--hairline-soft) pt-4 flex items-center justify-between gap-3">
         <div className="flex flex-col gap-0.5 min-w-0">
-          <span className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium">
+          <span className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
             Code applied
           </span>
-          <span className="text-[14px] text-[var(--ink)] font-medium truncate">
-            {applied.code} <span className="text-[var(--mute)]">· {applied.description}</span>
+          <span className="text-[14px] text-(--ink) font-medium truncate">
+            {applied.code} <span className="text-(--mute)">· {applied.description}</span>
           </span>
         </div>
         <button
           type="button"
           onClick={onRemove}
-          className="text-[12px] underline underline-offset-2 text-[var(--ink)] shrink-0"
+          className="text-[12px] underline underline-offset-2 text-(--ink) shrink-0"
         >
           Remove
         </button>
@@ -555,11 +667,11 @@ function DiscountEntry({
 
   if (!open) {
     return (
-      <div className="border-t border-[var(--hairline-soft)] pt-4">
+      <div className="border-t border-(--hairline-soft) pt-4">
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="text-[13px] text-[var(--ink)] underline underline-offset-2"
+          className="text-[13px] text-(--ink) underline underline-offset-2"
         >
           Have a discount code?
         </button>
@@ -568,8 +680,8 @@ function DiscountEntry({
   }
 
   return (
-    <div className="border-t border-[var(--hairline-soft)] pt-4 flex flex-col gap-2">
-      <label className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium">
+    <div className="border-t border-(--hairline-soft) pt-4 flex flex-col gap-2">
+      <label className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
         Discount code
       </label>
       <div className="flex gap-2">
@@ -580,7 +692,7 @@ function DiscountEntry({
           autoCapitalize="characters"
           autoComplete="off"
           spellCheck={false}
-          className="flex-1 h-11 border border-[var(--hairline)] bg-[var(--paper)] px-3 text-[14px] tracking-[0.06em] text-[var(--ink)] focus-visible:outline-none focus-visible:border-[var(--ink)]"
+          className="flex-1 h-11 border border-(--hairline) bg-(--paper) px-3 text-[14px] tracking-[0.06em] text-(--ink) focus-visible:outline-none focus-visible:border-(--ink)"
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault()
@@ -598,9 +710,7 @@ function DiscountEntry({
           {isApplying ? 'Checking…' : 'Apply'}
         </Button>
       </div>
-      {discountError ? (
-        <p className="text-[12px] text-[var(--coral)] m-0">{discountError}</p>
-      ) : null}
+      {discountError ? <p className="text-[12px] text-(--coral) m-0">{discountError}</p> : null}
     </div>
   )
 }

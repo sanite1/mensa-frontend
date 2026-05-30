@@ -9,7 +9,7 @@ import { CartDrawer } from '@/components/cart/CartDrawer'
 
 export function PlatformLayout() {
   return (
-    <div className="flex flex-col min-h-screen bg-[var(--paper)]">
+    <div className="flex flex-col min-h-screen bg-(--paper)">
       <Header />
       <main className="flex-1">
         <Outlet />

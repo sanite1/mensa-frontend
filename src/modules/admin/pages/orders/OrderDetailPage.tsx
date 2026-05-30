@@ -17,15 +17,8 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Truck, PackageCheck, PackageX, RefreshCw } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import {
-  useAdminOrder,
-  useUpdateOrderFulfilment,
-} from '@/lib/network/api/order.api'
-import type {
-  FulfilmentStatus,
-  Order,
-  PaymentStatus,
-} from '@/lib/network/types/order.types'
+import { useAdminOrder, useUpdateOrderFulfilment } from '@/lib/network/api/order.api'
+import type { FulfilmentStatus, Order, PaymentStatus } from '@/lib/network/types/order.types'
 import { formatNaira, cn } from '@/lib/utils'
 
 const PAYMENT_LABEL: Record<PaymentStatus, string> = {
@@ -44,12 +37,7 @@ const FULFILMENT_LABEL: Record<FulfilmentStatus, string> = {
   cancelled: 'Cancelled',
 }
 
-const FULFILMENT_ORDER: FulfilmentStatus[] = [
-  'pending',
-  'processing',
-  'shipped',
-  'delivered',
-]
+const FULFILMENT_ORDER: FulfilmentStatus[] = ['pending', 'processing', 'shipped', 'delivered']
 
 /** Mirror of canTransitionFulfilment on the backend so the UI surfaces
  *  the same allowed list. Backend re-validates on PATCH. */
@@ -67,7 +55,7 @@ export function OrderDetailPage() {
   const order = query.data?.data?.order
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-[1280px]">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-7xl">
       <div className="mb-6">
         <Link
           to="/orders"
@@ -104,37 +92,21 @@ function OrderView({ order }: { order: Order }) {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap mb-8">
         <div>
-          <div
-            className="t-eyebrow text-mute mb-3 font-mono"
-            style={{ letterSpacing: '0.12em' }}
-          >
+          <div className="t-eyebrow text-mute mb-3 font-mono tracking-[0.12em]">
             Order {order.orderNumber}
           </div>
-          <h1
-            className="m-0"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontStyle: 'italic',
-              fontWeight: 600,
-              fontSize: 'clamp(28px, 4vw, 40px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.025em',
-              color: 'var(--ink)',
-            }}
-          >
+          <h1 className="m-0 font-display italic font-semibold text-[clamp(28px,4vw,40px)] leading-[1.05] tracking-tight text-ink">
             {order.address.fullName}
           </h1>
-          <p className="t-body-s mt-2 text-graphite">
-            Placed {placed}
-          </p>
+          <p className="t-body-s mt-2 text-graphite">Placed {placed}</p>
         </div>
         <div className="flex flex-col items-end gap-2">
           <StatusChip
-            tone={paymentTone(order.payment.status)}
+            toneClass={paymentToneClass(order.payment.status)}
             label={PAYMENT_LABEL[order.payment.status]}
           />
           <StatusChip
-            tone={fulfilmentTone(order.fulfilment.status)}
+            toneClass={fulfilmentToneClass(order.fulfilment.status)}
             label={FULFILMENT_LABEL[order.fulfilment.status]}
           />
         </div>
@@ -173,48 +145,27 @@ function FulfilmentTimeline({ order }: { order: Order }) {
           return (
             <li
               key={step}
-              className="flex items-center gap-2 text-[12.5px]"
-              style={{ color: reached ? 'var(--ink)' : 'var(--mute)' }}
+              className={cn(
+                'flex items-center gap-2 text-[12.5px]',
+                reached ? 'text-ink' : 'text-mute',
+              )}
             >
               <span
-                className="rounded-full"
-                style={{
-                  width: 10,
-                  height: 10,
-                  background: isCurrent
-                    ? 'var(--pink)'
-                    : reached
-                      ? 'var(--ink)'
-                      : 'var(--hairline)',
-                  boxShadow: isCurrent
-                    ? '0 0 0 4px var(--blush)'
-                    : undefined,
-                }}
+                className={cn(
+                  'rounded-full w-2.5 h-2.5',
+                  isCurrent ? 'bg-pink shadow-blush-ring' : reached ? 'bg-ink' : 'bg-hairline',
+                )}
               />
               {FULFILMENT_LABEL[step]}
               {i < FULFILMENT_ORDER.length - 1 ? (
-                <span
-                  aria-hidden
-                  className="hidden sm:inline-block"
-                  style={{
-                    width: 32,
-                    height: 1,
-                    background: 'var(--hairline)',
-                  }}
-                />
+                <span aria-hidden className="hidden sm:inline-block w-8 h-px bg-hairline" />
               ) : null}
             </li>
           )
         })}
         {current === 'cancelled' ? (
-          <li
-            className="flex items-center gap-2 text-[12.5px]"
-            style={{ color: 'var(--coral)' }}
-          >
-            <span
-              className="rounded-full"
-              style={{ width: 10, height: 10, background: 'var(--coral)' }}
-            />
+          <li className="flex items-center gap-2 text-[12.5px] text-coral">
+            <span className="rounded-full w-2.5 h-2.5 bg-coral" />
             Cancelled
           </li>
         ) : null}
@@ -234,26 +185,16 @@ function LinesCard({ order }: { order: Order }) {
         {order.lines.map((l) => (
           <li
             key={`${l.variantId}`}
-            className="grid items-center px-5 py-4 border-b border-hairline-soft last:border-b-0"
-            style={{ gridTemplateColumns: '52px 1fr auto' }}
+            className="grid grid-cols-[52px_1fr_auto] items-center px-5 py-4 border-b border-hairline-soft last:border-b-0"
           >
-            <div
-              className="w-12 h-12 bg-blush flex items-center justify-center overflow-hidden"
-              style={{ borderRadius: 2 }}
-            >
+            <div className="w-12 h-12 bg-blush flex items-center justify-center overflow-hidden rounded-xs">
               {l.imageUrl ? (
-                <img
-                  src={l.imageUrl}
-                  alt={l.productName}
-                  className="w-full h-full object-cover"
-                />
+                <img src={l.imageUrl} alt={l.productName} className="w-full h-full object-cover" />
               ) : null}
             </div>
             <div className="min-w-0 ml-3">
-              <div className="text-[14px] text-ink font-medium leading-tight">
-                {l.productName}
-              </div>
-              <div className="text-[12px] uppercase tracking-[0.1em] text-mute font-mono mt-1">
+              <div className="text-[14px] text-ink font-medium leading-tight">{l.productName}</div>
+              <div className="text-[12px] uppercase tracking-widest text-mute font-mono mt-1">
                 {l.sku}
               </div>
               <div className="text-[13px] text-graphite mt-1">
@@ -297,16 +238,12 @@ function CustomerCard({ order }: { order: Order }) {
       <div className="t-eyebrow text-mute mb-3">Customer</div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-[14px]">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.1em] text-mute mb-1.5">
-            Contact
-          </div>
+          <div className="text-[11px] uppercase tracking-widest text-mute mb-1.5">Contact</div>
           <div className="text-ink">{order.customerEmail}</div>
           <div className="text-graphite mt-0.5">{order.customerPhone}</div>
         </div>
         <div>
-          <div className="text-[11px] uppercase tracking-[0.1em] text-mute mb-1.5">
-            Delivery
-          </div>
+          <div className="text-[11px] uppercase tracking-widest text-mute mb-1.5">Delivery</div>
           <div className="text-ink leading-relaxed">
             {order.address.fullName}
             <br />
@@ -371,8 +308,8 @@ function FulfilmentControls({ order }: { order: Order }) {
 
       {order.payment.status !== 'paid' ? (
         <p className="text-[12px] text-coral m-0">
-          Payment is not confirmed. You can cancel this order, but cannot
-          mark it processing, shipped, or delivered until paid.
+          Payment is not confirmed. You can cancel this order, but cannot mark it processing,
+          shipped, or delivered until paid.
         </p>
       ) : null}
 
@@ -383,9 +320,7 @@ function FulfilmentControls({ order }: { order: Order }) {
             value={trackingCode}
             onChange={setTrackingCode}
             placeholder={
-              order.fulfilment.shippingMethod === 'sendbox'
-                ? 'SB-...'
-                : 'In-house rider id'
+              order.fulfilment.shippingMethod === 'sendbox' ? 'SB-...' : 'In-house rider id'
             }
           />
           <FormPair
@@ -398,7 +333,7 @@ function FulfilmentControls({ order }: { order: Order }) {
       ) : null}
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-[11px] uppercase tracking-[0.1em] text-mute font-medium">
+        <label className="text-[11px] uppercase tracking-widest text-mute font-medium">
           Internal note (optional)
         </label>
         <textarea
@@ -414,8 +349,7 @@ function FulfilmentControls({ order }: { order: Order }) {
         {allowed.map((status) => {
           const meta = TRANSITION_META[status]
           const disabled =
-            update.isPending ||
-            (status !== 'cancelled' && order.payment.status !== 'paid')
+            update.isPending || (status !== 'cancelled' && order.payment.status !== 'paid')
           return (
             <Button
               key={status}
@@ -487,10 +421,7 @@ function InternalNotesCard({ notes }: { notes: string }) {
   return (
     <div className="border border-hairline-soft bg-cream-soft p-5">
       <div className="t-eyebrow text-mute mb-3">Internal notes</div>
-      <pre
-        className="m-0 text-[12.5px] text-graphite whitespace-pre-wrap"
-        style={{ fontFamily: 'var(--font-mono)', lineHeight: 1.5 }}
-      >
+      <pre className="m-0 text-[12.5px] text-graphite whitespace-pre-wrap font-mono leading-normal">
         {notes}
       </pre>
     </div>
@@ -511,9 +442,7 @@ function FormPair({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] uppercase tracking-[0.1em] text-mute font-medium">
-        {label}
-      </label>
+      <label className="text-[11px] uppercase tracking-widest text-mute font-medium">{label}</label>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -525,52 +454,47 @@ function FormPair({
 }
 
 // ─────────────────────────────────────────────────────────────────
-function StatusChip({
-  tone,
-  label,
-}: {
-  tone: { bg: string; fg: string }
-  label: string
-}) {
+// Status chip with tone classes resolved at the call site so the
+// component itself stays inline-style-free.
+function StatusChip({ toneClass, label }: { toneClass: string; label: string }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center text-[11px] uppercase tracking-[0.1em]',
-        'font-medium px-2.5 py-1',
+        'inline-flex items-center text-[11px] uppercase tracking-widest font-medium px-2.5 py-1',
+        toneClass,
       )}
-      style={{ background: tone.bg, color: tone.fg }}
     >
       {label}
     </span>
   )
 }
 
-function paymentTone(status: PaymentStatus) {
+function paymentToneClass(status: PaymentStatus): string {
   switch (status) {
     case 'paid':
-      return { bg: 'var(--ok)', fg: 'var(--paper)' }
+      return 'bg-ok text-paper'
     case 'failed':
-      return { bg: 'var(--coral)', fg: 'var(--paper)' }
+      return 'bg-coral text-paper'
     case 'refunded':
     case 'partial_refund':
-      return { bg: 'var(--cream)', fg: 'var(--ink)' }
+      return 'bg-cream text-ink'
     default:
-      return { bg: 'var(--cream)', fg: 'var(--mute)' }
+      return 'bg-cream text-mute'
   }
 }
 
-function fulfilmentTone(status: FulfilmentStatus) {
+function fulfilmentToneClass(status: FulfilmentStatus): string {
   switch (status) {
     case 'delivered':
-      return { bg: 'var(--ok)', fg: 'var(--paper)' }
+      return 'bg-ok text-paper'
     case 'shipped':
-      return { bg: 'var(--ink)', fg: 'var(--paper)' }
+      return 'bg-ink text-paper'
     case 'cancelled':
-      return { bg: 'var(--coral)', fg: 'var(--paper)' }
+      return 'bg-coral text-paper'
     case 'processing':
-      return { bg: 'var(--blush)', fg: 'var(--berry)' }
+      return 'bg-blush text-berry'
     default:
-      return { bg: 'var(--cream)', fg: 'var(--mute)' }
+      return 'bg-cream text-mute'
   }
 }
 

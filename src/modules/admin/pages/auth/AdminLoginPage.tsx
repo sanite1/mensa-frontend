@@ -40,23 +40,13 @@ export function AdminLoginPage() {
   const onSubmit = (values: Values) => login.mutate(values)
 
   return (
-    <div className="w-full max-w-[440px]">
+    <div className="w-full max-w-110">
       <div className="bg-paper border border-hairline-soft p-8 md:p-10">
         <div className="flex flex-col items-start gap-6 mb-8">
           <MensaWordmark height={32} tone="pink" />
           <div>
             <div className="t-eyebrow text-mute mb-2">Admin portal</div>
-            <h1
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontStyle: 'italic',
-                fontWeight: 600,
-                fontSize: 36,
-                lineHeight: 1.05,
-                letterSpacing: '-0.02em',
-                color: 'var(--ink)',
-              }}
-            >
+            <h1 className="font-display italic font-semibold text-[36px] leading-[1.05] tracking-[-0.02em] text-ink">
               Sign in.
             </h1>
           </div>

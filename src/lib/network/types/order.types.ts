@@ -95,6 +95,7 @@ export interface Order {
   payment: OrderPayment
   fulfilment: OrderFulfilment
   discountCode?: string
+  internalNotes?: string
   createdAt: string
   updatedAt: string
 }

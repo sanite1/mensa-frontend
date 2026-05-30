@@ -223,3 +223,28 @@ button {
 .m-reset * {
   box-sizing: border-box;
 }
+
+/* ─── Custom Tailwind utilities ─────────────────────────────────────────── */
+
+/* Stripe pattern reused as a placeholder texture in Photo and MegaMenu.
+   Defined here so the className stays a plain Tailwind utility instead of
+   a sprawling arbitrary-value bg-[repeating-linear-gradient(...)] class. */
+@utility bg-blush-stripe {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-blush-2) 0 8px,
+    var(--color-blush) 8px 16px
+  );
+}
+
+/* Nigerian flag mini-bar used in the utility strip currency picker
+   and mobile drawer footer. */
+@utility bg-ng-flag {
+  background: linear-gradient(to right, #008751 50%, #fff 50%);
+}
+
+/* Pink-blush ring used by the active fulfilment-timeline dot on the
+   admin order detail page. */
+@utility shadow-blush-ring {
+  box-shadow: 0 0 0 4px var(--color-blush);
+}

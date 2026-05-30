@@ -36,9 +36,13 @@ const CATEGORY_LABEL: Record<ProductCategory, string> = {
   education: 'Education',
 }
 
+// Grid columns are kept on the className with an arbitrary value so the
+// header and every row stay in lock-step automatically.
+const ROW_COLS = 'grid-cols-[2.2fr_1fr_1fr_0.9fr_0.7fr_0.9fr_44px]'
+
 export function ProductsListPage() {
   const query = useAdminProducts({ pageSize: 100 })
-  const products = query.data?.data?.items ?? []
+  const products: Product[] = query.data?.data?.items ?? []
 
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState<ProductCategory | 'all'>('all')
@@ -57,23 +61,12 @@ export function ProductsListPage() {
   }, [products, activeCategory, search])
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-[1280px]">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-7xl">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap mb-6 md:mb-8">
         <div className="min-w-0">
           <div className="t-eyebrow text-mute mb-3">Catalogue</div>
-          <h1
-            className="m-0"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontStyle: 'italic',
-              fontWeight: 600,
-              fontSize: 'clamp(32px, 5vw, 48px)',
-              lineHeight: 1.02,
-              letterSpacing: '-0.025em',
-              color: 'var(--ink)',
-            }}
-          >
+          <h1 className="m-0 font-display italic font-semibold text-[clamp(32px,5vw,48px)] leading-[1.02] tracking-tight text-ink">
             Products
           </h1>
           <p className="t-body-s mt-2 text-graphite">
@@ -92,7 +85,7 @@ export function ProductsListPage() {
       {/* Toolbar */}
       <div className="flex items-center gap-3 md:gap-4 flex-wrap mb-5 md:mb-6">
         {/* Search */}
-        <div className="relative flex-1 min-w-full sm:min-w-[240px] max-w-full sm:max-w-[420px]">
+        <div className="relative flex-1 min-w-full sm:min-w-60 max-w-full sm:max-w-105">
           <Search
             size={16}
             strokeWidth={1.6}
@@ -146,18 +139,16 @@ export function ProductsListPage() {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Grid template kept in one place so the header + every row stay
-// in lock-step when columns shift.
-const ROW_TEMPLATE = '2.2fr 1fr 1fr 0.9fr 0.7fr 0.9fr 44px'
-
 function ProductsTable({ products }: { products: Product[] }) {
   return (
     <div className="border border-hairline-soft bg-paper overflow-x-auto">
-      <div className="min-w-[880px]">
+      <div className="min-w-220">
         {/* Header row */}
         <div
-          className="grid items-center px-5 py-3 border-b border-hairline-soft bg-cream-soft text-[10px] uppercase tracking-[0.12em] font-medium text-mute font-mono"
-          style={{ gridTemplateColumns: ROW_TEMPLATE }}
+          className={cn(
+            'grid items-center px-5 py-3 border-b border-hairline-soft bg-cream-soft text-[10px] uppercase tracking-[0.12em] font-medium text-mute font-mono',
+            ROW_COLS,
+          )}
         >
           <div>Product</div>
           <div>Category</div>
@@ -204,9 +195,9 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
     <div
       className={cn(
         'grid items-center px-5 py-4 transition-colors hover:bg-cream-soft',
+        ROW_COLS,
         !isLast && 'border-b border-hairline-soft',
       )}
-      style={{ gridTemplateColumns: ROW_TEMPLATE }}
     >
       {/* Product cell — only the name + thumb area navigates. Keeps the
           actions kebab from fighting the row link for clicks. */}
@@ -214,10 +205,7 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
         to={`/products/${product.slug}/edit`}
         className="flex items-center gap-3 min-w-0 no-underline"
       >
-        <div
-          className="flex-shrink-0 w-12 h-12 bg-blush flex items-center justify-center overflow-hidden"
-          style={{ borderRadius: 2 }}
-        >
+        <div className="shrink-0 w-12 h-12 bg-blush flex items-center justify-center overflow-hidden rounded-[2px]">
           {product.images?.[0]?.url ? (
             <img
               src={product.images[0].url}
@@ -225,38 +213,23 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="text-[9px] uppercase tracking-[0.1em] text-berry opacity-60 font-mono">
+            <span className="text-[9px] uppercase tracking-widest text-berry opacity-60 font-mono">
               n/a
             </span>
           )}
         </div>
         <div className="min-w-0">
-          <div
-            className="truncate text-ink"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontStyle: 'italic',
-              fontWeight: 600,
-              fontSize: 18,
-              lineHeight: 1.1,
-              letterSpacing: '-0.015em',
-            }}
-          >
+          <div className="truncate text-ink font-display italic font-semibold text-[18px] leading-[1.1] tracking-[-0.015em]">
             {product.name}
           </div>
-          <div
-            className="truncate text-mute font-mono mt-0.5"
-            style={{ fontSize: 11, letterSpacing: '0.06em' }}
-          >
+          <div className="truncate text-mute font-mono mt-0.5 text-[11px] tracking-[0.06em]">
             {product.slug}
           </div>
         </div>
       </Link>
 
       {/* Category */}
-      <div className="text-[13px] text-graphite">
-        {CATEGORY_LABEL[product.category]}
-      </div>
+      <div className="text-[13px] text-graphite">{CATEGORY_LABEL[product.category]}</div>
 
       {/* B2C price */}
       <div className="text-right text-[14px] text-ink font-medium">
@@ -273,11 +246,7 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
         <span
           className={cn(
             'text-[13px]',
-            totalStock === 0
-              ? 'text-err'
-              : lowStock
-                ? 'text-coral'
-                : 'text-graphite',
+            totalStock === 0 ? 'text-err' : lowStock ? 'text-coral' : 'text-graphite',
           )}
         >
           {totalStock}
@@ -290,9 +259,7 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
           tone={product.isActive ? 'ok' : 'mute'}
           label={product.isActive ? 'Visible' : 'Hidden'}
         />
-        {product.isSoldOut ? (
-          <StatusPill tone="coral" label="Sold out" />
-        ) : null}
+        {product.isSoldOut ? <StatusPill tone="coral" label="Sold out" /> : null}
       </div>
 
       {/* Row actions */}
@@ -313,12 +280,9 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="bg-paper border border-hairline-soft min-w-[220px]"
+            className="bg-paper border border-hairline-soft min-w-55"
           >
-            <DropdownMenuItem
-              onSelect={() => toggleVisibility()}
-              className="text-[13px] text-ink"
-            >
+            <DropdownMenuItem onSelect={() => toggleVisibility()} className="text-[13px] text-ink">
               {product.isActive ? (
                 <>
                   <EyeOff size={14} strokeWidth={1.6} />
@@ -331,10 +295,7 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
                 </>
               )}
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => toggleSoldOut()}
-              className="text-[13px] text-ink"
-            >
+            <DropdownMenuItem onSelect={() => toggleSoldOut()} className="text-[13px] text-ink">
               {product.isSoldOut ? (
                 <>
                   <PackageCheck size={14} strokeWidth={1.6} />
@@ -358,28 +319,17 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
   )
 }
 
-function StatusPill({
-  tone,
-  label,
-}: {
-  tone: 'ok' | 'mute' | 'coral'
-  label: string
-}) {
-  const color =
-    tone === 'ok'
-      ? 'var(--ok)'
-      : tone === 'coral'
-        ? 'var(--coral)'
-        : 'var(--mute)'
+function StatusPill({ tone, label }: { tone: 'ok' | 'mute' | 'coral'; label: string }) {
+  const toneClass = tone === 'ok' ? 'text-ok' : tone === 'coral' ? 'text-coral' : 'text-mute'
+  const dotClass = tone === 'ok' ? 'bg-ok' : tone === 'coral' ? 'bg-coral' : 'bg-mute'
   return (
     <span
-      className="inline-flex items-center gap-1.5 text-[11px] font-medium"
-      style={{ letterSpacing: '0.04em', color }}
+      className={cn(
+        'inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.04em]',
+        toneClass,
+      )}
     >
-      <span
-        className="rounded-full"
-        style={{ width: 6, height: 6, background: color }}
-      />
+      <span className={cn('rounded-full w-1.5 h-1.5', dotClass)} />
       {label}
     </span>
   )
@@ -394,10 +344,7 @@ function LoadingState() {
           key={i}
           className="flex items-center gap-3 px-5 py-4 border-b border-hairline-soft last:border-b-0"
         >
-          <div
-            className="w-12 h-12 bg-cream-soft animate-pulse"
-            style={{ borderRadius: 2 }}
-          />
+          <div className="w-12 h-12 bg-cream-soft animate-pulse rounded-[2px]" />
           <div className="flex flex-col gap-2 flex-1">
             <div className="h-4 bg-cream-soft animate-pulse w-1/3" />
             <div className="h-3 bg-cream-soft animate-pulse w-1/4" />
@@ -412,16 +359,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="border border-hairline-soft bg-paper p-12 text-center">
       <div className="t-eyebrow text-err mb-3">Something went wrong</div>
-      <h3
-        className="m-0"
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontStyle: 'italic',
-          fontWeight: 600,
-          fontSize: 24,
-          color: 'var(--ink)',
-        }}
-      >
+      <h3 className="m-0 font-display italic font-semibold text-[24px] text-ink">
         We couldn't load the catalogue.
       </h3>
       <Button variant="secondary" size="default" className="mt-5" onClick={onRetry}>
@@ -434,19 +372,8 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 function EmptyState({ hasFilter }: { hasFilter: boolean }) {
   return (
     <div className="border border-hairline-soft bg-paper p-12 text-center">
-      <div className="t-eyebrow text-mute mb-3">
-        {hasFilter ? 'No matches' : 'Empty catalogue'}
-      </div>
-      <h3
-        className="m-0"
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontStyle: 'italic',
-          fontWeight: 600,
-          fontSize: 24,
-          color: 'var(--ink)',
-        }}
-      >
+      <div className="t-eyebrow text-mute mb-3">{hasFilter ? 'No matches' : 'Empty catalogue'}</div>
+      <h3 className="m-0 font-display italic font-semibold text-[24px] text-ink">
         {hasFilter ? 'Nothing matches that filter.' : 'No products yet.'}
       </h3>
       {!hasFilter ? (

@@ -22,10 +22,7 @@ import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
 
 const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email is required.')
-    .email('Please enter a valid email address.'),
+  email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
   password: z.string().min(1, 'Password is required.'),
 })
 
@@ -48,7 +45,7 @@ export function LoginPage() {
       footer={
         <>
           New to Mensa?{' '}
-          <Link to="/register" className="text-[var(--ink)] underline underline-offset-2">
+          <Link to="/register" className="text-(--ink) underline underline-offset-2">
             Create an account
           </Link>
         </>
@@ -63,7 +60,12 @@ export function LoginPage() {
               <FormItem className="space-y-2">
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" autoComplete="email" placeholder="you@example.com" {...field} />
+                  <Input
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -78,13 +80,17 @@ export function LoginPage() {
                   <FormLabel>Password</FormLabel>
                   <Link
                     to="/forgot-password"
-                    className="text-[11px] uppercase tracking-[0.12em] font-medium text-[var(--mute)] hover:text-[var(--ink)]"
+                    className="text-[11px] uppercase tracking-[0.12em] font-medium text-(--mute) hover:text-(--ink)"
                   >
                     Forgot?
                   </Link>
                 </div>
                 <FormControl>
-                  <PasswordField autoComplete="current-password" placeholder="••••••••" {...field} />
+                  <PasswordField
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -8,6 +8,7 @@
 // varied tone backed placeholder tiles (hero / flat / detail / pack) so the
 // admin can preview the PDP layout before uploading real Cloudinary assets.
 // ─────────────────────────────────────────────────────────────────────────
+import type { CSSProperties } from 'react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import type { ProductImage } from '@/lib/network/types/product.types'
@@ -29,10 +30,11 @@ interface GalleryProps {
   badge?: { label: string; tone?: 'pink' | 'coral' | 'ink' } | null
 }
 
-const BADGE_BG: Record<string, string> = {
-  pink: 'var(--pink)',
-  coral: 'var(--coral)',
-  ink: 'var(--ink)',
+// Badge tone maps to a Tailwind class so the gallery stays inline-style-free.
+const BADGE_TONE_CLASS: Record<string, string> = {
+  pink: 'bg-pink',
+  coral: 'bg-coral',
+  ink: 'bg-ink',
 }
 
 // Placeholder slides shown when a product has no Cloudinary images.
@@ -64,7 +66,7 @@ export function Gallery({ images, productName, badge }: GalleryProps) {
   return (
     <div className="flex flex-col gap-3">
       {/* Desktop: thumbs left of main image */}
-      <div className="hidden lg:grid" style={{ gridTemplateColumns: '88px 1fr', gap: 16 }}>
+      <div className="hidden lg:grid grid-cols-[88px_1fr] gap-4">
         <Thumbs slides={slides} active={active} onPick={setActive} layout="vertical" />
         <MainSlide slide={main} alt={main.alt || productName} badge={badge} counter={counter} />
       </div>
@@ -92,12 +94,10 @@ export function Gallery({ images, productName, badge }: GalleryProps) {
                 type="button"
                 onClick={() => setActive(i)}
                 aria-label={`Show image ${i + 1}`}
-                className="rounded-full transition-all"
-                style={{
-                  width: i === active ? 24 : 7,
-                  height: 7,
-                  background: i === active ? 'var(--ink)' : 'var(--hairline)',
-                }}
+                className={cn(
+                  'rounded-full transition-all h-1.75',
+                  i === active ? 'w-6 bg-ink' : 'w-1.75 bg-hairline',
+                )}
               />
             ))}
           </div>
@@ -122,6 +122,9 @@ function MainSlide({
   badge?: GalleryProps['badge']
   counter?: string | null
 }) {
+  const badgeToneClass = badge
+    ? BADGE_TONE_CLASS[badge.tone ?? 'pink'] ?? 'bg-pink'
+    : ''
   return (
     <div className="relative">
       <Photo
@@ -133,37 +136,16 @@ function MainSlide({
       />
       {badge ? (
         <span
-          className="absolute font-sans uppercase"
-          style={{
-            top: 18,
-            left: 18,
-            padding: '7px 14px',
-            borderRadius: 999,
-            background: BADGE_BG[badge.tone ?? 'pink'] ?? 'var(--pink)',
-            color: '#fff',
-            fontSize: 11.5,
-            fontWeight: 500,
-            letterSpacing: '0.08em',
-          }}
+          className={cn(
+            'absolute top-4.5 left-4.5 font-sans uppercase py-1.75 px-3.5 rounded-full text-white text-[11.5px] font-medium tracking-[0.08em]',
+            badgeToneClass,
+          )}
         >
           {badge.label}
         </span>
       ) : null}
       {counter ? (
-        <span
-          className="absolute font-mono"
-          style={{
-            bottom: 18,
-            right: 18,
-            padding: '8px 14px',
-            borderRadius: 999,
-            background: 'var(--paper)',
-            border: '1px solid var(--hairline)',
-            color: 'var(--ink)',
-            fontSize: 10.5,
-            letterSpacing: '0.08em',
-          }}
-        >
+        <span className="absolute bottom-4.5 right-4.5 font-mono py-2 px-3.5 rounded-full bg-paper border border-hairline text-ink text-[10.5px] tracking-[0.08em]">
           {counter}
         </span>
       ) : null}
@@ -182,25 +164,33 @@ function Thumbs({
   onPick: (i: number) => void
   layout: 'vertical' | 'horizontal'
 }) {
+  // Horizontal layout splits evenly across however many slides we have.
+  // Store the full grid-template-columns string in a CSS variable so the
+  // className can consume it via the parenthesis shorthand instead of an
+  // arbitrary-value bracket class.
+  const horizontalVars: CSSProperties =
+    layout === 'horizontal'
+      ? ({ '--thumb-cols': `repeat(${slides.length},1fr)` } as CSSProperties)
+      : ({} as CSSProperties)
+
   return (
     <div
-      className={cn(layout === 'vertical' ? 'flex flex-col gap-2' : 'grid gap-2')}
-      style={
-        layout === 'horizontal'
-          ? { gridTemplateColumns: `repeat(${slides.length}, 1fr)` }
-          : undefined
-      }
+      className={cn(
+        layout === 'vertical'
+          ? 'flex flex-col gap-2'
+          : 'grid gap-2 grid-cols-(--thumb-cols)',
+      )}
+      style={horizontalVars}
     >
       {slides.map((slide, i) => (
         <button
           key={slide.key}
           type="button"
           onClick={() => onPick(i)}
-          className="p-0 cursor-pointer bg-transparent overflow-hidden"
-          style={{
-            border: `1.5px solid ${i === active ? 'var(--ink)' : 'transparent'}`,
-            borderRadius: 4,
-          }}
+          className={cn(
+            'p-0 cursor-pointer bg-transparent overflow-hidden rounded-sm border-[1.5px]',
+            i === active ? 'border-ink' : 'border-transparent',
+          )}
           aria-label={`Show image ${i + 1}`}
         >
           <Photo

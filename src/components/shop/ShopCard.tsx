@@ -22,10 +22,12 @@ interface ShopCardProps {
   product: Product
 }
 
-const BADGE_BG: Record<string, string> = {
-  pink: 'var(--pink)',
-  coral: 'var(--coral)',
-  ink: 'var(--ink)',
+// Badge tone is a runtime prop (pink / coral / ink). Map to a Tailwind
+// class so the component stays inline-style-free.
+const BADGE_TONE_CLASS: Record<string, string> = {
+  pink: 'bg-pink',
+  coral: 'bg-coral',
+  ink: 'bg-ink',
 }
 
 export function ShopCard({ product }: ShopCardProps) {
@@ -33,22 +35,21 @@ export function ShopCard({ product }: ShopCardProps) {
   const metadata = product.metadata ?? {}
   const heroImage = images.find((img) => img.order === 0) ?? images[0]
   const price = product.salePrice ?? product.basePriceB2C
-  const hasSale =
-    product.salePrice != null && product.salePrice < product.basePriceB2C
+  const hasSale = product.salePrice != null && product.salePrice < product.basePriceB2C
   const savings = hasSale ? product.basePriceB2C - (product.salePrice ?? 0) : 0
 
   const isSoldOut = product.isSoldOut
+  const badgeToneClass = BADGE_TONE_CLASS[metadata.badgeTone ?? 'pink'] ?? 'bg-pink'
 
   return (
-    <Link
-      to={`/shop/${product.slug}`}
-      className="group flex flex-col no-underline text-[var(--ink)] gap-3"
-    >
+    <Link to={`/shop/${product.slug}`} className="group flex flex-col no-underline text-ink gap-3">
       {/* Image + badge */}
       <div className="relative overflow-hidden">
         <div
-          className="transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-          style={isSoldOut ? { filter: 'grayscale(0.6)', opacity: 0.65 } : undefined}
+          className={cn(
+            'transition-transform duration-500 ease-out group-hover:scale-[1.03]',
+            isSoldOut && 'grayscale-[0.6] opacity-65',
+          )}
         >
           <Photo
             src={heroImage?.url}
@@ -59,37 +60,16 @@ export function ShopCard({ product }: ShopCardProps) {
         </div>
         {metadata.badge && !isSoldOut ? (
           <span
-            className="absolute font-sans uppercase"
-            style={{
-              top: 12,
-              left: 12,
-              padding: '5px 10px',
-              background: BADGE_BG[metadata.badgeTone ?? 'pink'] ?? 'var(--pink)',
-              color: '#fff',
-              fontSize: 10.5,
-              fontWeight: 500,
-              letterSpacing: '0.08em',
-              borderRadius: 999,
-            }}
+            className={cn(
+              'absolute top-3 left-3 font-sans uppercase px-2.5 py-1.25 text-white text-[10.5px] font-medium tracking-[0.08em] rounded-full',
+              badgeToneClass,
+            )}
           >
             {metadata.badge}
           </span>
         ) : null}
         {isSoldOut ? (
-          <span
-            className="absolute font-sans uppercase"
-            style={{
-              top: 12,
-              left: 12,
-              padding: '5px 10px',
-              background: 'var(--ink)',
-              color: '#fff',
-              fontSize: 10.5,
-              fontWeight: 500,
-              letterSpacing: '0.08em',
-              borderRadius: 999,
-            }}
-          >
+          <span className="absolute top-3 left-3 font-sans uppercase px-2.5 py-1.25 bg-ink text-white text-[10.5px] font-medium tracking-[0.08em] rounded-full">
             Sold out
           </span>
         ) : null}
@@ -97,105 +77,43 @@ export function ShopCard({ product }: ShopCardProps) {
 
       {/* Meta column */}
       <div className="flex flex-col gap-1.5">
-        {/* Name */}
-        <h3
-          className="m-0"
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontStyle: 'italic',
-            fontWeight: 600,
-            fontSize: 'clamp(17px, 1.5vw, 22px)',
-            lineHeight: 1.08,
-            letterSpacing: '-0.015em',
-            color: 'var(--ink)',
-            // Clamp to 2 lines so long names don't unbalance the grid.
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}
-        >
+        {/* Name — clamped to 2 lines so long names don't unbalance the grid. */}
+        <h3 className="m-0 font-display italic font-semibold text-[clamp(17px,1.5vw,22px)] leading-[1.08] tracking-[-0.015em] text-ink line-clamp-2">
           {product.name}
         </h3>
 
         {/* Price row */}
         <div className="flex items-baseline gap-2 flex-wrap">
-          <span
-            className="font-sans"
-            style={{
-              color: 'var(--ink)',
-              fontWeight: 600,
-              fontSize: 'clamp(13.5px, 1.1vw, 15px)',
-              lineHeight: 1,
-            }}
-          >
+          <span className="font-sans text-ink font-semibold text-[clamp(13.5px,1.1vw,15px)] leading-none">
             {formatNaira(price)}
           </span>
           {hasSale ? (
             <>
-              <span
-                className="font-sans"
-                style={{
-                  color: 'var(--mute)',
-                  fontSize: 'clamp(11.5px, 1vw, 13px)',
-                  textDecoration: 'line-through',
-                  lineHeight: 1,
-                }}
-              >
+              <span className="font-sans text-mute text-[clamp(11.5px,1vw,13px)] line-through leading-none">
                 {formatNaira(product.basePriceB2C)}
               </span>
-              <span
-                className="font-sans"
-                style={{
-                  background: 'var(--blush)',
-                  color: 'var(--berry)',
-                  padding: '2px 6px',
-                  fontSize: 10,
-                  fontWeight: 500,
-                  letterSpacing: '0.04em',
-                  borderRadius: 3,
-                }}
-              >
+              <span className="font-sans bg-blush text-berry px-1.5 py-0.5 text-[10px] font-medium tracking-[0.04em] rounded-[3px]">
                 Save {formatNaira(savings)}
               </span>
             </>
           ) : null}
         </div>
 
-        {/* Subheading tag */}
+        {/* Subheading tag — single line, truncate with ellipsis. */}
         {product.subheading ? (
-          <div
-            className="font-mono uppercase mt-0.5"
-            style={{
-              fontSize: 10,
-              letterSpacing: '0.1em',
-              color: 'var(--mute)',
-              // Single line, truncate with ellipsis.
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
+          <div className="font-mono uppercase mt-0.5 text-[10px] tracking-widest text-mute whitespace-nowrap overflow-hidden text-ellipsis">
             {product.subheading}
           </div>
         ) : null}
 
         {/* Rating row (only when present) */}
         {typeof metadata.rating === 'number' ? (
-          <div
-            className={cn(
-              'flex items-center gap-1.5',
-              product.subheading ? 'mt-0.5' : 'mt-1',
-            )}
-          >
+          <div className={cn('flex items-center gap-1.5', product.subheading ? 'mt-0.5' : 'mt-1')}>
             <Stars value={metadata.rating} size={11} />
-            <span
-              className="font-sans text-[var(--graphite)]"
-              style={{ fontSize: 12 }}
-            >
+            <span className="font-sans text-graphite text-[12px]">
               {metadata.rating.toFixed(1)}
               {metadata.reviewCount != null ? (
-                <span className="text-[var(--mute)]"> ({metadata.reviewCount})</span>
+                <span className="text-mute"> ({metadata.reviewCount})</span>
               ) : null}
             </span>
           </div>

@@ -20,7 +20,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
           ref={ref}
           type={visible ? 'text' : 'password'}
           className={cn(
-            'flex h-11 w-full border border-[var(--hairline)] bg-[var(--paper)] pl-3.5 pr-11 py-2 text-[15px] text-[var(--ink)] placeholder:text-[var(--mute)] focus-visible:outline-none focus-visible:border-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-50',
+            'flex h-11 w-full border border-(--hairline) bg-(--paper) pl-3.5 pr-11 py-2 text-[15px] text-(--ink) placeholder:text-(--mute) focus-visible:outline-none focus-visible:border-(--ink) disabled:cursor-not-allowed disabled:opacity-50',
             className,
           )}
           {...props}
@@ -30,7 +30,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
           tabIndex={-1}
           aria-label={visible ? 'Hide password' : 'Show password'}
           onClick={() => setVisible((v) => !v)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center text-[var(--mute)] hover:text-[var(--ink)]"
+          className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center text-(--mute) hover:text-(--ink)"
         >
           {visible ? <EyeOff size={18} strokeWidth={1.6} /> : <Eye size={18} strokeWidth={1.6} />}
         </button>

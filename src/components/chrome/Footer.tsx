@@ -6,24 +6,43 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 import { MensaLockup } from './MensaWordmark'
-import {
-  IconPin,
-  IconMail,
-  IconPhone,
-  IconChevronDown,
-} from './icons'
+import { IconPin, IconMail, IconPhone, IconChevronDown } from './icons'
 
-const SHOP = ['Period pants', 'Reusable pads', 'The starter set', 'Education', 'Gift cards', 'Shop all']
+const SHOP = [
+  'Period pants',
+  'Reusable pads',
+  'The starter set',
+  'Education',
+  'Gift cards',
+  'Shop all',
+]
 const LEARN = ['My Cycoo guide', 'FLOW Game', 'Care instructions', 'Size guide', 'Journal', 'FAQ']
 const COMPANY = ['Our story', 'Sustainability', 'Partnerships', 'Press', 'Stockists', 'Careers']
 const HELP = ['Track order', 'Shipping', 'Returns', 'Contact us', 'Privacy', 'Terms']
-const SHOP_LEARN_COMPACT = ['Period pants', 'Reusable pads', 'The starter set', 'FLOW Game', 'My Cycoo', 'Care instructions', 'Size guide']
-const COMPANY_HELP_COMPACT = ['Our story', 'Sustainability', 'Partnerships', 'Track order', 'Shipping', 'Returns', 'Contact us']
+const SHOP_LEARN_COMPACT = [
+  'Period pants',
+  'Reusable pads',
+  'The starter set',
+  'FLOW Game',
+  'My Cycoo',
+  'Care instructions',
+  'Size guide',
+]
+const COMPANY_HELP_COMPACT = [
+  'Our story',
+  'Sustainability',
+  'Partnerships',
+  'Track order',
+  'Shipping',
+  'Returns',
+  'Contact us',
+]
 
 export function Footer() {
   return (
-    <footer className="bg-[var(--ink)] text-[var(--paper)] w-full">
+    <footer className="bg-ink text-paper w-full">
       <DesktopFooter />
       <TabletFooter />
       <MobileFooter />
@@ -36,40 +55,17 @@ function DesktopFooter() {
   return (
     <div className="hidden lg:block">
       {/* Headline + newsletter */}
-      <div
-        className="grid items-end border-b border-white/10"
-        style={{
-          padding: '64px 48px 48px',
-          gridTemplateColumns: '1.4fr 1fr',
-          gap: 48,
-        }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontStyle: 'italic',
-            fontWeight: 500,
-            fontSize: 124,
-            lineHeight: 0.9,
-            letterSpacing: '-0.035em',
-          }}
-        >
+      <div className="grid items-end border-b border-white/10 pt-16 px-12 pb-12 grid-cols-[1.4fr_1fr] gap-12">
+        <div className="font-display italic font-medium text-[124px] leading-[0.9] tracking-[-0.035em]">
           Periods
           <br />
-          made <span style={{ color: 'var(--pink)' }}>convenient.</span>
+          made <span className="text-pink">convenient.</span>
         </div>
-        <NewsletterColumn fontSize={18} />
+        <NewsletterColumn fontSize="lg" />
       </div>
 
       {/* Columns */}
-      <div
-        className="grid"
-        style={{
-          padding: '48px 48px 36px',
-          gridTemplateColumns: '1.6fr 1fr 1fr 1fr 1fr',
-          gap: 48,
-        }}
-      >
+      <div className="grid pt-12 px-12 pb-9 grid-cols-[1.6fr_1fr_1fr_1fr_1fr] gap-12">
         <BrandColumn lockupHeight={72} />
         <FootCol title="Shop" items={SHOP} />
         <FootCol title="Learn" items={LEARN} />
@@ -77,7 +73,7 @@ function DesktopFooter() {
         <FootCol title="Help" items={HELP} />
       </div>
 
-      <BottomRow padX={48} />
+      <BottomRow density="lg" />
     </div>
   )
 }
@@ -86,41 +82,22 @@ function DesktopFooter() {
 function TabletFooter() {
   return (
     <div className="hidden md:block lg:hidden">
-      <div
-        className="grid items-end border-b border-white/10"
-        style={{ padding: '48px 40px 36px', gridTemplateColumns: '1fr', gap: 24 }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontStyle: 'italic',
-            fontWeight: 500,
-            fontSize: 64,
-            lineHeight: 0.9,
-            letterSpacing: '-0.035em',
-          }}
-        >
+      <div className="grid items-end border-b border-white/10 pt-12 px-10 pb-9 grid-cols-1 gap-6">
+        <div className="font-display italic font-medium text-[64px] leading-[0.9] tracking-[-0.035em]">
           Periods
           <br />
-          made <span style={{ color: 'var(--pink)' }}>convenient.</span>
+          made <span className="text-pink">convenient.</span>
         </div>
-        <NewsletterColumn fontSize={15} />
+        <NewsletterColumn fontSize="md" />
       </div>
 
-      <div
-        className="grid"
-        style={{
-          padding: '40px 40px 32px',
-          gridTemplateColumns: '1.6fr 1fr 1fr',
-          gap: 32,
-        }}
-      >
+      <div className="grid pt-10 px-10 pb-8 grid-cols-[1.6fr_1fr_1fr] gap-8">
         <BrandColumn lockupHeight={60} />
         <FootCol title="Shop & Learn" items={SHOP_LEARN_COMPACT} />
         <FootCol title="Company & Help" items={COMPANY_HELP_COMPACT} />
       </div>
 
-      <BottomRow padX={40} />
+      <BottomRow density="md" />
     </div>
   )
 }
@@ -128,45 +105,44 @@ function TabletFooter() {
 // ─── MOBILE (< md) ──────────────────────────────────────────────────────
 function MobileFooter() {
   return (
-    <div className="block md:hidden" style={{ padding: '40px 20px 28px' }}>
-      <div
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontStyle: 'italic',
-          fontWeight: 500,
-          fontSize: 56,
-          lineHeight: 0.92,
-          letterSpacing: '-0.03em',
-          marginBottom: 32,
-        }}
-      >
+    <div className="block md:hidden pt-10 px-5 pb-7">
+      <div className="font-display italic font-medium text-[56px] leading-[0.92] tracking-[-0.03em] mb-8">
         Periods
         <br />
-        made <span style={{ color: 'var(--pink)' }}>convenient.</span>
+        made <span className="text-pink">convenient.</span>
       </div>
 
       {/* Newsletter */}
       <div className="t-eyebrow mb-3 text-white/55">The newsletter</div>
-      <p className="text-[14px] mb-3.5 leading-[1.6] text-white/[0.78]">
+      <p className="text-[14px] mb-3.5 leading-[1.6] text-white/78">
         Period care, restocks, the occasional 10% off. Two emails a month, max.
       </p>
       <NewsletterInput mobile />
 
       <div className="mt-7">
-        <Accordion title="Shop" items={['Period pants', 'Reusable pads', 'The starter set', 'Education', 'Gift cards']} />
-        <Accordion title="Learn" items={['My Cycoo guide', 'FLOW Game', 'Care instructions', 'Size guide', 'FAQ']} />
-        <Accordion title="Company" items={['Our story', 'Sustainability', 'Partnerships', 'Press']} />
+        <Accordion
+          title="Shop"
+          items={['Period pants', 'Reusable pads', 'The starter set', 'Education', 'Gift cards']}
+        />
+        <Accordion
+          title="Learn"
+          items={['My Cycoo guide', 'FLOW Game', 'Care instructions', 'Size guide', 'FAQ']}
+        />
+        <Accordion
+          title="Company"
+          items={['Our story', 'Sustainability', 'Partnerships', 'Press']}
+        />
         <Accordion title="Help" items={['Track order', 'Shipping', 'Returns', 'Contact us']} />
       </div>
 
       {/* Contact */}
-      <div className="flex flex-col gap-2.5 py-6 border-b border-white/[0.12]">
+      <div className="flex flex-col gap-2.5 py-6 border-b border-white/12">
         <FootContact icon={<IconPin size={14} />}>Abuja, FCT, Nigeria</FootContact>
         <FootContact icon={<IconMail size={14} />}>hi@mensaproducts.com</FootContact>
         <FootContact icon={<IconPhone size={14} />}>+234 707 534 5496</FootContact>
       </div>
 
-      <div className="flex gap-2.5 py-[22px]">
+      <div className="flex gap-2.5 py-5.5">
         <SocialDotDark label="IG" />
         <SocialDotDark label="TT" />
         <SocialDotDark label="X" />
@@ -188,11 +164,16 @@ function MobileFooter() {
 }
 
 // ─── Shared bits ────────────────────────────────────────────────────────
-function NewsletterColumn({ fontSize }: { fontSize: number }) {
+function NewsletterColumn({ fontSize }: { fontSize: 'lg' | 'md' }) {
   return (
     <div className="flex flex-col gap-4 pb-2">
       <div className="t-eyebrow text-white/55">The newsletter</div>
-      <p className="max-w-[380px] text-white" style={{ fontSize, lineHeight: 1.55 }}>
+      <p
+        className={cn(
+          'max-w-95 text-white leading-[1.55]',
+          fontSize === 'lg' ? 'text-[18px]' : 'text-[15px]',
+        )}
+      >
         Period care, restock alerts, the occasional 10% off. Two emails a month, maximum.
       </p>
       <NewsletterInput />
@@ -204,23 +185,25 @@ function NewsletterInput({ mobile = false }: { mobile?: boolean }) {
   return (
     <form
       onSubmit={(e) => e.preventDefault()}
-      className="flex border border-white/30 overflow-hidden"
-      style={{ borderRadius: 6, maxWidth: mobile ? '100%' : 420 }}
+      className={cn(
+        'flex border border-white/30 overflow-hidden rounded-md',
+        mobile ? 'max-w-full' : 'max-w-105',
+      )}
     >
       <input
         type="email"
         placeholder="your@email.com"
-        className="flex-1 bg-transparent border-none text-[var(--paper)] outline-none placeholder:text-white/55"
-        style={{
-          padding: mobile ? '12px 14px' : '14px 16px',
-          fontFamily: 'var(--font-sans)',
-          fontSize: mobile ? 14 : 15,
-        }}
+        className={cn(
+          'flex-1 bg-transparent border-none text-paper outline-none placeholder:text-white/55 font-sans',
+          mobile ? 'py-3 px-3.5 text-[14px]' : 'py-3.5 px-4 text-[15px]',
+        )}
       />
       <button
         type="submit"
-        className="bg-[var(--pink)] text-white border-none cursor-pointer font-sans font-medium hover:bg-[var(--pink-deep)]"
-        style={{ padding: mobile ? '0 18px' : '0 22px', fontSize: mobile ? 13 : 14 }}
+        className={cn(
+          'bg-pink text-white border-0 cursor-pointer font-sans font-medium hover:bg-pink-deep',
+          mobile ? 'px-4.5 text-[13px]' : 'px-5.5 text-[14px]',
+        )}
       >
         Subscribe
       </button>
@@ -232,11 +215,11 @@ function BrandColumn({ lockupHeight }: { lockupHeight: number }) {
   return (
     <div>
       <MensaLockup height={lockupHeight} tone="paper" />
-      <p className="text-[14px] mt-[22px] max-w-[280px] leading-[1.6] text-white/70">
+      <p className="text-[14px] mt-5.5 max-w-70 leading-[1.6] text-white/70">
         Reusable period products designed in Abuja for Nigerian women. Comfortable. Confident.
         Sustainable.
       </p>
-      <div className="flex flex-col gap-2 mt-[22px]">
+      <div className="flex flex-col gap-2 mt-5.5">
         <FootContact icon={<IconPin size={14} />}>Abuja, FCT, Nigeria</FootContact>
         <FootContact icon={<IconMail size={14} />}>hi@mensaproducts.com</FootContact>
         <FootContact icon={<IconPhone size={14} />}>+234 707 534 5496</FootContact>
@@ -252,7 +235,7 @@ function FootCol({ title, items }: { title: string; items: string[] }) {
       <ul className="m-0 p-0 list-none flex flex-col gap-2.5">
         {items.map((item) => (
           <li key={item}>
-            <Link to="/" className="text-[14px] text-[var(--paper)] no-underline hover:text-[var(--pink)]">
+            <Link to="/" className="text-[14px] text-paper no-underline hover:text-pink">
               {item}
             </Link>
           </li>
@@ -265,7 +248,7 @@ function FootCol({ title, items }: { title: string; items: string[] }) {
 function FootContact({ icon, children }: { icon: ReactNode; children: ReactNode }) {
   return (
     <div className="flex items-center gap-2 text-[13px] text-white/85">
-      <span className="text-[var(--pink)]">{icon}</span>
+      <span className="text-pink">{icon}</span>
       {children}
     </div>
   )
@@ -273,15 +256,7 @@ function FootContact({ icon, children }: { icon: ReactNode; children: ReactNode 
 
 function PayChip({ children }: { children: ReactNode }) {
   return (
-    <span
-      className="border border-white/20 text-white/85 font-sans"
-      style={{
-        borderRadius: 4,
-        padding: '5px 10px',
-        fontSize: 11.5,
-        letterSpacing: '0.04em',
-      }}
-    >
+    <span className="border border-white/20 text-white/85 font-sans rounded-sm py-1.25 px-2.5 text-[11.5px] tracking-[0.04em]">
       {children}
     </span>
   )
@@ -289,10 +264,7 @@ function PayChip({ children }: { children: ReactNode }) {
 
 function SocialDotDark({ label }: { label: string }) {
   return (
-    <span
-      className="inline-flex items-center justify-center rounded-full border border-white/25 text-[var(--paper)] font-sans"
-      style={{ width: 32, height: 32, fontSize: 10.5, fontWeight: 600, letterSpacing: '0.04em' }}
-    >
+    <span className="inline-flex items-center justify-center rounded-full border border-white/25 text-paper font-sans w-8 h-8 text-[10.5px] font-semibold tracking-[0.04em]">
       {label}
     </span>
   )
@@ -300,15 +272,12 @@ function SocialDotDark({ label }: { label: string }) {
 
 function Accordion({ title, items }: { title: string; items: string[] }) {
   return (
-    <details className="border-b border-white/[0.12]">
-      <summary
-        className="list-none cursor-pointer flex items-center justify-between text-[var(--paper)] font-sans font-medium"
-        style={{ padding: '18px 0', fontSize: 15 }}
-      >
+    <details className="border-b border-white/12">
+      <summary className="list-none cursor-pointer flex items-center justify-between text-paper font-sans font-medium py-4.5 text-[15px]">
         {title}
-        <IconChevronDown size={16} className="text-[var(--paper)]" />
+        <IconChevronDown size={16} className="text-paper" />
       </summary>
-      <ul className="list-none m-0 pb-[18px] pl-0 pr-0 pt-0 flex flex-col gap-2.5">
+      <ul className="list-none m-0 pb-4.5 pl-0 pr-0 pt-0 flex flex-col gap-2.5">
         {items.map((i) => (
           <li key={i}>
             <Link to="/" className="text-[14px] text-white/75 no-underline">
@@ -321,11 +290,13 @@ function Accordion({ title, items }: { title: string; items: string[] }) {
   )
 }
 
-function BottomRow({ padX }: { padX: number }) {
+function BottomRow({ density }: { density: 'lg' | 'md' }) {
   return (
     <div
-      className="border-t border-white/10 flex items-center justify-between gap-6 flex-wrap text-white/55"
-      style={{ padding: `20px ${padX}px`, fontSize: 12.5 }}
+      className={cn(
+        'border-t border-white/10 flex items-center justify-between gap-6 flex-wrap text-white/55 py-5 text-[12.5px]',
+        density === 'lg' ? 'px-12' : 'px-10',
+      )}
     >
       <div className="flex items-center gap-4 flex-wrap">
         <span>© 2026 Mensa Period Products</span>

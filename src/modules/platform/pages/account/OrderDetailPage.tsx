@@ -18,40 +18,34 @@ export function OrderDetailPage() {
       <div className="mb-6">
         <Link
           to="/account/orders"
-          className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium hover:text-[var(--ink)]"
+          className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium hover:text-(--ink)"
         >
           ← Back to orders
         </Link>
       </div>
 
       {query.isLoading ? (
-        <div className="text-[14px] text-[var(--mute)]">Loading order…</div>
+        <div className="text-[14px] text-(--mute)">Loading order…</div>
       ) : query.isError || !order ? (
-        <div className="border border-[var(--coral)] bg-[var(--coral-soft)] px-4 py-5 text-[14px] text-[var(--ink)]">
+        <div className="border border-(--coral) bg-(--coral-soft) px-4 py-5 text-[14px] text-(--ink)">
           We could not find that order on your account.
         </div>
       ) : (
         <>
           <header className="mb-6">
-            <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--mute)] font-medium">
+            <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
               Order {order.orderNumber}
             </p>
-            <h1 className="mt-2 font-serif italic text-4xl text-[var(--ink)]">
-              Your order.
-            </h1>
+            <h1 className="mt-2 font-serif italic text-4xl text-(--ink)">Your order.</h1>
           </header>
           <OrderSummaryCard order={order} />
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Button asChild variant="outline" size="lg">
+            <Button asChild variant="secondary" size="lg">
               <Link to="/shop">Continue shopping</Link>
             </Button>
             {order.fulfilment.trackingUrl ? (
               <Button asChild variant="primary" size="lg">
-                <a
-                  href={order.fulfilment.trackingUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <a href={order.fulfilment.trackingUrl} target="_blank" rel="noreferrer">
                   Track package
                 </a>
               </Button>

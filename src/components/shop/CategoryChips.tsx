@@ -33,34 +33,39 @@ export function CategoryChips({
   counts,
   density = 'lg',
 }: CategoryChipsProps) {
-  const padding = density === 'sm' ? '7px 12px' : '9px 16px'
-  const fontSize = density === 'sm' ? 12.5 : 13.5
+  const densityClass =
+    density === 'sm'
+      ? 'py-1.75 px-3 text-[12.5px]'
+      : 'py-2.25 px-4 text-[13.5px]'
 
   return (
     <div className="flex gap-1.5 flex-wrap">
       {SHOP_CATEGORIES.map((opt) => {
         const isActive = opt.id === active
-        const count = opt.id === null
-          ? Object.values(counts ?? {}).reduce((a, b) => a + b, 0)
-          : counts?.[opt.id]
+        const count =
+          opt.id === null
+            ? Object.values(counts ?? {}).reduce((a, b) => a + b, 0)
+            : counts?.[opt.id]
         return (
           <button
             key={opt.id ?? 'all'}
             type="button"
             onClick={() => onChange(opt.id)}
             className={cn(
-              'inline-flex items-baseline gap-1.5 rounded-full font-sans font-medium whitespace-nowrap transition-colors',
+              'inline-flex items-baseline gap-1.5 rounded-full font-sans font-medium whitespace-nowrap transition-colors tracking-[0.01em]',
+              densityClass,
               isActive
-                ? 'bg-[var(--ink)] text-[var(--paper)] border border-[var(--ink)]'
-                : 'bg-transparent text-[var(--ink)] border border-[var(--hairline)] hover:border-[var(--ink)]',
+                ? 'bg-ink text-paper border border-ink'
+                : 'bg-transparent text-ink border border-hairline hover:border-ink',
             )}
-            style={{ padding, fontSize, letterSpacing: '0.01em' }}
           >
             {opt.label}
             {count != null ? (
               <span
-                className="font-mono"
-                style={{ opacity: isActive ? 0.7 : 0.5, fontSize: 11 }}
+                className={cn(
+                  'font-mono text-[11px]',
+                  isActive ? 'opacity-70' : 'opacity-50',
+                )}
               >
                 {count}
               </span>

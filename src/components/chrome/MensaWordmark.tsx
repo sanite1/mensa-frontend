@@ -7,11 +7,13 @@
 //   tone="paper" — inverts the lockup to white for dark surfaces (footer)
 //   tone="ink"   — turns the lockup black for high-contrast contexts
 //
-// `MensaWordmark` and `MensaLockup` both render the same asset. They exist
-// as separate components so call sites read true to intent and so that we
-// can later split into two assets if the brand ever ships a wordmark-only
-// SVG (without the "PERIOD PRODUCTS" sub-mark).
+// Height is a runtime number; we route it through a CSS variable so the
+// Tailwind arbitrary-value class can consume it without surfacing as a
+// regular inline style. The tone filter likewise becomes a Tailwind class
+// per option so there's no inline style on the path here.
 // ─────────────────────────────────────────────────────────────────────────
+import type { CSSProperties } from 'react'
+import { cn } from '@/lib/utils'
 import logoSrc from '@/assets/mensa_logo.png'
 
 interface MensaMarkProps {
@@ -20,10 +22,17 @@ interface MensaMarkProps {
   className?: string
 }
 
-const TONE_FILTER: Record<NonNullable<MensaMarkProps['tone']>, string | undefined> = {
-  pink: undefined,
-  paper: 'brightness(0) invert(1)',
-  ink: 'brightness(0)',
+// Arbitrary-value filter classes so Tailwind generates exactly the
+// declaration we need (no `filter-` theme token covers these brand-
+// specific filter recipes).
+const TONE_FILTER_CLASS: Record<NonNullable<MensaMarkProps['tone']>, string> = {
+  pink: '',
+  paper: 'filter-[brightness(0)_invert(1)]',
+  ink: 'filter-[brightness(0)]',
+}
+
+function buildVars(height: number): CSSProperties {
+  return { '--mark-h': `${height}px` } as CSSProperties
 }
 
 export function MensaWordmark({ height = 28, tone = 'pink', className }: MensaMarkProps) {
@@ -31,13 +40,8 @@ export function MensaWordmark({ height = 28, tone = 'pink', className }: MensaMa
     <img
       src={logoSrc}
       alt="Mensa"
-      className={className}
-      style={{
-        height,
-        width: 'auto',
-        display: 'inline-block',
-        filter: TONE_FILTER[tone],
-      }}
+      className={cn('inline-block w-auto h-(--mark-h)', TONE_FILTER_CLASS[tone], className)}
+      style={buildVars(height)}
     />
   )
 }
@@ -47,13 +51,8 @@ export function MensaLockup({ height = 64, tone = 'pink', className }: MensaMark
     <img
       src={logoSrc}
       alt="Mensa Period Products"
-      className={className}
-      style={{
-        height,
-        width: 'auto',
-        display: 'inline-block',
-        filter: TONE_FILTER[tone],
-      }}
+      className={cn('inline-block w-auto h-(--mark-h)', TONE_FILTER_CLASS[tone], className)}
+      style={buildVars(height)}
     />
   )
 }

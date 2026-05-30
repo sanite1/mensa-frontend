@@ -33,7 +33,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
     .toUpperCase()
 
   return (
-    <header className="h-[68px] bg-paper border-b border-hairline flex items-center justify-between px-4 md:px-6 lg:px-8">
+    <header className="h-17 bg-paper border-b border-hairline flex items-center justify-between px-4 md:px-6 lg:px-8">
       {/* Mobile hamburger */}
       <button
         type="button"
@@ -54,13 +54,10 @@ export function Topbar({ onMenuClick }: TopbarProps) {
             type="button"
             className="inline-flex items-center gap-2.5 h-10 px-2 md:px-3 hover:bg-cream rounded-none"
           >
-            <span
-              className="inline-flex items-center justify-center h-8 w-8 bg-ink text-paper font-medium"
-              style={{ fontSize: 12, letterSpacing: '0.04em' }}
-            >
+            <span className="inline-flex items-center justify-center h-8 w-8 bg-ink text-paper font-medium text-[12px] tracking-[0.04em]">
               {initials}
             </span>
-            <span className="hidden sm:inline text-[14px] text-ink truncate max-w-[160px]">
+            <span className="hidden sm:inline text-[14px] text-ink truncate max-w-40">
               {user.name}
             </span>
             <ChevronDown size={16} strokeWidth={1.6} className="text-mute" />
@@ -68,7 +65,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="bg-paper border border-hairline rounded-none min-w-[220px]"
+          className="bg-paper border border-hairline rounded-none min-w-55"
         >
           <DropdownMenuLabel className="text-mute uppercase text-[11px] tracking-[0.12em] font-medium">
             Signed in as

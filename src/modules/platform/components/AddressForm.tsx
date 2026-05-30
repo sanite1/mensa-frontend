@@ -13,22 +13,11 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useEffect } from 'react'
-import {
-  type Control,
-  type FieldValues,
-  type Path,
-  type UseFormReturn,
-} from 'react-hook-form'
+import { type Control, type FieldValues, type Path, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Input } from '@/components/ui/input'
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { NG_STATES } from '@/data/nigerian-states'
 import { cn } from '@/lib/utils'
 
@@ -44,21 +33,10 @@ export const addressSchema = z.object({
     .string()
     .trim()
     .regex(/^\+?[0-9\s-]{7,20}$/, 'Please enter a valid phone number.'),
-  line1: z
-    .string()
-    .trim()
-    .min(2, 'Street address is required.')
-    .max(200, 'Address is too long.'),
+  line1: z.string().trim().min(2, 'Street address is required.').max(200, 'Address is too long.'),
   line2: z.string().trim().max(200).optional().or(z.literal('')),
-  city: z
-    .string()
-    .trim()
-    .min(2, 'City is required.')
-    .max(80, 'City is too long.'),
-  state: z
-    .string()
-    .trim()
-    .min(2, 'Please pick a delivery state.'),
+  city: z.string().trim().min(2, 'City is required.').max(80, 'City is too long.'),
+  state: z.string().trim().min(2, 'Please pick a delivery state.'),
   country: z.string().trim().default('NG'),
   postal: z.string().trim().max(20).optional().or(z.literal('')),
 })
@@ -111,9 +89,7 @@ export function AddressForm<TFieldValues extends FieldValues>({
 
   return (
     <section className={cn('flex flex-col gap-5', className)}>
-      {heading ? (
-        <h2 className="font-serif italic text-2xl text-[var(--ink)]">{heading}</h2>
-      ) : null}
+      {heading ? <h2 className="font-serif italic text-2xl text-(--ink)">{heading}</h2> : null}
 
       <FormField
         control={control}
@@ -136,12 +112,7 @@ export function AddressForm<TFieldValues extends FieldValues>({
           <FormItem className="space-y-2">
             <FormLabel>Phone</FormLabel>
             <FormControl>
-              <Input
-                type="tel"
-                autoComplete="tel"
-                placeholder="0801 234 5678"
-                {...field}
-              />
+              <Input type="tel" autoComplete="tel" placeholder="0801 234 5678" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -155,11 +126,7 @@ export function AddressForm<TFieldValues extends FieldValues>({
           <FormItem className="space-y-2">
             <FormLabel>Street address</FormLabel>
             <FormControl>
-              <Input
-                autoComplete="address-line1"
-                placeholder="12 Aminu Kano Crescent"
-                {...field}
-              />
+              <Input autoComplete="address-line1" placeholder="12 Aminu Kano Crescent" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -173,11 +140,7 @@ export function AddressForm<TFieldValues extends FieldValues>({
           <FormItem className="space-y-2">
             <FormLabel>Apartment, suite, etc. (optional)</FormLabel>
             <FormControl>
-              <Input
-                autoComplete="address-line2"
-                placeholder="Flat 4B"
-                {...field}
-              />
+              <Input autoComplete="address-line2" placeholder="Flat 4B" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -192,11 +155,7 @@ export function AddressForm<TFieldValues extends FieldValues>({
             <FormItem className="space-y-2">
               <FormLabel>City</FormLabel>
               <FormControl>
-                <Input
-                  autoComplete="address-level2"
-                  placeholder="Wuse 2"
-                  {...field}
-                />
+                <Input autoComplete="address-level2" placeholder="Wuse 2" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -211,7 +170,7 @@ export function AddressForm<TFieldValues extends FieldValues>({
               <FormControl>
                 <select
                   autoComplete="address-level1"
-                  className="flex h-11 w-full border border-[var(--hairline)] bg-[var(--paper)] px-3 py-2 text-[15px] text-[var(--ink)] focus-visible:outline-none focus-visible:border-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-11 w-full border border-(--hairline) bg-(--paper) px-3 py-2 text-[15px] text-(--ink) focus-visible:outline-none focus-visible:border-(--ink) disabled:cursor-not-allowed disabled:opacity-50"
                   {...field}
                   value={field.value ?? ''}
                 >
@@ -238,11 +197,7 @@ export function AddressForm<TFieldValues extends FieldValues>({
           <FormItem className="space-y-2">
             <FormLabel>Postal code (optional)</FormLabel>
             <FormControl>
-              <Input
-                autoComplete="postal-code"
-                placeholder="900288"
-                {...field}
-              />
+              <Input autoComplete="postal-code" placeholder="900288" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
