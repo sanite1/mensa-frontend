@@ -21,6 +21,7 @@ import {
 import { useRegister } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
+import { useSeo } from '@/lib/seo'
 
 const registerSchema = z.object({
   name: z
@@ -39,6 +40,7 @@ const registerSchema = z.object({
 type RegisterValues = z.infer<typeof registerSchema>
 
 export function RegisterPage() {
+  useSeo({ title: 'Create an account', noindex: true })
   const register = useRegister()
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),

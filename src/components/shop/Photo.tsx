@@ -25,6 +25,11 @@ interface PhotoProps {
   label?: ReactNode
   sublabel?: ReactNode
   className?: string
+  /** Loading hint. Defaults to `lazy` because most Photos render below
+   *  the fold (PDP gallery thumbs, shop grid past the first row, journal
+   *  cards, etc.). Pass `eager` for above-the-fold hero usage so the
+   *  largest contentful paint isn't deferred. */
+  priority?: 'lazy' | 'eager'
 }
 
 // Stripe needs a gradient that has no theme token equivalent, so it lives
@@ -48,6 +53,7 @@ export function Photo({
   label,
   sublabel,
   className,
+  priority = 'lazy',
 }: PhotoProps) {
   // Dark tones need light text; everything else uses graphite.
   const textColorClass =
@@ -74,6 +80,9 @@ export function Photo({
         <img
           src={src}
           alt={alt}
+          loading={priority}
+          decoding="async"
+          fetchPriority={priority === 'eager' ? 'high' : 'auto'}
           className="absolute inset-0 h-full w-full object-cover object-(--photo-obj)"
         />
       ) : (

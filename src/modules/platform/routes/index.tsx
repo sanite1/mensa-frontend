@@ -13,6 +13,19 @@ import { OrdersPage } from '@/modules/platform/pages/account/OrdersPage'
 import { OrderDetailPage } from '@/modules/platform/pages/account/OrderDetailPage'
 import { AddressesPage } from '@/modules/platform/pages/account/AddressesPage'
 import { AboutPage } from '@/modules/platform/pages/AboutPage'
+import { PartnershipsPage } from '@/modules/platform/pages/PartnershipsPage'
+import { ContactPage } from '@/modules/platform/pages/ContactPage'
+import { ReturnsPage } from '@/modules/platform/pages/ReturnsPage'
+import { NotFoundPage } from '@/modules/platform/pages/NotFoundPage'
+import { EducationIndexPage } from '@/modules/platform/pages/education/EducationIndexPage'
+import { EducationPostPage } from '@/modules/platform/pages/education/EducationPostPage'
+import { PrivacyPage } from '@/modules/platform/pages/legal/PrivacyPage'
+import { TermsPage } from '@/modules/platform/pages/legal/TermsPage'
+import { JournalIndexPage } from '@/modules/platform/pages/journal/JournalIndexPage'
+import { JournalPostPage } from '@/modules/platform/pages/journal/JournalPostPage'
+import { PartnerOnboardingPage } from '@/modules/platform/pages/partner/PartnerOnboardingPage'
+import { PartnerDashboardPage } from '@/modules/platform/pages/partner/PartnerDashboardPage'
+import { RoleGuard } from '@/components/auth/RoleGuard'
 import { ShopPage } from '@/modules/platform/pages/shop/ShopPage'
 import { ProductDetailPage } from '@/modules/platform/pages/shop/ProductDetailPage'
 import { CheckoutPage } from '@/modules/platform/pages/checkout/CheckoutPage'
@@ -56,6 +69,25 @@ export function PlatformRoutes() {
 
           {/* Editorial / brand pages */}
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/partnerships" element={<PartnershipsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/returns" element={<ReturnsPage />} />
+          <Route path="/journal" element={<JournalIndexPage />} />
+          <Route path="/journal/:slug" element={<JournalPostPage />} />
+          <Route path="/education" element={<EducationIndexPage />} />
+          <Route path="/education/:slug" element={<EducationPostPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+
+          {/* Partner onboarding (token-gated public) */}
+          <Route path="/partner/onboarding" element={<PartnerOnboardingPage />} />
+
+          {/* Partner dashboard (auth + role gate) */}
+          <Route element={<AuthGuard />}>
+            <Route element={<RoleGuard allowed={['partner']} />}>
+              <Route path="/partner" element={<PartnerDashboardPage />} />
+            </Route>
+          </Route>
 
           {/* Phase 3 — Checkout (guest-friendly, no auth guard) */}
           <Route path="/checkout" element={<CheckoutPage />} />
@@ -64,11 +96,9 @@ export function PlatformRoutes() {
             element={<ConfirmationPage />}
           />
           <Route path="/orders/track" element={<TrackOrderPage />} />
-          {/* Phase 5 — Content */}
-          {/* <Route path="/journal" element={<Journal />} /> */}
-          {/* <Route path="/education" element={<Education />} /> */}
-          {/* <Route path="/about" element={<About />} /> */}
-          {/* <Route path="/partnerships" element={<Partnerships />} /> */}
+
+          {/* 404 catch-all — must be last so it only matches unrouted paths. */}
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

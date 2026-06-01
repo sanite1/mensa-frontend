@@ -6,8 +6,10 @@
 // `features.freeDelivery` flag so it can be flipped on per environment
 // without editing this file.
 // ─────────────────────────────────────────────────────────────────────────
+import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
-import { IconChevronDown, IconTruck } from './icons'
+import { IconTruck } from './icons'
+import { CurrencyPicker } from './CurrencyPicker'
 import {
   features,
   FREE_DELIVERY_THRESHOLD_LABEL,
@@ -38,22 +40,23 @@ export function UtilityStrip({ compact = false }: UtilityStripProps) {
         )}
       </div>
       <div className="flex items-center gap-5.5 opacity-85">
-        <a href="/track" className="text-inherit no-underline">
+        <Link
+          to="/orders/track"
+          className="text-inherit no-underline inline-flex items-center gap-1.5 hover:opacity-100"
+        >
+          <IconTruck size={13} />
           Track order
-        </a>
+        </Link>
         <span className="opacity-40">·</span>
-        <a href="/help" className="text-inherit no-underline">
+        <Link to="/contact" className="text-inherit no-underline hover:opacity-100">
           Help
-        </a>
+        </Link>
         <span className="opacity-40">·</span>
-        <span className="inline-flex items-center gap-1.5">
-          <span
-            aria-hidden
-            className="inline-block rounded-px w-3.5 h-2.25 bg-ng-flag"
-          />
-          NGN
-          <IconChevronDown size={12} />
-        </span>
+        {/* Display currency picker. NGN is canonical — switching here
+            converts displayed prices via static FX rates, but checkout
+            still charges in NGN. CheckoutPage shows a note when the
+            selected currency is not NGN. */}
+        <CurrencyPicker tone="dark" />
       </div>
     </div>
   )

@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+# Auth, account, checkout and partner-portal surfaces are noindex'd per page
+# via meta tags. We deny them here as belt-and-braces for bots that ignore
+# meta directives.
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /account
+Disallow: /account/
+Disallow: /checkout
+Disallow: /checkout/
+Disallow: /partner
+Disallow: /partner/
+
+Sitemap: https://mensaproducts.com/sitemap.xml

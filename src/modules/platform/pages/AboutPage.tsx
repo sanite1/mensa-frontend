@@ -19,8 +19,14 @@ import { IconArrowRight } from '@/components/chrome/icons'
 
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
 import { BigNumber } from '@/components/editorial/BigNumber'
+import { useSeo } from '@/lib/seo'
 
 export function AboutPage() {
+  useSeo({
+    title: 'Our story',
+    description:
+      'Mensa was founded by Kehinde Abereoje in Abuja — a public-health advocate who turned a visit to a displaced persons camp at fourteen into a workshop, a brand, and an answer to period poverty in Nigeria.',
+  })
   return (
     <div className="bg-paper">
       <Hero />
@@ -66,9 +72,9 @@ function Hero() {
         {/* Byline */}
         <div className="mt-8 lg:mt-12 pt-5 flex flex-wrap items-baseline justify-between gap-5 border-t border-hairline">
           <p className="m-0 max-w-140 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-            A letter from <span className="text-ink font-semibold">Adaeze &amp; Tomilola</span>,
-            founders, about the women in our lives we kept failing, and the small workshop we built
-            to stop.
+            A letter from <span className="text-ink font-semibold">Kehinde Abereoje</span>,
+            founder, about the girls in displaced communities she first met at fourteen, and
+            the small workshop she built to do something about it.
           </p>
           <a
             href="#origin"
@@ -182,24 +188,25 @@ function Origin() {
         <div>
           <SectionEyebrow>The why</SectionEyebrow>
           <h2 className="m-0 mt-5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-[1.02] tracking-[-0.02em] text-ink">
-            How a question at a wedding became Mensa.
+            How a visit at fourteen became Mensa.
           </h2>
           <p className="mt-6 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
-            In 2022, our founder Adaeze stood at her cousin's wedding in Asaba and watched four
-            women in turn ask the same panicked question: <em>"Do you have a spare pad?"</em>. None
-            of them did. All of them paid ₦1,200 at the hotel boutique for the same disposable they
-            had been wearing for ten years.
+            Kehinde was fourteen when she first visited an internally displaced persons camp near
+            her home in Abuja. The thing that stayed with her was small and unsexy: girls were
+            missing school, every month, because they had no period products. The maths was
+            grim. One pack of disposable pads costs more than a day's food.
           </p>
           <p className="mt-3.5 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
-            That was the moment. Six months later, the first prototype of the Mensa period pant was
-            sewn in a twelve square metre room in Wuse II. Two years later, we have sold to 5,200
-            women across 27 Nigerian states. Same room. Same answer to the same question.
+            At sixteen she co-founded Purple Pact with her twin brother. The Initiative has
+            since reached more than ten thousand women and girls across Nigeria. Mensa is the
+            answer to a question Purple Pact kept running into: how do you actually solve period
+            poverty when single-use pads cost what they cost? You make a product that lasts five
+            years.
           </p>
-          <blockquote className="mt-8 py-5 px-6 bg-cream-soft border-l-0.75 border-coral font-display italic font-medium text-[clamp(18px,2.5vw,24px)] leading-[1.3] text-ink">
-            "We did not want to build a brand. We wanted to answer a question. The brand happened
-            because the answer worked."
+          <blockquote className="mt-8 py-5 px-6 bg-cream-soft border-l-[3px] border-coral font-display italic font-medium text-[clamp(18px,2.5vw,24px)] leading-[1.3] text-ink">
+            "We wanted to tackle some of the little things that have the biggest consequences."
             <footer className="mt-3 text-[13px] font-sans not-italic font-medium text-graphite">
-              Adaeze Okafor, founder
+              Kehinde Abereoje, founder
             </footer>
           </blockquote>
         </div>
@@ -262,72 +269,116 @@ function MStat({ n, label }: { n: string; label: string }) {
 }
 
 // ─── FOUNDERS ────────────────────────────────────────────────────
+// ─── FOUNDER ─────────────────────────────────────────────────────
+// Single founder editorial layout: large environmental portrait on the
+// left, eyebrow + name + role + narrative + a row of stat tiles + a
+// pull-quote on the right. Tuned for one person rather than a team grid.
 function Founders() {
-  const people = [
-    {
-      name: 'Adaeze Okafor',
-      role: 'Founder · product',
-      bio: 'Former product designer at Andela. Sewed the first Mensa pant herself.',
-    },
-    {
-      name: 'Tomilola Adeyemi',
-      role: 'Co-founder · brand',
-      bio: 'Built marketing teams at Sendcloud and Helium Health. Writes every word.',
-    },
-    {
-      name: 'Halima Bello',
-      role: 'Head of production',
-      bio: 'Tailored for two decades before joining. Runs the Wuse II workshop.',
-    },
-    {
-      name: 'Mariam Suleiman',
-      role: 'Lead designer',
-      bio: 'Pattern cutter trained at YABATECH. Owns every gusset.',
-    },
+  const milestones: { n: string; label: string }[] = [
+    { n: '14', label: 'Years old at the IDP camp that started it all' },
+    { n: '10K+', label: 'Women and girls reached through Purple Pact' },
+    { n: '2024', label: 'Diana Award recipient · gender equality' },
   ]
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-cream">
       <div className="mb-10 lg:mb-12">
-        <SectionEyebrow>The team</SectionEyebrow>
-        <h2 className="m-0 mt-3.5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-none tracking-[-0.02em] text-ink">
-          Twelve women in Abuja.
-          <br />
-          Four of them named here.
+        <SectionEyebrow>The founder</SectionEyebrow>
+        <h2 className="m-0 mt-3.5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-[1.05] tracking-tight text-ink max-w-200">
+          One founder. One workshop in Abuja. One question that would not let her go.
         </h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
-        {people.map((p) => (
-          <div key={p.name}>
-            <Photo tone="cream" ratio="4/5" label={`PORTRAIT · ${p.name.toUpperCase()}`} />
-            <div className="mt-3.5">
-              <div className="m-0 font-display italic font-semibold text-[19px] text-ink">
-                {p.name}
-              </div>
-              <div className="mt-1 font-mono text-[11px] tracking-[0.12em] text-coral uppercase">
-                {p.role}
-              </div>
-              <p className="m-0 mt-2.5 text-graphite text-[13.5px] leading-normal">{p.bio}</p>
-            </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-16 items-start">
+        {/* Portrait */}
+        <div className="relative">
+          <Photo
+            tone="blush"
+            ratio="4/5"
+            label="PORTRAIT · KEHINDE ABEREOJE"
+            sublabel="natural light, founder at the studio"
+          />
+          <div className="absolute left-4 top-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper/95 backdrop-blur-[4px] text-ink font-mono text-[10.5px] tracking-widest uppercase">
+            <span className="w-1.5 h-1.5 rounded-full bg-coral" />
+            Founder · Abuja
           </div>
-        ))}
+        </div>
+
+        {/* Narrative */}
+        <div className="flex flex-col gap-7">
+          <div>
+            <div className="font-mono text-[11px] tracking-widest text-coral uppercase font-medium">
+              Founder · CEO · Public-health advocate
+            </div>
+            <h3 className="m-0 mt-3 font-display italic font-semibold text-[clamp(32px,5vw,52px)] leading-[1.02] tracking-tight text-ink">
+              Kehinde Abereoje.
+            </h3>
+          </div>
+
+          <div className="flex flex-col gap-4 text-graphite text-[clamp(15px,1.8vw,17.5px)] leading-[1.65]">
+            <p className="m-0">
+              Kehinde grew up in Abuja and started Purple Pact Initiative with her twin brother
+              at sixteen, after a visit to an internally displaced persons camp put a number on
+              what girls actually lose to period poverty: school days, dignity, options.
+            </p>
+            <p className="m-0">
+              Purple Pact has since reached more than ten thousand women and girls across
+              Nigeria. Mensa is the for-profit arm that funds the work, the answer to a question
+              that kept coming up in the field: cheaper pads do not exist. Better pads do.
+            </p>
+            <p className="m-0">
+              Kehinde holds a BSc in Public Health from Babcock University and an MPhil in
+              Population Health Sciences from the University of Cambridge, where she was a
+              Mastercard Foundation Scholar. She received the Diana Award in 2024 for her work
+              on gender equality.
+            </p>
+          </div>
+
+          {/* Stat tiles */}
+          <div className="grid grid-cols-3 gap-3 lg:gap-4 mt-2">
+            {milestones.map((m) => (
+              <div
+                key={m.label}
+                className="border-t border-hairline pt-4 flex flex-col gap-1.5"
+              >
+                <BigNumber color="var(--berry)" size={36}>
+                  {m.n}
+                </BigNumber>
+                <p className="m-0 text-[12px] leading-snug text-graphite">{m.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Pull quote */}
+          <blockquote className="m-0 mt-4 py-5 px-6 bg-paper border-l-[3px] border-coral font-display italic font-medium text-[clamp(17px,2.2vw,22px)] leading-[1.35] text-ink">
+            "People shouldn't have to fight for, and receive a pat on the back for, fighting for
+            gender equality. It's something that's just meant to happen."
+            <footer className="mt-3 text-[12px] font-sans not-italic font-medium text-mute uppercase tracking-widest">
+              Kehinde, on the Diana Award
+            </footer>
+          </blockquote>
+        </div>
       </div>
     </section>
   )
 }
 
 // ─── IMPACT ──────────────────────────────────────────────────────
+// Per-product math instead of unverifiable adoption numbers — these
+// are facts about how the product itself is built, not customer
+// counts. Once we have real shipping data and consented partner
+// rosters, swap in those numbers and pull a quarterly-update note.
 function Impact() {
-  const stats = [
-    { n: '5,200+', label: 'Women served' },
-    { n: '1.2M+', label: 'Disposables avoided' },
-    { n: '4,800', label: 'kg of waste diverted' },
-    { n: '27 / 36', label: 'Nigerian states reached' },
+  const stats: { n: string; label: string }[] = [
+    { n: '5 yrs', label: 'Useful life of one pair, washed every cycle' },
+    { n: '250+', label: 'Disposable pads one pair replaces over five years' },
+    { n: '4 layers', label: 'Wicking, absorbent core, leakproof membrane, outer shell' },
+    { n: '100%', label: 'Designed, cut and sewn in our Wuse II studio' },
   ]
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-ink text-paper">
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12 lg:mb-14">
         <div>
-          <SectionEyebrow color="var(--pink)">Our impact, in plain numbers</SectionEyebrow>
+          <SectionEyebrow color="var(--pink)">The product, in plain numbers</SectionEyebrow>
           <h2 className="m-0 mt-5 font-display italic font-semibold text-[clamp(32px,6vw,80px)] leading-none tracking-tight text-paper">
             The marketing is
             <br />
@@ -335,8 +386,8 @@ function Impact() {
           </h2>
         </div>
         <div className="max-w-80 text-paper/65 text-[14px] leading-[1.55]">
-          Updated every quarter from our own production and shipping numbers. We will never round
-          up.
+          Facts about how each pair is built. When we have real shipping numbers worth
+          publishing, this is where we will publish them.
         </div>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -344,7 +395,7 @@ function Impact() {
           <div key={s.label} className="pt-5 lg:pt-7 border-t border-paper/20">
             <span
               className={cn(
-                'block font-display italic font-semibold text-[clamp(48px,6vw,88px)] leading-[0.9] tracking-[-0.02em]',
+                'block font-display italic font-semibold text-[clamp(40px,5vw,72px)] leading-[0.95] tracking-tight',
                 i === 0 ? 'text-pink' : 'text-paper',
               )}
             >
@@ -353,17 +404,6 @@ function Impact() {
             <div className="mt-3 text-paper/75 text-[14px] leading-normal">{s.label}</div>
           </div>
         ))}
-      </div>
-      <div className="mt-12 lg:mt-14 p-5 lg:p-6 flex flex-wrap items-center justify-between gap-4 bg-paper/5">
-        <div className="text-paper/85 text-[14px] leading-[1.55]">
-          For every five pack sold we donate one reusable pad to a girl in our partner schools.
-        </div>
-        <Link
-          to="/partnerships"
-          className="inline-flex items-center gap-2 no-underline text-paper text-[14px] font-medium border-b border-paper pb-0.5"
-        >
-          See our partner schools <IconArrowRight size={14} />
-        </Link>
       </div>
     </section>
   )
@@ -399,7 +439,7 @@ function PressStrip() {
         </div>
       </div>
       <blockquote className="m-0 mt-7 lg:mt-10 max-w-230 font-display italic font-medium text-[clamp(20px,3vw,32px)] leading-[1.3] text-ink tracking-[-0.012em]">
-        "The Lagos D2C brand quietly building Nigeria's most considered period care product."
+        "The Abuja D2C brand quietly building Nigeria's most considered period care product."
         <footer className="mt-2.5 text-[12px] font-sans font-medium text-mute not-italic tracking-[0.08em] uppercase">
           TechCabal · February 2025
         </footer>
@@ -409,26 +449,26 @@ function PressStrip() {
 }
 
 // ─── PARTNERSHIPS ────────────────────────────────────────────────
+// Pre-launch, so no real partner roster to name. We describe what each
+// tier of partnership offers and point readers at /partnerships to
+// apply. Swap in named partners + counts once they are real and have
+// consented to being credited.
 function Partnerships() {
-  const blocks = [
+  const blocks: { kind: string; offer: string; copy: string }[] = [
     {
       kind: 'Schools',
-      items: [
-        'Loyola Jesuit College, Abuja',
-        'British International, Lagos',
-        'Faith Academy, Wuse',
-      ],
-      n: 18,
+      offer: 'Educator kits, in-class sessions',
+      copy: 'Bulk per student. Educator kits and a forty-minute classroom session included, with a payment plan that fits a term.',
     },
     {
       kind: 'NGOs',
-      items: ['Girl Effect Nigeria', 'Slum2School', 'Project Pink Blue'],
-      n: 9,
+      offer: 'Programme pricing',
+      copy: 'Distribution drives at cost-friendly rates. Volume rebates against measurable reach.',
     },
     {
       kind: 'Councils',
-      items: ['AMAC, FCT', 'Eti-Osa LGA, Lagos', 'Ife Central, Osun'],
-      n: 6,
+      offer: 'Net 30 on verified POs',
+      copy: 'Net 30 terms for verified council orders. Multi-tranche fulfilment across LGAs.',
     },
   ]
   return (
@@ -436,12 +476,13 @@ function Partnerships() {
       <div className="mb-10 lg:mb-12 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
         <div>
           <SectionEyebrow>Partnerships</SectionEyebrow>
-          <h2 className="m-0 mt-3.5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-[1.02] tracking-[-0.02em] text-ink">
+          <h2 className="m-0 mt-3.5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-[1.02] tracking-tight text-ink">
             Schools, NGOs, councils.
           </h2>
           <p className="mt-4 max-w-135 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-            We sell direct to women, and we partner with organisations who want every girl in their
-            care to have reusable period products from her first cycle.
+            We sell direct to women, and we partner with organisations who want every girl in
+            their care to have reusable period products from her first cycle. Programmes are
+            opening up now — applications are reviewed within five working days.
           </p>
         </div>
         <Button asChild variant="ink" size="lg">
@@ -450,24 +491,14 @@ function Partnerships() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {blocks.map((p) => (
-          <div key={p.kind} className="bg-cream-soft p-6 flex flex-col gap-4">
-            <div className="flex items-baseline justify-between">
-              <div className="font-display italic font-semibold text-[22px] text-ink">{p.kind}</div>
-              <BigNumber color="var(--pink)" size={36}>
-                {p.n}
-              </BigNumber>
+          <div key={p.kind} className="bg-cream-soft p-6 flex flex-col gap-3 h-full">
+            <div className="font-mono text-[10.5px] tracking-widest uppercase text-mute font-medium">
+              {p.kind}
             </div>
-            <ul className="m-0 p-0 list-none flex flex-col gap-2">
-              {p.items.map((it) => (
-                <li key={it} className="flex items-baseline gap-2 text-[14px] text-graphite">
-                  <span className="text-coral text-[11px]">+</span>
-                  {it}
-                </li>
-              ))}
-              <li className="flex items-baseline gap-2 text-[13px] text-mute">
-                ...and {p.n - 3} more
-              </li>
-            </ul>
+            <div className="font-display italic font-semibold text-[22px] leading-tight tracking-tight text-ink">
+              {p.offer}
+            </div>
+            <p className="m-0 t-body-s text-graphite leading-relaxed">{p.copy}</p>
           </div>
         ))}
       </div>

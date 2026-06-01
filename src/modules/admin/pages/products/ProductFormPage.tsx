@@ -112,6 +112,7 @@ const formSchema = z.object({
   trustLines: z.array(trustLineSchema).default([]),
   isActive: z.boolean().default(true),
   isSoldOut: z.boolean().default(false),
+  showSizeGuide: z.boolean().default(false),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -155,6 +156,7 @@ const defaultValues: FormValues = {
   trustLines: [],
   isActive: true,
   isSoldOut: false,
+  showSizeGuide: false,
 }
 
 // ── SKU helper ─────────────────────────────────────────────────────────
@@ -303,6 +305,7 @@ export function ProductFormPage() {
       })),
       isActive: product.isActive,
       isSoldOut: product.isSoldOut ?? false,
+      showSizeGuide: product.showSizeGuide ?? false,
     })
     slugManuallyEdited.current = true
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -365,6 +368,7 @@ export function ProductFormPage() {
         : {},
       isActive: values.isActive,
       isSoldOut: values.isSoldOut,
+      showSizeGuide: values.showSizeGuide,
     }
 
     if (isEditMode && slugParam) {
@@ -567,6 +571,30 @@ export function ProductFormPage() {
                     <FormDescription>
                       Forces a sold out treatment on the storefront without touching the variant
                       stock counts.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="showSizeGuide"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Size guide link</FormLabel>
+                    <FormControl>
+                      <SelectInput
+                        value={field.value ? 'show' : 'hide'}
+                        onChange={(v) => field.onChange(v === 'show')}
+                        options={[
+                          { value: 'hide', label: 'Do not show on this product' },
+                          { value: 'show', label: 'Show size guide link on the PDP' },
+                        ]}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Adds a small Size guide link above the size picker that opens the pants
+                      size chart. Turn on for pants and bundles; leave off for pads, books, etc.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -1294,7 +1322,13 @@ function ImagesSection({
                   i === 0 ? 'ring-2 ring-pink' : '',
                 )}
               >
-                <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
+                <img
+                  src={img.url}
+                  alt={img.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
               </div>
               {i === 0 ? (
                 <span className="absolute top-2 left-2 px-2 py-0.5 bg-pink text-paper font-mono uppercase tracking-widest text-[9px] rounded-xs">
@@ -1459,7 +1493,13 @@ function PendingImagesSection({
                     i === 0 ? 'ring-2 ring-pink' : '',
                   )}
                 >
-                  <img src={p.preview} alt={p.file.name} className="w-full h-full object-cover" />
+                  <img
+                    src={p.preview}
+                    alt={p.file.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 {i === 0 ? (
                   <span className="absolute top-2 left-2 px-2 py-0.5 bg-pink text-paper font-mono uppercase tracking-widest text-[9px] rounded-xs">

@@ -26,19 +26,25 @@ const buttonVariants = cva(
         primary: 'bg-pink text-paper hover:bg-pink-deep',
         ink: 'bg-ink text-paper hover:bg-graphite',
         coral: 'bg-coral text-paper hover:opacity-90',
-        // Arbitrary-value CSS vars deliberately. Theme-token classes
-        // (`text-ink` + `hover:text-paper`) lost a specificity tie in
-        // production builds — base `text-ink` won on hover, leaving
-        // ink text on the ink hover background (invisible). Arbitrary
-        // value syntax forces Tailwind to mint a unique class name per
-        // utility, so the cascade resolves correctly.
+        // The hover text colour MUST win — without the trailing `!` the
+        // base `text-ink` keeps applying on :hover and you get ink text
+        // on an ink hover background (invisible button). This has bitten
+        // us twice across both arbitrary-var and theme-token spellings;
+        // do not remove the `!` unless you've manually verified hover in
+        // the browser.
         secondary:
-          'border border-(--ink) bg-transparent text-(--ink) hover:bg-(--ink) hover:text-(--paper)',
+          'border border-ink bg-transparent text-ink hover:bg-ink hover:text-paper!',
         soft: 'bg-blush text-berry hover:bg-blush-2',
         ghost: 'bg-transparent text-ink hover:bg-cream',
       },
+      // NOTE: CVA silently produces *no* class when a `size`/`variant` value
+      // is not in this map — buttons render with browser-default styling and
+      // it looks like the component is broken. Every size used anywhere in
+      // the app MUST be defined here. `md` is a friendly alias for `default`
+      // and the most-used size in the codebase; keep them in sync.
       size: {
         sm: 'h-9 px-4 text-[13px]',
+        md: 'h-11 px-6 text-sm',
         default: 'h-11 px-6 text-sm',
         lg: 'h-12 px-8 text-[15px]',
         icon: 'h-10 w-10',

@@ -40,12 +40,15 @@ import { AddressForm, addressSchema } from '@/modules/platform/components/Addres
 import { useCartStore } from '@/lib/network/stores/cart.store'
 import { useAuthStore } from '@/lib/network/stores/auth.store'
 import { useInitializeCheckout, useShippingRates } from '@/lib/network/api/order.api'
+import { getReferralCode } from '@/lib/referral'
 import { useApplyDiscount } from '@/lib/network/api/discount.api'
 import type { ApplyDiscountResponseData } from '@/lib/network/types/discount.types'
 import { useAddMyAddress, useMyAddresses } from '@/lib/network/api/user.api'
 import type { UserAddress } from '@/lib/network/types/user.types'
 import type { ShippingMethod, ShippingRateOption } from '@/lib/network/types/order.types'
-import { formatNaira } from '@/lib/utils'
+import { useFormatPrice } from '@/lib/currency'
+import { useCurrencyStore } from '@/lib/network/stores/currency.store'
+import { useSeo } from '@/lib/seo'
 import { handleApiError } from '@/lib/network/helpers/handleApiError'
 
 // ── Form schema ───────────────────────────────────────────────────
@@ -69,6 +72,7 @@ type CheckoutValues = z.infer<typeof checkoutSchema>
 // ── Page ──────────────────────────────────────────────────────────
 
 export function CheckoutPage() {
+  useSeo({ title: 'Checkout', noindex: true })
   const navigate = useNavigate()
   const lines = useCartStore((s) => s.lines)
   const subtotalKobo = useCartStore((s) => s.subtotal())
@@ -78,6 +82,12 @@ export function CheckoutPage() {
   const [selectedMethod, setSelectedMethod] = useState<ShippingMethod | null>(null)
   const [paying, setPaying] = useState(false)
   const initialize = useInitializeCheckout()
+  const formatPrice = useFormatPrice()
+  const displayCurrency = useCurrencyStore((s) => s.currency)
+  // Paystack always charges in NGN. If the visitor is viewing a different
+  // currency we surface a small note so the bank-statement amount in NGN
+  // doesn't catch them off guard.
+  const showCurrencyNote = displayCurrency !== 'NGN'
 
   // ── Discount state ───────────────────────────────────────────────
   //
@@ -246,6 +256,7 @@ export function CheckoutPage() {
 
     setPaying(true)
     try {
+      const referralCode = getReferralCode() ?? undefined
       const init = await initialize.mutateAsync({
         lines: lines.map((l) => ({
           productId: l.productId,
@@ -258,6 +269,7 @@ export function CheckoutPage() {
         shippingMethod: selectedRate.method,
         shippingAmount: selectedRate.amount,
         discountCode: applied?.code,
+        referralCode,
       })
       const data = init.data
       if (!data || !data.authorizationUrl) {
@@ -494,7 +506,7 @@ export function CheckoutPage() {
                             </div>
                           </div>
                           <div className="text-[15px] text-(--ink) font-semibold">
-                            {formatNaira(opt.amount)}
+                            {formatPrice(opt.amount)}
                           </div>
                         </div>
                       </button>
@@ -525,7 +537,7 @@ export function CheckoutPage() {
                       </div>
                     </div>
                     <div className="text-[14px] text-(--ink) font-semibold whitespace-nowrap">
-                      {formatNaira(l.unitPrice * l.qty)}
+                      {formatPrice(l.unitPrice * l.qty)}
                     </div>
                   </li>
                 ))}
@@ -569,16 +581,16 @@ export function CheckoutPage() {
               <div className="border-t border-(--hairline-soft) pt-4 flex flex-col gap-2 text-[14px] text-(--graphite)">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>{formatNaira(subtotalKobo)}</span>
+                  <span>{formatPrice(subtotalKobo)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span>{selectedRate ? formatNaira(shippingKobo) : '—'}</span>
+                  <span>{selectedRate ? formatPrice(shippingKobo) : '—'}</span>
                 </div>
                 {discountKobo > 0 ? (
                   <div className="flex justify-between text-(--berry)">
                     <span>Discount ({applied?.code})</span>
-                    <span>− {formatNaira(discountKobo)}</span>
+                    <span>− {formatPrice(discountKobo)}</span>
                   </div>
                 ) : null}
               </div>
@@ -588,9 +600,22 @@ export function CheckoutPage() {
                   Total
                 </span>
                 <span className="text-2xl font-semibold text-(--ink)">
-                  {formatNaira(totalKobo)}
+                  {formatPrice(totalKobo)}
                 </span>
               </div>
+
+              {/* NGN-charge note. Paystack only handles Mensa's NGN account,
+                  so a visitor browsing in USD / GBP / EUR needs to know what
+                  will actually hit their card. */}
+              {showCurrencyNote ? (
+                <div className="bg-cream-soft border border-hairline-soft px-3.5 py-2.5 text-[12px] text-graphite leading-relaxed">
+                  Prices shown in {displayCurrency}. Your card will be charged{' '}
+                  <span className="text-ink font-medium">
+                    ₦{(totalKobo / 100).toLocaleString('en-NG')}
+                  </span>{' '}
+                  in NGN by Paystack. Your bank may apply a foreign-exchange fee.
+                </div>
+              ) : null}
 
               <Button
                 type="submit"
@@ -601,7 +626,7 @@ export function CheckoutPage() {
               >
                 {paying || initialize.isPending
                   ? 'Opening Paystack…'
-                  : `Pay ${formatNaira(totalKobo)}`}
+                  : `Pay ${formatPrice(totalKobo)}`}
               </Button>
 
               <p className="text-[12px] text-(--mute) text-center">

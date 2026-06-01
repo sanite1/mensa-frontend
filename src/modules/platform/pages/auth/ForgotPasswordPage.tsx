@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/form'
 import { useForgotPassword } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
+import { useSeo } from '@/lib/seo'
 
 const forgotSchema = z.object({
   email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
@@ -29,6 +30,7 @@ const forgotSchema = z.object({
 type ForgotValues = z.infer<typeof forgotSchema>
 
 export function ForgotPasswordPage() {
+  useSeo({ title: 'Reset your password', noindex: true })
   const forgot = useForgotPassword()
   const form = useForm<ForgotValues>({
     resolver: zodResolver(forgotSchema),

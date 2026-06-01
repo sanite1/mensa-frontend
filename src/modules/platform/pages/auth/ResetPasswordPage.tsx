@@ -20,6 +20,7 @@ import {
 import { useResetPassword } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
+import { useSeo } from '@/lib/seo'
 
 const resetSchema = z
   .object({
@@ -38,6 +39,7 @@ const resetSchema = z
 type ResetValues = z.infer<typeof resetSchema>
 
 export function ResetPasswordPage() {
+  useSeo({ title: 'Set a new password', noindex: true })
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token') ?? ''
   const reset = useResetPassword()

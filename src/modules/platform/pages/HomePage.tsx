@@ -23,17 +23,23 @@ import {
 } from '@/components/chrome/icons'
 import { Photo } from '@/components/shop/Photo'
 import { ShopCard } from '@/components/shop/ShopCard'
-import { Stars } from '@/components/shop/Stars'
 
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
 import { BigNumber } from '@/components/editorial/BigNumber'
 import { TrustStrip } from '@/components/editorial/TrustStrip'
-import { Testimonial } from '@/components/editorial/Testimonial'
 
 import { useProducts } from '@/lib/network/api/product.api'
 import type { Product } from '@/lib/network/types/product.types'
+import { useContentList } from '@/lib/network/api/content.api'
+import type { ContentPost } from '@/lib/network/types/content.types'
+import { useSeo } from '@/lib/seo'
 
 export function HomePage() {
+  useSeo({
+    title: 'Reusable period products, made in Abuja',
+    description:
+      "Switch once. Wear for five years. Mensa makes reusable period pants and pads designed for Nigerian women. One pack replaces hundreds of disposables.",
+  })
   return (
     <div className="bg-paper">
       <Hero />
@@ -42,9 +48,7 @@ export function HomePage() {
       <ShopTeaser />
       <BrandStory />
       <Education />
-      <Testimonials />
       <Journal />
-      <NewsletterCta />
     </div>
   )
 }
@@ -79,9 +83,9 @@ function Hero() {
 
         <TrustStrip
           items={[
-            { icon: <Stars value={4.8} size={13} />, text: '4.8 · 312 reviews' },
+            { text: 'Designed & sewn in Abuja' },
             { text: 'Free delivery in Abuja & Lagos' },
-            { text: '30-day comfort guarantee' },
+            { text: 'Five-year wear · replaces 250+ disposables' },
           ]}
         />
       </div>
@@ -94,6 +98,7 @@ function Hero() {
             label="HERO · pack of three"
             sublabel="warm tones, soft light"
             className="h-full!"
+            priority="eager"
           />
         </div>
       </div>
@@ -104,10 +109,10 @@ function Hero() {
 // ─── MICRO TRUST ─────────────────────────────────────────────────
 function MicroTrust() {
   const items: { icon: React.ReactNode; text: string }[] = [
-    { icon: <IconTruck size={18} />, text: 'Nationwide delivery · 2-5 days' },
+    { icon: <IconTruck size={18} />, text: 'Nationwide delivery · 2 to 5 days' },
     { icon: <IconShield size={18} />, text: '30 day comfort guarantee' },
     { icon: <IconLeaf size={18} />, text: '5 year lifetime, zero monthly cost' },
-    { icon: <IconUser size={18} />, text: '5,200+ Nigerian women, and counting' },
+    { icon: <IconUser size={18} />, text: 'Designed & sewn in Abuja' },
   ]
   return (
     <section className="px-5 md:px-10 lg:px-16 py-5 bg-ink text-paper">
@@ -229,7 +234,7 @@ function BrandStory() {
               <Link to="/about">Read our story</Link>
             </Button>
             <div className="text-[13px] text-berry opacity-70">
-              5,200+ women served · 1.2M+ disposables avoided
+              Designed in Abuja · five years per pair
             </div>
           </div>
         </div>
@@ -320,72 +325,24 @@ function EduCard({ tone, eyebrow, title, body, price }: EduCardProps) {
   )
 }
 
-// ─── TESTIMONIALS ───────────────────────────────────────────────
-function Testimonials() {
-  return (
-    <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-cream">
-      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-8 mb-12 lg:mb-14">
-        <div>
-          <SectionEyebrow>Voices</SectionEyebrow>
-          <h2 className="m-0 mt-5 text-ink font-display italic font-semibold text-[clamp(32px,5vw,64px)] leading-none tracking-[-0.02em]">
-            4.8 stars. 312 reviews. One sentence each.
-          </h2>
-        </div>
-        <div className="flex items-center gap-3 self-start lg:self-auto">
-          <Stars value={4.8} size={20} />
-          <span className="text-ink text-[15px] font-medium">4.8 from 312 verified buyers</span>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Testimonial
-          tone="paper"
-          quote="Honestly, I bought them out of curiosity. Three months in and I've thrown away one packet of pads. One."
-          name="Chioma A."
-          location="Lagos"
-        />
-        <Testimonial
-          tone="blush"
-          quote="The first month I wore them, I forgot I was on my period twice. That's the only review I can give."
-          name="Aisha M."
-          location="Abuja"
-        />
-        <Testimonial
-          tone="paper"
-          quote="I teach a girls' health class. The FLOW cards did in 40 minutes what my slides hadn't in three weeks."
-          name="Mrs. Okonkwo"
-          location="Enugu · educator"
-        />
-      </div>
-    </section>
-  )
-}
-
 // ─── JOURNAL ────────────────────────────────────────────────────
+// Reads the three most recent published journal posts straight from
+// the CMS. When the editorial team publishes a new post in the admin
+// Content tab (kind=journal, status=published) it shows up here on
+// the next page load — no code change required.
 function Journal() {
-  const articles = [
-    {
-      eyebrow: 'EDUCATION · 6 MIN READ',
-      title:
-        "What schools in Abuja get wrong about menstrual health, and what we're doing about it.",
-      img: 'stripe' as const,
-    },
-    {
-      eyebrow: 'PRODUCT · 4 MIN READ',
-      title: 'A teardown of our four-layer construction (and why the wicking layer matters most).',
-      img: 'cream' as const,
-    },
-    {
-      eyebrow: 'COMMUNITY · 8 MIN READ',
-      title: 'Five women in Kano on what reusable pants changed about their month.',
-      img: 'blush' as const,
-    },
-  ]
+  const query = useContentList({ kind: 'journal', pageSize: 3 })
+  const articles: ContentPost[] = query.data?.data?.items ?? []
+  // Stable placeholder tones per slug so the home page doesn't reshuffle
+  // between renders before cover images are uploaded.
+  const tones: Array<'stripe' | 'cream' | 'blush'> = ['stripe', 'cream', 'blush']
+
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-paper">
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-8 mb-12 lg:mb-14">
         <div>
           <SectionEyebrow>From the journal</SectionEyebrow>
-          <h2 className="m-0 mt-5 text-ink font-display italic font-semibold text-[clamp(28px,4vw,56px)] leading-[1.02] tracking-[-0.02em]">
+          <h2 className="m-0 mt-5 text-ink font-display italic font-semibold text-[clamp(28px,4vw,56px)] leading-[1.02] tracking-tight">
             Plain spoken writing about periods, products and the people we serve.
           </h2>
         </div>
@@ -396,71 +353,42 @@ function Journal() {
           All articles <IconArrowRight size={16} />
         </Link>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {articles.map((a, i) => (
-          <article key={i} className="flex flex-col gap-4">
-            <Photo tone={a.img} ratio="3/2" label={`ARTICLE ${i + 1} · editorial image`} />
-            <div className="font-mono text-[11px] tracking-[0.12em] text-mute uppercase">
-              {a.eyebrow}
-            </div>
-            <h3 className="m-0 font-display italic font-semibold text-[24px] leading-[1.15] tracking-[-0.012em] text-ink">
-              {a.title}
-            </h3>
-          </article>
-        ))}
-      </div>
+      {articles.length === 0 ? (
+        <p className="t-body-s text-mute">New articles coming soon.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {articles.map((a: ContentPost, i: number) => (
+            <Link
+              key={a._id}
+              to={`/journal/${a.slug}`}
+              className="flex flex-col gap-4 no-underline group"
+            >
+              {a.coverImage?.url ? (
+                <img
+                  src={a.coverImage.url}
+                  alt={a.coverImage.alt || a.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full aspect-3/2 object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                />
+              ) : (
+                <Photo
+                  tone={tones[i % tones.length]}
+                  ratio="3/2"
+                  label={`${a.category.toUpperCase()} · editorial image`}
+                />
+              )}
+              <div className="font-mono text-[11px] tracking-widest text-mute uppercase">
+                {a.category} · {a.readMinutes} min read
+              </div>
+              <h3 className="m-0 font-display italic font-semibold text-[24px] leading-tight tracking-tight text-ink group-hover:text-pink-deep transition-colors">
+                {a.title}
+              </h3>
+            </Link>
+          ))}
+        </div>
+      )}
     </section>
   )
 }
 
-// ─── NEWSLETTER CTA ─────────────────────────────────────────────
-function NewsletterCta() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const data = new FormData(e.currentTarget)
-    const email = String(data.get('email') ?? '').trim()
-    if (!email) return
-    // Newsletter module ships later; acknowledge so the form never feels
-    // broken even though no backend is wired yet.
-    import('sonner').then((m) =>
-      m.toast.success('Thanks. We will be in touch when the journal goes live.'),
-    )
-    e.currentTarget.reset()
-  }
-  return (
-    <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-24 bg-blush">
-      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-20 items-center">
-        <div>
-          <SectionEyebrow color="var(--berry)">The newsletter</SectionEyebrow>
-          <h2 className="m-0 mt-5 font-display italic font-semibold text-[clamp(40px,6vw,80px)] leading-none tracking-tight text-berry">
-            Stay close to the cycle.
-          </h2>
-          <p className="mt-5 max-w-130 text-[17px] leading-[1.55] text-berry opacity-85">
-            Period care, restocks, the occasional 10% off, and the journal in your inbox. Two emails
-            a month, maximum. Unsubscribe in one click.
-          </p>
-        </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <div className="flex border border-berry bg-paper/40">
-            <input
-              name="email"
-              type="email"
-              required
-              placeholder="your@email.com"
-              className="flex-1 bg-transparent border-none outline-none px-5 py-4 font-sans text-[15px] text-berry"
-            />
-            <button
-              type="submit"
-              className="px-7 bg-ink text-paper border-0 font-sans font-medium text-[14px] tracking-[0.02em] cursor-pointer"
-            >
-              Subscribe
-            </button>
-          </div>
-          <div className="text-[13px] text-berry opacity-70">
-            By subscribing you agree to our privacy policy. No spam, ever.
-          </div>
-        </form>
-      </div>
-    </section>
-  )
-}

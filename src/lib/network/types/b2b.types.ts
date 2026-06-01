@@ -11,10 +11,15 @@ export interface B2BOrg {
   contactName: string
   contactEmail: string
   contactPhone: string
+  notes?: string
   verificationStatus: B2BVerificationStatus
+  verificationNote?: string
+  verifiedAt?: string | null
+  verifiedBy?: string | null
   creditTerms: CreditTerms
-  pricingTierId?: string
+  pricingTierId?: string | null
   createdAt: string
+  updatedAt: string
 }
 
 export interface QuoteRequest {

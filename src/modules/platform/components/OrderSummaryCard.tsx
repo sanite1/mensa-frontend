@@ -13,7 +13,8 @@
 
 import type { Order } from '@/lib/network/types/order.types'
 import { Photo } from '@/components/shop/Photo'
-import { formatNaira, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { useFormatPrice } from '@/lib/currency'
 
 const PAYMENT_LABELS: Record<Order['payment']['status'], string> = {
   pending: 'Awaiting payment',
@@ -46,6 +47,7 @@ function statusToneClass(payment: Order['payment']['status']): string {
 }
 
 export function OrderSummaryCard({ order }: { order: Order }) {
+  const formatPrice = useFormatPrice()
   return (
     <div className="border border-hairline bg-paper p-6 lg:p-8 flex flex-col gap-6">
       {/* Status chips */}
@@ -83,7 +85,7 @@ export function OrderSummaryCard({ order }: { order: Order }) {
               <div className="text-[13px] text-(--graphite) mt-1">Qty {l.qty}</div>
             </div>
             <div className="text-[14px] text-(--ink) font-semibold whitespace-nowrap">
-              {formatNaira(l.lineTotal)}
+              {formatPrice(l.lineTotal)}
             </div>
           </li>
         ))}
@@ -93,16 +95,16 @@ export function OrderSummaryCard({ order }: { order: Order }) {
       <div className="flex flex-col gap-2 text-[14px] text-(--graphite) border-t border-(--hairline-soft) pt-4">
         <div className="flex justify-between">
           <span>Subtotal</span>
-          <span>{formatNaira(order.totals.subtotal)}</span>
+          <span>{formatPrice(order.totals.subtotal)}</span>
         </div>
         <div className="flex justify-between">
           <span>Shipping</span>
-          <span>{formatNaira(order.totals.shipping)}</span>
+          <span>{formatPrice(order.totals.shipping)}</span>
         </div>
         {order.totals.discount > 0 ? (
           <div className="flex justify-between">
             <span>Discount</span>
-            <span>− {formatNaira(order.totals.discount)}</span>
+            <span>− {formatPrice(order.totals.discount)}</span>
           </div>
         ) : null}
       </div>
@@ -111,7 +113,7 @@ export function OrderSummaryCard({ order }: { order: Order }) {
           Total
         </span>
         <span className="text-2xl font-semibold text-(--ink)">
-          {formatNaira(order.totals.total)}
+          {formatPrice(order.totals.total)}
         </span>
       </div>
 

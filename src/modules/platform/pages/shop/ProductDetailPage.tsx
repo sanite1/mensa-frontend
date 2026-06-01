@@ -11,12 +11,14 @@ import { Link, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useProduct } from '@/lib/network/api/product.api'
 import { useCartStore } from '@/lib/network/stores/cart.store'
-import { formatNaira } from '@/lib/utils'
+import { useFormatPrice } from '@/lib/currency'
 import { Button } from '@/components/ui/button'
 import { Gallery } from '@/components/shop/Gallery'
 import { OptionPicker } from '@/components/shop/OptionPicker'
 import { Stars } from '@/components/shop/Stars'
 import { TrustLine } from '@/components/shop/TrustLine'
+import { SizeGuideDialog } from '@/components/shop/SizeGuideDialog'
+import { useSeo } from '@/lib/seo'
 import {
   IconArrowRight,
   IconCheck,
@@ -70,6 +72,20 @@ function ProductView({ product }: { product: Product }) {
   const images = product.images ?? []
   const metadata = product.metadata ?? {}
   const optionTypes = product.optionTypes ?? []
+
+  // SEO — use the hero image if we have one, otherwise the brand
+  // default falls through from the index.html default. (heroImage
+  // itself is declared further down for the rest of the view.)
+  const seoHeroUrl = (images.find((img) => img.order === 0) ?? images[0])?.url
+  useSeo({
+    title: product.name,
+    description:
+      product.shortDescription ||
+      product.subheading ||
+      `${product.name} — reusable period products designed in Abuja.`,
+    image: seoHeroUrl,
+    type: 'product',
+  })
 
   // Default selection: pull options from the first in stock variant.
   const defaultOptions = useMemo(() => {
@@ -232,6 +248,7 @@ function ProductInfo({
   const metadata = product.metadata ?? {}
   const variants = product.variants ?? []
   const optionTypes = product.optionTypes ?? []
+  const formatPrice = useFormatPrice()
   return (
     <div className="flex flex-col gap-5 md:gap-6">
       {/* Title block */}
@@ -270,15 +287,15 @@ function ProductInfo({
       {/* Price */}
       <div className="flex items-baseline gap-3 flex-wrap">
         <div className="font-sans text-ink font-semibold text-[32px] leading-none">
-          {formatNaira(effectivePrice)}
+          {formatPrice(effectivePrice)}
         </div>
         {hasSale ? (
           <>
             <div className="text-[16px] text-mute line-through">
-              {formatNaira(product.basePriceB2C)}
+              {formatPrice(product.basePriceB2C)}
             </div>
             <span className="font-sans px-2 py-0.5 rounded-sm bg-blush text-berry text-[11.5px] font-medium tracking-[0.04em]">
-              Save {formatNaira(savings)}
+              Save {formatPrice(savings)}
             </span>
           </>
         ) : null}
@@ -292,14 +309,16 @@ function ProductInfo({
       {/* Option picker (Size, Color, etc.) */}
       {optionTypes.length > 0 ? (
         <div>
-          {optionTypes.includes('Size') ? (
+          {product.showSizeGuide ? (
             <div className="flex items-baseline justify-end mb-3">
-              <Link
-                to="/size-guide"
-                className="text-[13px] font-medium text-(--ink) border-b border-(--ink) pb-0.5 no-underline"
-              >
-                Size guide →
-              </Link>
+              <SizeGuideDialog>
+                <button
+                  type="button"
+                  className="text-[13px] font-medium text-ink border-b border-ink pb-0.5 hover:text-pink-deep hover:border-pink-deep cursor-pointer bg-transparent"
+                >
+                  Size guide →
+                </button>
+              </SizeGuideDialog>
             </div>
           ) : null}
           <OptionPicker
@@ -375,7 +394,7 @@ function ProductInfo({
             'Out of stock'
           ) : (
             <>
-              Add to bag · {formatNaira(effectivePrice * qty)}
+              Add to bag · {formatPrice(effectivePrice * qty)}
               <IconArrowRight size={16} />
             </>
           )}
@@ -474,12 +493,13 @@ function StickyAddToBag({
   isOutOfStock: boolean
   onAddToBag: () => void
 }) {
+  const formatPrice = useFormatPrice()
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-(--paper) border-t border-(--hairline) px-4 py-3 flex items-center gap-3">
       <div className="flex flex-col flex-1 min-w-0">
         <span className="text-[13px] truncate text-(--graphite)">{product.name}</span>
         <span className="text-[15px] font-semibold text-(--ink)">
-          {formatNaira(effectivePrice)}
+          {formatPrice(effectivePrice)}
         </span>
       </div>
       <Button

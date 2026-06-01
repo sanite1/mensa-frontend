@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useCartStore, type CartLine } from '@/lib/network/stores/cart.store'
-import { formatNaira } from '@/lib/utils'
+import { useFormatPrice } from '@/lib/currency'
 import { Photo } from '@/components/shop/Photo'
 import { IconArrowRight, IconClose } from '@/components/chrome/icons'
 import { features, FREE_DELIVERY_THRESHOLD_KOBO } from '@/lib/features'
@@ -134,6 +134,7 @@ function FreeDeliveryStrip({
   remaining: number
   subtotal: number
 }) {
+  const formatPrice = useFormatPrice()
   const progress = qualifies
     ? 100
     : Math.min(100, Math.max(0, (subtotal / FREE_DELIVERY_THRESHOLD_KOBO) * 100))
@@ -151,7 +152,7 @@ function FreeDeliveryStrip({
             Free delivery in Abuja &amp; Lagos <strong className="text-ink">unlocked.</strong>
           </>
         ) : (
-          <>Add {formatNaira(remaining)} more for free delivery in Abuja &amp; Lagos.</>
+          <>Add {formatPrice(remaining)} more for free delivery in Abuja &amp; Lagos.</>
         )}
       </div>
       <div className="mt-2 w-full overflow-hidden h-1 bg-hairline-soft">
@@ -172,6 +173,7 @@ function LineItem({ line }: { line: CartLine }) {
   const updateQty = useCartStore((s) => s.updateQty)
   const removeItem = useCartStore((s) => s.removeItem)
   const closeDrawer = useCartStore((s) => s.closeDrawer)
+  const formatPrice = useFormatPrice()
 
   return (
     <li className="flex gap-4 px-6 py-5 border-b border-hairline-soft">
@@ -229,7 +231,7 @@ function LineItem({ line }: { line: CartLine }) {
           </div>
 
           <div className="font-sans text-ink font-semibold text-[15px]">
-            {formatNaira(line.unitPrice * line.qty)}
+            {formatPrice(line.unitPrice * line.qty)}
           </div>
         </div>
       </div>
@@ -265,6 +267,7 @@ function CartFooter({
   subtotalKobo: number
   onContinueShopping: () => void
 }) {
+  const formatPrice = useFormatPrice()
   return (
     <div className="border-t border-hairline-soft px-6 py-5 bg-paper">
       <div className="flex items-baseline justify-between mb-1">
@@ -272,7 +275,7 @@ function CartFooter({
           Subtotal
         </span>
         <span className="font-sans text-ink font-semibold text-[22px]">
-          {formatNaira(subtotalKobo)}
+          {formatPrice(subtotalKobo)}
         </span>
       </div>
       <div className="t-body-s text-mute mb-4">Shipping and discounts calculated at checkout.</div>

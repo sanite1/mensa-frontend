@@ -5,39 +5,98 @@
 //   < md: stacked, accordion columns
 // ─────────────────────────────────────────────────────────────────────────
 import { Link } from 'react-router-dom'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
+import { useSubscribeToNewsletter } from '@/lib/network/api/newsletter.api'
 import { MensaLockup } from './MensaWordmark'
-import { IconPin, IconMail, IconPhone, IconChevronDown } from './icons'
+import {
+  IconPin,
+  IconMail,
+  IconPhone,
+  IconChevronDown,
+  IconInstagram,
+  IconTikTok,
+} from './icons'
 
-const SHOP = [
-  'Period pants',
-  'Reusable pads',
-  'The starter set',
-  'Education',
-  'Gift cards',
-  'Shop all',
+const SOCIALS = [
+  {
+    label: 'Instagram',
+    handle: '@shopmensa_',
+    href: 'https://instagram.com/shopmensa_',
+    Icon: IconInstagram,
+  },
+  {
+    label: 'TikTok',
+    handle: '@shopmensa',
+    href: 'https://www.tiktok.com/@shopmensa',
+    Icon: IconTikTok,
+  },
+] as const
+
+/** Footer link spec. `href` lands at an existing route when we have one,
+ *  otherwise it stays at `/` until that surface ships — so the footer
+ *  never sends a visitor to a 404. */
+type FootLink = { label: string; href: string }
+
+const SHOP: FootLink[] = [
+  { label: 'Period pants', href: '/shop?category=pants' },
+  { label: 'Reusable pads', href: '/shop?category=pads' },
+  { label: 'The starter set', href: '/shop?category=bundles' },
+  { label: 'Education', href: '/shop?category=education' },
 ]
-const LEARN = ['My Cycoo guide', 'FLOW Game', 'Care instructions', 'Size guide', 'Journal', 'FAQ']
-const COMPANY = ['Our story', 'Sustainability', 'Partnerships', 'Press', 'Stockists', 'Careers']
-const HELP = ['Track order', 'Shipping', 'Returns', 'Contact us', 'Privacy', 'Terms']
-const SHOP_LEARN_COMPACT = [
-  'Period pants',
-  'Reusable pads',
-  'The starter set',
-  'FLOW Game',
-  'My Cycoo',
-  'Care instructions',
-  'Size guide',
+const LEARN: FootLink[] = [
+  { label: 'Education library', href: '/education' },
+  { label: 'My Cycoo guide', href: '/shop?category=education' },
+  { label: 'FLOW Game', href: '/shop?category=education' },
+  { label: 'Journal', href: '/journal' },
 ]
-const COMPANY_HELP_COMPACT = [
-  'Our story',
-  'Sustainability',
-  'Partnerships',
-  'Track order',
-  'Shipping',
-  'Returns',
-  'Contact us',
+const COMPANY: FootLink[] = [
+  { label: 'Our story', href: '/about' },
+  { label: 'Partnerships', href: '/partnerships' },
+]
+const HELP: FootLink[] = [
+  { label: 'Track order', href: '/orders/track' },
+  { label: 'Returns', href: '/returns' },
+  { label: 'Contact us', href: '/contact' },
+  { label: 'Terms', href: '/terms' },
+  { label: 'Privacy', href: '/privacy' },
+]
+const SHOP_LEARN_COMPACT: FootLink[] = [
+  { label: 'Period pants', href: '/shop?category=pants' },
+  { label: 'Reusable pads', href: '/shop?category=pads' },
+  { label: 'The starter set', href: '/shop?category=bundles' },
+  { label: 'Education library', href: '/education' },
+  { label: 'Journal', href: '/journal' },
+]
+const COMPANY_HELP_COMPACT: FootLink[] = [
+  { label: 'Our story', href: '/about' },
+  { label: 'Partnerships', href: '/partnerships' },
+  { label: 'Track order', href: '/orders/track' },
+  { label: 'Returns', href: '/returns' },
+  { label: 'Contact us', href: '/contact' },
+  { label: 'Terms', href: '/terms' },
+  { label: 'Privacy', href: '/privacy' },
+]
+const MOBILE_SHOP: FootLink[] = [
+  { label: 'Period pants', href: '/shop?category=pants' },
+  { label: 'Reusable pads', href: '/shop?category=pads' },
+  { label: 'The starter set', href: '/shop?category=bundles' },
+  { label: 'Education', href: '/shop?category=education' },
+]
+const MOBILE_LEARN: FootLink[] = [
+  { label: 'Education library', href: '/education' },
+  { label: 'Journal', href: '/journal' },
+]
+const MOBILE_COMPANY: FootLink[] = [
+  { label: 'Our story', href: '/about' },
+  { label: 'Partnerships', href: '/partnerships' },
+]
+const MOBILE_HELP: FootLink[] = [
+  { label: 'Track order', href: '/orders/track' },
+  { label: 'Returns', href: '/returns' },
+  { label: 'Contact us', href: '/contact' },
+  { label: 'Terms', href: '/terms' },
+  { label: 'Privacy', href: '/privacy' },
 ]
 
 export function Footer() {
@@ -120,19 +179,10 @@ function MobileFooter() {
       <NewsletterInput mobile />
 
       <div className="mt-7">
-        <Accordion
-          title="Shop"
-          items={['Period pants', 'Reusable pads', 'The starter set', 'Education', 'Gift cards']}
-        />
-        <Accordion
-          title="Learn"
-          items={['My Cycoo guide', 'FLOW Game', 'Care instructions', 'Size guide', 'FAQ']}
-        />
-        <Accordion
-          title="Company"
-          items={['Our story', 'Sustainability', 'Partnerships', 'Press']}
-        />
-        <Accordion title="Help" items={['Track order', 'Shipping', 'Returns', 'Contact us']} />
+        <Accordion title="Shop" items={MOBILE_SHOP} />
+        <Accordion title="Learn" items={MOBILE_LEARN} />
+        <Accordion title="Company" items={MOBILE_COMPANY} />
+        <Accordion title="Help" items={MOBILE_HELP} />
       </div>
 
       {/* Contact */}
@@ -143,19 +193,10 @@ function MobileFooter() {
       </div>
 
       <div className="flex gap-2.5 py-5.5">
-        <SocialDotDark label="IG" />
-        <SocialDotDark label="TT" />
-        <SocialDotDark label="X" />
+        <SocialLinks />
       </div>
 
-      <div className="t-eyebrow mb-2.5 text-white/55">Pay with</div>
-      <div className="flex gap-2 flex-wrap mb-6">
-        <PayChip>Paystack</PayChip>
-        <PayChip>Nomba</PayChip>
-        <PayChip>Bank transfer</PayChip>
-      </div>
-
-      <div className="flex flex-col gap-1 text-[12px] text-white/55">
+      <div className="flex flex-col gap-1 text-[12px] text-white/55 mb-2">
         <div>© 2026 Mensa Period Products</div>
         <div>Designed &amp; made in Nigeria</div>
       </div>
@@ -182,9 +223,41 @@ function NewsletterColumn({ fontSize }: { fontSize: 'lg' | 'md' }) {
 }
 
 function NewsletterInput({ mobile = false }: { mobile?: boolean }) {
+  const [email, setEmail] = useState('')
+  const [done, setDone] = useState(false)
+  const subscribe = useSubscribeToNewsletter()
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const trimmed = email.trim()
+    if (!trimmed) return
+    subscribe.mutate(
+      { email: trimmed, source: 'footer' },
+      {
+        onSuccess: () => {
+          setDone(true)
+          setEmail('')
+        },
+      },
+    )
+  }
+
+  if (done) {
+    return (
+      <div
+        className={cn(
+          'flex items-center text-paper border border-white/30 rounded-md',
+          mobile ? 'py-3 px-3.5 text-[14px]' : 'py-3.5 px-4 text-[15px]',
+        )}
+      >
+        You are on the list. Watch your inbox.
+      </div>
+    )
+  }
+
   return (
     <form
-      onSubmit={(e) => e.preventDefault()}
+      onSubmit={onSubmit}
       className={cn(
         'flex border border-white/30 overflow-hidden rounded-md',
         mobile ? 'max-w-full' : 'max-w-105',
@@ -192,7 +265,11 @@ function NewsletterInput({ mobile = false }: { mobile?: boolean }) {
     >
       <input
         type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         placeholder="your@email.com"
+        autoComplete="email"
         className={cn(
           'flex-1 bg-transparent border-none text-paper outline-none placeholder:text-white/55 font-sans',
           mobile ? 'py-3 px-3.5 text-[14px]' : 'py-3.5 px-4 text-[15px]',
@@ -200,12 +277,13 @@ function NewsletterInput({ mobile = false }: { mobile?: boolean }) {
       />
       <button
         type="submit"
+        disabled={subscribe.isPending}
         className={cn(
-          'bg-pink text-white border-0 cursor-pointer font-sans font-medium hover:bg-pink-deep',
+          'bg-pink text-white border-0 cursor-pointer font-sans font-medium hover:bg-pink-deep disabled:opacity-60 disabled:cursor-default',
           mobile ? 'px-4.5 text-[13px]' : 'px-5.5 text-[14px]',
         )}
       >
-        Subscribe
+        {subscribe.isPending ? '…' : 'Subscribe'}
       </button>
     </form>
   )
@@ -228,20 +306,46 @@ function BrandColumn({ lockupHeight }: { lockupHeight: number }) {
   )
 }
 
-function FootCol({ title, items }: { title: string; items: string[] }) {
+function FootCol({ title, items }: { title: string; items: FootLink[] }) {
   return (
     <div>
       <div className="t-eyebrow mb-4 text-white/55">{title}</div>
       <ul className="m-0 p-0 list-none flex flex-col gap-2.5">
         {items.map((item) => (
-          <li key={item}>
-            <Link to="/" className="text-[14px] text-paper no-underline hover:text-pink">
-              {item}
-            </Link>
+          <li key={item.label}>
+            <FootAnchor href={item.href} className="text-paper hover:text-pink">
+              {item.label}
+            </FootAnchor>
           </li>
         ))}
       </ul>
     </div>
+  )
+}
+
+/** Picks the right element: react-router Link for in-app paths, plain
+ *  <a> for mailto: / tel: / absolute URLs (those can't go through Link). */
+function FootAnchor({
+  href,
+  className,
+  children,
+}: {
+  href: string
+  className?: string
+  children: ReactNode
+}) {
+  const cls = cn('text-[14px] no-underline', className)
+  if (/^(mailto:|tel:|https?:)/.test(href)) {
+    return (
+      <a href={href} className={cls}>
+        {children}
+      </a>
+    )
+  }
+  return (
+    <Link to={href} className={cls}>
+      {children}
+    </Link>
   )
 }
 
@@ -254,23 +358,27 @@ function FootContact({ icon, children }: { icon: ReactNode; children: ReactNode 
   )
 }
 
-function PayChip({ children }: { children: ReactNode }) {
+function SocialLinks() {
   return (
-    <span className="border border-white/20 text-white/85 font-sans rounded-sm py-1.25 px-2.5 text-[11.5px] tracking-[0.04em]">
-      {children}
-    </span>
+    <>
+      {SOCIALS.map(({ label, handle, href, Icon }) => (
+        <a
+          key={label}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${label} ${handle}`}
+          title={`${label} ${handle}`}
+          className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/25 text-paper hover:bg-paper hover:text-ink transition-colors no-underline"
+        >
+          <Icon size={15} />
+        </a>
+      ))}
+    </>
   )
 }
 
-function SocialDotDark({ label }: { label: string }) {
-  return (
-    <span className="inline-flex items-center justify-center rounded-full border border-white/25 text-paper font-sans w-8 h-8 text-[10.5px] font-semibold tracking-[0.04em]">
-      {label}
-    </span>
-  )
-}
-
-function Accordion({ title, items }: { title: string; items: string[] }) {
+function Accordion({ title, items }: { title: string; items: FootLink[] }) {
   return (
     <details className="border-b border-white/12">
       <summary className="list-none cursor-pointer flex items-center justify-between text-paper font-sans font-medium py-4.5 text-[15px]">
@@ -279,10 +387,10 @@ function Accordion({ title, items }: { title: string; items: string[] }) {
       </summary>
       <ul className="list-none m-0 pb-4.5 pl-0 pr-0 pt-0 flex flex-col gap-2.5">
         {items.map((i) => (
-          <li key={i}>
-            <Link to="/" className="text-[14px] text-white/75 no-underline">
-              {i}
-            </Link>
+          <li key={i.label}>
+            <FootAnchor href={i.href} className="text-white/75">
+              {i.label}
+            </FootAnchor>
           </li>
         ))}
       </ul>
@@ -303,16 +411,8 @@ function BottomRow({ density }: { density: 'lg' | 'md' }) {
         <span className="opacity-50">·</span>
         <span>Designed &amp; made in Nigeria</span>
       </div>
-      <div className="flex items-center gap-3.5">
-        <span className="mr-2">Pay with</span>
-        <PayChip>Paystack</PayChip>
-        <PayChip>Nomba</PayChip>
-        <PayChip>Bank transfer</PayChip>
-      </div>
       <div className="flex gap-2">
-        <SocialDotDark label="IG" />
-        <SocialDotDark label="TT" />
-        <SocialDotDark label="X" />
+        <SocialLinks />
       </div>
     </div>
   )

@@ -41,6 +41,7 @@ import {
   useUpdateMyAddress,
 } from '@/lib/network/api/user.api'
 import type { UserAddress } from '@/lib/network/types/user.types'
+import { useSeo } from '@/lib/seo'
 
 // Same shape as the checkout address fieldset, plus an optional label.
 const formSchema = z.object({
@@ -50,6 +51,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>
 
 export function AddressesPage() {
+  useSeo({ title: 'Saved addresses', noindex: true })
   const query = useMyAddresses()
   const addresses: UserAddress[] = query.data?.data?.addresses ?? []
 

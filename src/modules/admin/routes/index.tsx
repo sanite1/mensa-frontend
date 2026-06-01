@@ -12,6 +12,15 @@ import { ProductFormPage } from '@/modules/admin/pages/products/ProductFormPage'
 import { OrdersListPage } from '@/modules/admin/pages/orders/OrdersListPage'
 import { OrderDetailPage } from '@/modules/admin/pages/orders/OrderDetailPage'
 import { DiscountsPage } from '@/modules/admin/pages/discounts/DiscountsPage'
+import { CustomersListPage } from '@/modules/admin/pages/customers/CustomersListPage'
+import { CustomerDetailPage } from '@/modules/admin/pages/customers/CustomerDetailPage'
+import { ContentListPage } from '@/modules/admin/pages/content/ContentListPage'
+import { ContentEditorPage } from '@/modules/admin/pages/content/ContentEditorPage'
+import { NewsletterPage } from '@/modules/admin/pages/newsletter/NewsletterPage'
+import { PartnershipsListPage } from '@/modules/admin/pages/partnerships/PartnershipsListPage'
+import { PartnershipDetailPage } from '@/modules/admin/pages/partnerships/PartnershipDetailPage'
+import { PartnerDetailPage } from '@/modules/admin/pages/partnerships/PartnerDetailPage'
+import { NotFoundPage } from '@/modules/admin/pages/NotFoundPage'
 
 export function AdminRoutes() {
   return (
@@ -42,12 +51,30 @@ export function AdminRoutes() {
 
               {/* Sprint 4 — discounts */}
               <Route path="/discounts" element={<DiscountsPage />} />
-              {/* Sprint 4 — admin proper */}
-              {/* <Route path="/customers" element={<CustomersPage />} /> */}
-              {/* <Route path="/discounts" element={<DiscountsPage />} /> */}
-              {/* <Route path="/content" element={<ContentPage />} /> */}
-              {/* Sprint 6 — B2B */}
-              {/* <Route path="/partnerships" element={<PartnershipsPage />} /> */}
+
+              {/* Sprint 4 — customers */}
+              <Route path="/customers" element={<CustomersListPage />} />
+              <Route path="/customers/:id" element={<CustomerDetailPage />} />
+
+              {/* Sprint 4 — content */}
+              <Route path="/content" element={<ContentListPage />} />
+              <Route path="/content/new" element={<ContentEditorPage />} />
+              <Route path="/content/:id/edit" element={<ContentEditorPage />} />
+
+              {/* Sprint 5 — newsletter */}
+              <Route path="/newsletter" element={<NewsletterPage />} />
+
+              {/* Sprint 6 (MVP) — partnerships */}
+              <Route path="/partnerships" element={<PartnershipsListPage />} />
+              {/* Specific subpath BEFORE the catch-all org route. */}
+              <Route
+                path="/partnerships/individuals/:id"
+                element={<PartnerDetailPage />}
+              />
+              <Route path="/partnerships/:id" element={<PartnershipDetailPage />} />
+
+              {/* 404 catch-all (admins only — unauthed traffic redirected to /login by AuthGuard). */}
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Route>
         </Route>

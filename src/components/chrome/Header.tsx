@@ -29,6 +29,7 @@ import { UtilityStrip } from './UtilityStrip'
 import { NavIconBtn } from './NavIconBtn'
 import { MegaMenu } from './MegaMenu'
 import { MobileDrawer } from './MobileDrawer'
+import { SearchOverlay } from './SearchOverlay'
 import { IconSearch, IconUser, IconBag, IconMenu, IconChevronDown } from './icons'
 
 interface NavLinkSpec {
@@ -39,7 +40,6 @@ interface NavLinkSpec {
 
 const navLinks: NavLinkSpec[] = [
   { label: 'Shop', href: '/shop', hasMenu: true },
-  { label: 'Education', href: '/education', hasMenu: true },
   { label: 'Our Story', href: '/about' },
   { label: 'Partnerships', href: '/partnerships' },
   { label: 'Journal', href: '/journal' },
@@ -50,10 +50,12 @@ const MEGA_CLOSE_DELAY_MS = 120
 export function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const closeTimer = useRef<number | null>(null)
   const totalItems = useCartStore((s) => s.totalItems())
   const openCart = useCartStore((s) => s.openDrawer)
   const cartBadge = totalItems > 0 ? totalItems : null
+  const openSearch = () => setSearchOpen(true)
 
   // Schedule a delayed close — gives the cursor a moment to travel between
   // the Shop link and the menu panel without accidentally dismissing it.
@@ -87,6 +89,7 @@ export function Header() {
         onShopLeave={scheduleMegaClose}
         cartBadge={cartBadge}
         onCartClick={openCart}
+        onSearchClick={openSearch}
       />
 
       {/* TABLET (md → lg) */}
@@ -94,6 +97,7 @@ export function Header() {
         onMenuClick={() => setDrawerOpen(true)}
         cartBadge={cartBadge}
         onCartClick={openCart}
+        onSearchClick={openSearch}
       />
 
       {/* MOBILE (< md) */}
@@ -101,6 +105,7 @@ export function Header() {
         onMenuClick={() => setDrawerOpen(true)}
         cartBadge={cartBadge}
         onCartClick={openCart}
+        onSearchClick={openSearch}
       />
 
       {/* MEGA MENU (desktop only) — absolutely positioned so it overlays the
@@ -122,6 +127,8 @@ export function Header() {
       ) : null}
 
       <MobileDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   )
 }
@@ -145,12 +152,14 @@ function DesktopRow({
   onShopLeave,
   cartBadge,
   onCartClick,
+  onSearchClick,
 }: {
   megaOpen: boolean
   onShopEnter: () => void
   onShopLeave: () => void
   cartBadge: number | null
   onCartClick: () => void
+  onSearchClick: () => void
 }) {
   return (
     <div className="hidden lg:grid items-center grid-cols-[1fr_auto_1fr] py-5 px-12 gap-8">
@@ -171,7 +180,7 @@ function DesktopRow({
         ))}
       </nav>
       <div className="flex items-center justify-end gap-1">
-        <NavIconBtn label="Search" href="/search">
+        <NavIconBtn label="Search" onClick={onSearchClick}>
           <IconSearch />
         </NavIconBtn>
         <AccountIcon />
@@ -237,10 +246,12 @@ function TabletRow({
   onMenuClick,
   cartBadge,
   onCartClick,
+  onSearchClick,
 }: {
   onMenuClick: () => void
   cartBadge: number | null
   onCartClick: () => void
+  onSearchClick: () => void
 }) {
   return (
     <div className="hidden md:grid lg:hidden items-center grid-cols-[auto_1fr_auto] py-4 px-6 gap-4">
@@ -258,7 +269,7 @@ function TabletRow({
         </Link>
       </div>
       <div className="flex items-center gap-1">
-        <NavIconBtn label="Search" href="/search">
+        <NavIconBtn label="Search" onClick={onSearchClick}>
           <IconSearch />
         </NavIconBtn>
         <AccountIcon />
@@ -275,10 +286,12 @@ function MobileRow({
   onMenuClick,
   cartBadge,
   onCartClick,
+  onSearchClick,
 }: {
   onMenuClick: () => void
   cartBadge: number | null
   onCartClick: () => void
+  onSearchClick: () => void
 }) {
   return (
     <div className="grid md:hidden items-center grid-cols-[auto_1fr_auto_auto] py-3 px-3.5 gap-1">
@@ -295,7 +308,7 @@ function MobileRow({
           <MensaWordmark height={26} />
         </Link>
       </div>
-      <NavIconBtn label="Search" href="/search">
+      <NavIconBtn label="Search" onClick={onSearchClick}>
         <IconSearch size={20} />
       </NavIconBtn>
       <NavIconBtn label="Cart" onClick={onCartClick} badge={cartBadge}>

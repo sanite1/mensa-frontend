@@ -126,12 +126,19 @@ img, svg {
   max-width: 100%;
 }
 
-a {
-  color: inherit;
-}
+/* Anchor + button defaults belong in @layer base so Tailwind utilities
+   (which live in @layer utilities) can override them. Without the layer
+   wrapper, an un-layered `a { color: inherit }` beats every utility class
+   regardless of specificity — invisible button text on Link children
+   (<Button asChild><Link/></Button>) was the symptom. Keep them layered. */
+@layer base {
+  a {
+    color: inherit;
+  }
 
-button {
-  font-family: inherit;
+  button {
+    font-family: inherit;
+  }
 }
 
 /* ─── Typography utilities ───────────────────────────────────────────────── */

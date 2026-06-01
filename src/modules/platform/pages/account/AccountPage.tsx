@@ -7,8 +7,10 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/lib/network/stores/auth.store'
 import { useGetMe, useLogout } from '@/lib/network/api/auth.api'
+import { useSeo } from '@/lib/seo'
 
 export function AccountPage() {
+  useSeo({ title: 'Your account', noindex: true })
   const storedUser = useAuthStore((s) => s.user)
   const me = useGetMe()
   const logout = useLogout()
@@ -35,18 +37,13 @@ export function AccountPage() {
         <Field label="Account type" value={prettyRole(user.role)} />
       </div>
 
-      {/* Quick actions — stubs for now */}
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
+      {/* Quick actions */}
+      <div className="mt-10 grid gap-4 md:grid-cols-2">
         <ActionTile title="Orders" body="Track current and past orders." href="/account/orders" />
         <ActionTile
           title="Addresses"
           body="Manage delivery destinations."
           href="/account/addresses"
-        />
-        <ActionTile
-          title="Preferences"
-          body="Email and SMS settings."
-          href="/account/preferences"
         />
       </div>
 

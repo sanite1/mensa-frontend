@@ -20,6 +20,7 @@ import {
 import { useLogin } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
+import { useSeo } from '@/lib/seo'
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
@@ -29,6 +30,7 @@ const loginSchema = z.object({
 type LoginValues = z.infer<typeof loginSchema>
 
 export function LoginPage() {
+  useSeo({ title: 'Sign in', noindex: true })
   const login = useLogin()
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),

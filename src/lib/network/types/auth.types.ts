@@ -3,7 +3,7 @@
 // Mirrors backend src/interfaces/user.interface.ts.
 // ═══════════════════════════════════════════════════════════════
 
-export type UserRole = 'customer' | 'admin' | 'b2b_admin' | 'b2b_member'
+export type UserRole = 'customer' | 'admin' | 'b2b_admin' | 'b2b_member' | 'partner'
 
 /** Safe user shape returned by the backend (never contains secrets). */
 export interface UserData {

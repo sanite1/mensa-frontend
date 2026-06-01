@@ -15,6 +15,7 @@ import {
   Tag,
   FileText,
   Briefcase,
+  Mail,
   X,
   type LucideIcon,
 } from 'lucide-react'
@@ -33,10 +34,11 @@ const items: NavItem[] = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
   { label: 'Orders', href: '/orders', icon: ShoppingBag },
   { label: 'Products', href: '/products', icon: Package },
-  { label: 'Customers', href: '/customers', icon: Users, comingSoon: true },
+  { label: 'Customers', href: '/customers', icon: Users },
   { label: 'Discounts', href: '/discounts', icon: Tag },
-  { label: 'Content', href: '/content', icon: FileText, comingSoon: true },
-  { label: 'Partnerships', href: '/partnerships', icon: Briefcase, comingSoon: true },
+  { label: 'Content', href: '/content', icon: FileText },
+  { label: 'Newsletter', href: '/newsletter', icon: Mail },
+  { label: 'Partnerships', href: '/partnerships', icon: Briefcase },
 ]
 
 interface SidebarProps {

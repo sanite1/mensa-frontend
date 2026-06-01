@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet'
 import { MensaWordmark } from './MensaWordmark'
+import { CurrencyPicker } from './CurrencyPicker'
 import {
   IconClose,
   IconSearch,
@@ -15,7 +16,6 @@ import {
   IconTruck,
   IconMail,
   IconChevronRight,
-  IconChevronDown,
 } from './icons'
 
 interface MobileDrawerProps {
@@ -25,7 +25,6 @@ interface MobileDrawerProps {
 
 const navItems = [
   { label: 'Shop', href: '/shop', sub: true },
-  { label: 'Education', href: '/education', sub: true },
   { label: 'Our Story', href: '/about' },
   { label: 'Partnerships', href: '/partnerships' },
   { label: 'Journal', href: '/journal' },
@@ -87,7 +86,7 @@ export function MobileDrawer({ open, onOpenChange }: MobileDrawerProps) {
           <DrawerLink icon={<IconUser size={18} />} href="/login">
             Login or register
           </DrawerLink>
-          <DrawerLink icon={<IconTruck size={18} />} href="/track">
+          <DrawerLink icon={<IconTruck size={18} />} href="/orders/track">
             Track order
           </DrawerLink>
           <DrawerLink icon={<IconMail size={18} />} href="mailto:hi@mensaproducts.com">
@@ -102,14 +101,7 @@ export function MobileDrawer({ open, onOpenChange }: MobileDrawerProps) {
             <SocialDot label="TT" />
             <SocialDot label="X" />
           </div>
-          <span className="inline-flex items-center gap-1.5 text-[14px] text-(--graphite)">
-            <span
-              aria-hidden
-              className="inline-block rounded-px w-3.5 h-2.25 bg-ng-flag"
-            />
-            Nigeria · NGN
-            <IconChevronDown size={12} />
-          </span>
+          <CurrencyPicker tone="light" />
         </div>
       </SheetContent>
     </Sheet>

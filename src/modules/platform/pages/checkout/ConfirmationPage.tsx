@@ -30,10 +30,13 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { OrderSummaryCard } from '@/modules/platform/components/OrderSummaryCard'
+import { FulfilmentTimeline } from '@/modules/platform/components/FulfilmentTimeline'
 
 import { useAuthStore } from '@/lib/network/stores/auth.store'
 import { useCartStore } from '@/lib/network/stores/cart.store'
 import { useTrackOrder, useVerifyCheckout } from '@/lib/network/api/order.api'
+import { clearReferralCode } from '@/lib/referral'
+import { useSeo } from '@/lib/seo'
 
 const emailSchema = z.object({
   email: z
@@ -47,6 +50,10 @@ type EmailValues = z.infer<typeof emailSchema>
 export function ConfirmationPage() {
   const navigate = useNavigate()
   const { orderNumber } = useParams<{ orderNumber: string }>()
+  useSeo({
+    title: orderNumber ? `Order ${orderNumber}` : 'Order confirmation',
+    noindex: true,
+  })
   const [params, setParams] = useSearchParams()
   const user = useAuthStore((s) => s.user)
   const clearCart = useCartStore((s) => s.clearCart)
@@ -120,9 +127,12 @@ export function ConfirmationPage() {
 
   // Once we have confirmation that the order is paid, drop the cart and
   // discard the stashed email. Both are one-shots tied to this orderNumber.
+  // We also clear the referral code so a future, unrelated purchase doesn't
+  // keep crediting the same partner — re-clicking the link will set it again.
   useEffect(() => {
     if (paymentStatus !== 'paid') return
     clearCart()
+    clearReferralCode()
     if (!orderNumber) return
     try {
       sessionStorage.removeItem(`mensa-checkout-email:${orderNumber}`)
@@ -285,6 +295,13 @@ export function ConfirmationPage() {
           </div>
         ) : null}
       </header>
+
+      {/* Tracking timeline only makes sense once payment has cleared. */}
+      {paid ? (
+        <div className="mb-6">
+          <FulfilmentTimeline order={order} />
+        </div>
+      ) : null}
 
       <OrderSummaryCard order={order} />
 

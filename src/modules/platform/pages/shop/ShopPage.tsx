@@ -9,6 +9,8 @@ import { useProducts } from '@/lib/network/api/product.api'
 import type { Product, ProductCategory } from '@/lib/network/types/product.types'
 import { ShopCard } from '@/components/shop/ShopCard'
 import { CategoryChips } from '@/components/shop/CategoryChips'
+import { SizeGuideDialog } from '@/components/shop/SizeGuideDialog'
+import { useSeo } from '@/lib/seo'
 import { IconArrowRight, IconChevronRight } from '@/components/chrome/icons'
 import { features, FREE_DELIVERY_THRESHOLD_LABEL } from '@/lib/features'
 
@@ -16,10 +18,45 @@ function isCategory(value: string | null): value is ProductCategory {
   return value === 'pants' || value === 'pads' || value === 'bundles' || value === 'education'
 }
 
+const CATEGORY_SEO: Record<ProductCategory, { title: string; description: string }> = {
+  pants: {
+    title: 'Period pants',
+    description:
+      'Reusable Mensa period pants in sizes S to 2XL. Sport, single, three-pack, five-pack. Designed in Abuja, made for Nigerian women.',
+  },
+  pads: {
+    title: 'Reusable pads',
+    description:
+      'Mensa reusable pads in regular and heavy. Replace hundreds of disposables with one set that lasts five years.',
+  },
+  bundles: {
+    title: 'The starter set',
+    description:
+      'Three Mensa period pants plus five reusable pads. Everything you need to switch away from disposables, for less than four months of pads.',
+  },
+  education: {
+    title: 'Education',
+    description:
+      'My Cycoo guide, FLOW Game, and Period Conversations — Mensa education products for classrooms and homes across Nigeria.',
+  },
+}
+
 export function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const categoryParam = searchParams.get('category')
   const activeCategory: ProductCategory | null = isCategory(categoryParam) ? categoryParam : null
+  const seoMeta = activeCategory
+    ? CATEGORY_SEO[activeCategory]
+    : {
+        title: 'Shop',
+        description:
+          'Reusable period pants, reusable pads, the starter set, and our education range. Free delivery in Abuja and Lagos.',
+      }
+  useSeo(seoMeta)
+  // Search term lands here from the navbar SearchOverlay (See all products
+  // link goes to /shop?q=...). Filtering happens client-side against the
+  // already-loaded catalogue since the full list is small.
+  const searchQuery = (searchParams.get('q') ?? '').trim().toLowerCase()
 
   // Fetch all products (no pagination at launch — 8 SKUs).
   const allProductsQuery = useProducts({ pageSize: 60 })
@@ -34,7 +71,18 @@ export function ShopPage() {
     return acc
   }, [products])
 
-  const visible = activeCategory ? products.filter((p) => p.category === activeCategory) : products
+  const visible = useMemo(() => {
+    let next = activeCategory
+      ? products.filter((p) => p.category === activeCategory)
+      : products
+    if (searchQuery) {
+      next = next.filter((p) => {
+        const haystack = `${p.name} ${p.shortDescription ?? ''} ${p.description ?? ''}`.toLowerCase()
+        return haystack.includes(searchQuery)
+      })
+    }
+    return next
+  }, [products, activeCategory, searchQuery])
 
   const setCategory = (next: ProductCategory | null) => {
     const params = new URLSearchParams(searchParams)
@@ -200,12 +248,14 @@ function GridFooter({ total, totalAll }: { total: number; totalAll: number }) {
         Showing {total} of {totalAll} products
       </div>
       <div className="flex items-center gap-4 md:gap-5">
-        <Link
-          to="/size-guide"
-          className="inline-flex items-center gap-2 text-(--ink) no-underline text-[14px] font-medium border-b border-(--ink) pb-0.5"
-        >
-          Read the size guide <IconArrowRight size={14} />
-        </Link>
+        <SizeGuideDialog>
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 text-ink text-[14px] font-medium border-b border-ink pb-0.5 bg-transparent cursor-pointer hover:text-pink-deep hover:border-pink-deep"
+          >
+            Read the size guide <IconArrowRight size={14} />
+          </button>
+        </SizeGuideDialog>
         <Link
           to="/partnerships"
           className="inline-flex items-center gap-2 text-(--ink) no-underline text-[14px] font-medium border-b border-(--ink) pb-0.5"

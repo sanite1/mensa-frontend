@@ -133,6 +133,8 @@ function MainSlide({
         tone={slide.tone}
         ratio={ratio}
         label={!slide.src ? (slide.label ?? 'product') : undefined}
+        // Above-the-fold on PDP. Make sure LCP isn't deferred.
+        priority="eager"
       />
       {badge ? (
         <span

@@ -1,12 +1,18 @@
 // ═══════════════════════════════════════════════════════════════
-// /orders/track — public order lookup by order number + email.
+// /orders/track — public order tracker.
 //
-// Same backend endpoint as the confirmation page (GET /orders/
-// track/:orderNumber?email=...). The email acts as a soft PIN —
-// both fields must match what was used at checkout.
+// Lookup by order number + email (the email is a soft PIN —
+// both must match what was used at checkout). Renders a
+// FulfilmentTimeline that polls live while the order is in
+// flight (paid but not delivered / cancelled).
+//
+// Deep-link form: /orders/track?orderNumber=MS-2026-00001&email=foo@bar.com
+// The orderShipped email links here pre-filled so customers
+// don't retype anything.
 // ═══════════════════════════════════════════════════════════════
 
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -21,49 +27,127 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { OrderSummaryCard } from '@/modules/platform/components/OrderSummaryCard'
+import { FulfilmentTimeline } from '@/modules/platform/components/FulfilmentTimeline'
 
 import { useTrackOrder } from '@/lib/network/api/order.api'
+import { useSeo } from '@/lib/seo'
 
 const lookupSchema = z.object({
   orderNumber: z
     .string()
     .trim()
+    .toUpperCase()
     .regex(/^MS-\d{4}-\d{5}$/, 'Order numbers look like MS-2026-00001.'),
   email: z
     .string()
     .trim()
+    .toLowerCase()
     .min(1, 'Email is required.')
     .email('Please enter the email you used at checkout.'),
 })
 type LookupValues = z.infer<typeof lookupSchema>
 
+const POLL_INTERVAL_MS = 30_000 // 30s while the order is in flight
+
 export function TrackOrderPage() {
-  const [submitted, setSubmitted] = useState<LookupValues | null>(null)
+  useSeo({
+    title: 'Track your order',
+    description:
+      'Look up the status of any Mensa order with your order number and the email you used at checkout.',
+  })
+  const [params, setParams] = useSearchParams()
+
+  // ── Initial values: prefer URL params so the email link works one-tap.
+  const initialOrderNumber = (params.get('orderNumber') ?? '').toUpperCase()
+  const initialEmail = (params.get('email') ?? '').toLowerCase()
+
+  // `submitted` drives the actual query. When the user types and clicks
+  // Find, OR when both URL params are present, we set this.
+  const [submitted, setSubmitted] = useState<LookupValues | null>(() => {
+    const parsed = lookupSchema.safeParse({
+      orderNumber: initialOrderNumber,
+      email: initialEmail,
+    })
+    return parsed.success ? parsed.data : null
+  })
+
   const form = useForm<LookupValues>({
     resolver: zodResolver(lookupSchema),
-    defaultValues: { orderNumber: '', email: '' },
+    defaultValues: {
+      orderNumber: initialOrderNumber,
+      email: initialEmail,
+    },
   })
 
   const trackQuery = useTrackOrder(submitted?.orderNumber, submitted?.email, !!submitted)
   const order = trackQuery.data?.data?.order
 
+  // ── Live polling while the order is still moving ──────────────────
+  // We only poll when we have an order, payment is confirmed, and we
+  // haven't hit a terminal fulfilment state (delivered or cancelled).
+  const isInFlight =
+    !!order &&
+    order.payment.status === 'paid' &&
+    order.fulfilment.status !== 'delivered' &&
+    order.fulfilment.status !== 'cancelled'
+
+  const refetch = trackQuery.refetch
+  useEffect(() => {
+    if (!isInFlight) return
+    const id = setInterval(() => {
+      refetch()
+    }, POLL_INTERVAL_MS)
+    return () => clearInterval(id)
+  }, [isInFlight, refetch])
+
+  // ── Keep the URL in sync with the looked-up values ────────────────
+  // So a refresh / share preserves context, and the back/forward
+  // buttons feel sensible. We only write when the user submits the
+  // form — the initial URL values pass straight through.
+  const lastSyncedRef = useRef<string>('')
+  useEffect(() => {
+    if (!submitted) return
+    const next = `${submitted.orderNumber}|${submitted.email}`
+    if (next === lastSyncedRef.current) return
+    lastSyncedRef.current = next
+    setParams(
+      { orderNumber: submitted.orderNumber, email: submitted.email },
+      { replace: true },
+    )
+  }, [submitted, setParams])
+
   const onSubmit = (values: LookupValues) => setSubmitted(values)
+
+  const onReset = () => {
+    setSubmitted(null)
+    setParams({}, { replace: true })
+    form.reset({ orderNumber: '', email: '' })
+  }
+
+  // Determine the user-facing state. We need to be careful because
+  // `useTrackOrder` returns isError on 404, which we treat as a "not
+  // found" message rather than a generic failure.
+  const lookupFailed = !!submitted && trackQuery.isError
+  const lookupSucceeded = !!submitted && !!order
+  const lookupLoading = !!submitted && trackQuery.isFetching && !order
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 lg:py-16">
       <header className="mb-8">
-        <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
+        <p className="text-[11px] uppercase tracking-widest text-mute font-medium font-mono">
           Track your order
         </p>
-        <h1 className="mt-2 font-serif italic text-4xl text-(--ink)">Look up an order.</h1>
-        <p className="mt-3 text-[15px] text-(--graphite) max-w-xl">
-          Enter your order number and the email you used at checkout. Both came in your confirmation
-          email.
+        <h1 className="m-0 mt-3 font-display italic font-semibold text-[clamp(32px,5vw,52px)] leading-tight tracking-tight text-ink">
+          Where is my order?
+        </h1>
+        <p className="mt-3 t-body text-graphite max-w-150">
+          Enter the order number and email you used at checkout. We will show you the latest
+          status, and this page updates itself as your order moves.
         </p>
       </header>
 
-      <div className="border border-(--hairline) bg-(--paper) p-6 lg:p-8 mb-10">
+      {/* Lookup form */}
+      <div className="border border-hairline bg-paper p-6 lg:p-8 mb-8">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -76,7 +160,12 @@ export function TrackOrderPage() {
                 <FormItem className="space-y-2">
                   <FormLabel>Order number</FormLabel>
                   <FormControl>
-                    <Input placeholder="MS-2026-00001" {...field} />
+                    <Input
+                      placeholder="MS-2026-00001"
+                      autoCapitalize="characters"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -100,28 +189,59 @@ export function TrackOrderPage() {
                 </FormItem>
               )}
             />
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-2 flex flex-wrap items-center gap-3">
               <Button
                 type="submit"
                 variant="primary"
                 size="lg"
-                className="w-full sm:w-auto"
-                disabled={trackQuery.isFetching && !!submitted}
+                disabled={lookupLoading}
               >
-                {trackQuery.isFetching && submitted ? 'Looking up…' : 'Find my order'}
+                {lookupLoading ? 'Looking up…' : lookupSucceeded ? 'Refresh' : 'Find my order'}
               </Button>
+              {submitted ? (
+                <Button type="button" variant="ghost" size="md" onClick={onReset}>
+                  Look up a different order
+                </Button>
+              ) : null}
             </div>
           </form>
         </Form>
       </div>
 
-      {submitted && trackQuery.isError ? (
-        <div className="border border-(--coral) bg-(--coral-soft) px-4 py-5 text-[14px] text-(--ink)">
-          No order matches that number and email combination. Double check both and try again.
+      {/* Results / states */}
+      {lookupLoading ? (
+        <div className="border border-hairline bg-paper p-6 t-body-s text-mute">
+          Looking up {submitted?.orderNumber}…
         </div>
       ) : null}
 
-      {order ? <OrderSummaryCard order={order} /> : null}
+      {lookupFailed ? <NotFoundPanel /> : null}
+
+      {lookupSucceeded && order ? <FulfilmentTimeline order={order} /> : null}
+
+      {/* Help footer */}
+      {!submitted ? (
+        <p className="mt-6 t-body-s text-mute">
+          Lost the order number? Check the confirmation email we sent at checkout, or{' '}
+          <Link to="/" className="text-ink underline underline-offset-4">
+            email us
+          </Link>{' '}
+          and we will find it.
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+function NotFoundPanel() {
+  return (
+    <div className="border border-coral/50 bg-blush p-5 lg:p-6 flex flex-col gap-2">
+      <div className="t-eyebrow text-coral">Not found</div>
+      <p className="m-0 text-[14.5px] text-berry leading-relaxed">
+        We could not match that order number and email. Both fields must be exactly what you used
+        at checkout. Double check the confirmation email we sent. If it still does not work,
+        reach us at hi@mensaproducts.com and we will sort it out.
+      </p>
     </div>
   )
 }

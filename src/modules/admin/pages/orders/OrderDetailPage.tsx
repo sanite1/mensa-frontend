@@ -189,7 +189,13 @@ function LinesCard({ order }: { order: Order }) {
           >
             <div className="w-12 h-12 bg-blush flex items-center justify-center overflow-hidden rounded-xs">
               {l.imageUrl ? (
-                <img src={l.imageUrl} alt={l.productName} className="w-full h-full object-cover" />
+                <img
+                  src={l.imageUrl}
+                  alt={l.productName}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
               ) : null}
             </div>
             <div className="min-w-0 ml-3">

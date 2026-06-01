@@ -150,6 +150,10 @@ export interface InitializeCheckoutInput {
   /** Must match an option amount returned by /checkout/shipping-rates. */
   shippingAmount: number
   discountCode?: string
+  /** Partner referral code captured from `?ref=` in the URL via
+   *  lib/referral.ts. Forwarded so the backend can attribute the
+   *  resulting order to the right partner. */
+  referralCode?: string
 }
 
 export interface InitializeCheckoutResponseData {

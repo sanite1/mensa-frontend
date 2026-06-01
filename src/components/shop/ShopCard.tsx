@@ -13,7 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
-import { formatNaira } from '@/lib/utils'
+import { useFormatPrice } from '@/lib/currency'
 import type { Product } from '@/lib/network/types/product.types'
 import { Photo } from './Photo'
 import { Stars } from './Stars'
@@ -37,6 +37,7 @@ export function ShopCard({ product }: ShopCardProps) {
   const price = product.salePrice ?? product.basePriceB2C
   const hasSale = product.salePrice != null && product.salePrice < product.basePriceB2C
   const savings = hasSale ? product.basePriceB2C - (product.salePrice ?? 0) : 0
+  const formatPrice = useFormatPrice()
 
   const isSoldOut = product.isSoldOut
   const badgeToneClass = BADGE_TONE_CLASS[metadata.badgeTone ?? 'pink'] ?? 'bg-pink'
@@ -85,15 +86,15 @@ export function ShopCard({ product }: ShopCardProps) {
         {/* Price row */}
         <div className="flex items-baseline gap-2 flex-wrap">
           <span className="font-sans text-ink font-semibold text-[clamp(13.5px,1.1vw,15px)] leading-none">
-            {formatNaira(price)}
+            {formatPrice(price)}
           </span>
           {hasSale ? (
             <>
               <span className="font-sans text-mute text-[clamp(11.5px,1vw,13px)] line-through leading-none">
-                {formatNaira(product.basePriceB2C)}
+                {formatPrice(product.basePriceB2C)}
               </span>
               <span className="font-sans bg-blush text-berry px-1.5 py-0.5 text-[10px] font-medium tracking-[0.04em] rounded-[3px]">
-                Save {formatNaira(savings)}
+                Save {formatPrice(savings)}
               </span>
             </>
           ) : null}
