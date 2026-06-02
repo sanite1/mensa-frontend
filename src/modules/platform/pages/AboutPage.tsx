@@ -72,9 +72,9 @@ function Hero() {
         {/* Byline */}
         <div className="mt-8 lg:mt-12 pt-5 flex flex-wrap items-baseline justify-between gap-5 border-t border-hairline">
           <p className="m-0 max-w-140 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-            A letter from <span className="text-ink font-semibold">Kehinde Abereoje</span>,
-            founder, about the girls in displaced communities she first met at fourteen, and
-            the small workshop she built to do something about it.
+            A letter from <span className="text-ink font-semibold">Kehinde Abereoje</span>, founder,
+            about the girls in displaced communities she first met at fourteen, and the small
+            workshop she built to do something about it.
           </p>
           <a
             href="#origin"
@@ -94,7 +94,7 @@ function Hero() {
             label="HERO · founders & workshop"
             sublabel="warm tones, indoor studio"
           />
-          <div className="absolute left-4.5 top-4 flex items-center gap-2.5 px-3 py-2 rounded-sm bg-paper/90 backdrop-blur-[4px] text-ink font-mono text-[10.5px] tracking-widest uppercase">
+          <div className="absolute left-4.5 top-4 flex items-center gap-2.5 px-3 py-2 rounded-sm bg-paper/90 backdrop-blur-xs text-ink font-mono text-[10.5px] tracking-widest uppercase">
             <span className="w-1.5 h-1.5 rounded-full bg-coral" />
             Plate 01 · Pack of 3 · Onyx Black
           </div>
@@ -193,15 +193,14 @@ function Origin() {
           <p className="mt-6 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
             Kehinde was fourteen when she first visited an internally displaced persons camp near
             her home in Abuja. The thing that stayed with her was small and unsexy: girls were
-            missing school, every month, because they had no period products. The maths was
-            grim. One pack of disposable pads costs more than a day's food.
+            missing school, every month, because they had no period products. The maths was grim.
+            One pack of disposable pads costs more than a day's food.
           </p>
           <p className="mt-3.5 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
-            At sixteen she co-founded Purple Pact with her twin brother. The Initiative has
-            since reached more than ten thousand women and girls across Nigeria. Mensa is the
-            answer to a question Purple Pact kept running into: how do you actually solve period
-            poverty when single-use pads cost what they cost? You make a product that lasts five
-            years.
+            At sixteen she co-founded Purple Pact with her twin brother. The Initiative has since
+            reached more than ten thousand women and girls across Nigeria. Mensa is the answer to a
+            question Purple Pact kept running into: how do you actually solve period poverty when
+            single-use pads cost what they cost? You make a product that lasts five years.
           </p>
           <blockquote className="mt-8 py-5 px-6 bg-cream-soft border-l-[3px] border-coral font-display italic font-medium text-[clamp(18px,2.5vw,24px)] leading-[1.3] text-ink">
             "We wanted to tackle some of the little things that have the biggest consequences."
@@ -297,7 +296,7 @@ function Founders() {
             label="PORTRAIT · KEHINDE ABEREOJE"
             sublabel="natural light, founder at the studio"
           />
-          <div className="absolute left-4 top-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper/95 backdrop-blur-[4px] text-ink font-mono text-[10.5px] tracking-widest uppercase">
+          <div className="absolute left-4 top-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper/95 backdrop-blur-xs text-ink font-mono text-[10.5px] tracking-widest uppercase">
             <span className="w-1.5 h-1.5 rounded-full bg-coral" />
             Founder · Abuja
           </div>
@@ -316,30 +315,27 @@ function Founders() {
 
           <div className="flex flex-col gap-4 text-graphite text-[clamp(15px,1.8vw,17.5px)] leading-[1.65]">
             <p className="m-0">
-              Kehinde grew up in Abuja and started Purple Pact Initiative with her twin brother
-              at sixteen, after a visit to an internally displaced persons camp put a number on
-              what girls actually lose to period poverty: school days, dignity, options.
+              Kehinde grew up in Abuja and started Purple Pact Initiative with her twin brother at
+              sixteen, after a visit to an internally displaced persons camp put a number on what
+              girls actually lose to period poverty: school days, dignity, options.
             </p>
             <p className="m-0">
-              Purple Pact has since reached more than ten thousand women and girls across
-              Nigeria. Mensa is the for-profit arm that funds the work, the answer to a question
-              that kept coming up in the field: cheaper pads do not exist. Better pads do.
+              Purple Pact has since reached more than ten thousand women and girls across Nigeria.
+              Mensa is the for-profit arm that funds the work, the answer to a question that kept
+              coming up in the field: cheaper pads do not exist. Better pads do.
             </p>
             <p className="m-0">
               Kehinde holds a BSc in Public Health from Babcock University and an MPhil in
               Population Health Sciences from the University of Cambridge, where she was a
-              Mastercard Foundation Scholar. She received the Diana Award in 2024 for her work
-              on gender equality.
+              Mastercard Foundation Scholar. She received the Diana Award in 2024 for her work on
+              gender equality.
             </p>
           </div>
 
           {/* Stat tiles */}
           <div className="grid grid-cols-3 gap-3 lg:gap-4 mt-2">
             {milestones.map((m) => (
-              <div
-                key={m.label}
-                className="border-t border-hairline pt-4 flex flex-col gap-1.5"
-              >
+              <div key={m.label} className="border-t border-hairline pt-4 flex flex-col gap-1.5">
                 <BigNumber color="var(--berry)" size={36}>
                   {m.n}
                 </BigNumber>
@@ -386,8 +382,8 @@ function Impact() {
           </h2>
         </div>
         <div className="max-w-80 text-paper/65 text-[14px] leading-[1.55]">
-          Facts about how each pair is built. When we have real shipping numbers worth
-          publishing, this is where we will publish them.
+          Facts about how each pair is built. When we have real shipping numbers worth publishing,
+          this is where we will publish them.
         </div>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -480,9 +476,9 @@ function Partnerships() {
             Schools, NGOs, councils.
           </h2>
           <p className="mt-4 max-w-135 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-            We sell direct to women, and we partner with organisations who want every girl in
-            their care to have reusable period products from her first cycle. Programmes are
-            opening up now — applications are reviewed within five working days.
+            We sell direct to women, and we partner with organisations who want every girl in their
+            care to have reusable period products from her first cycle. Programmes are opening up
+            now — applications are reviewed within five working days.
           </p>
         </div>
         <Button asChild variant="ink" size="lg">

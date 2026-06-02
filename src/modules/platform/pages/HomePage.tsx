@@ -38,7 +38,7 @@ export function HomePage() {
   useSeo({
     title: 'Reusable period products, made in Abuja',
     description:
-      "Switch once. Wear for five years. Mensa makes reusable period pants and pads designed for Nigerian women. One pack replaces hundreds of disposables.",
+      'Switch once. Wear for five years. Mensa makes reusable period pants and pads designed for Nigerian women. One pack replaces hundreds of disposables.',
   })
   return (
     <div className="bg-paper">
@@ -98,7 +98,7 @@ function Hero() {
             label="HERO · pack of three"
             sublabel="warm tones, soft light"
             className="h-full!"
-            priority="eager"
+            // priority="eager"
           />
         </div>
       </div>
@@ -391,4 +391,3 @@ function Journal() {
     </section>
   )
 }
-
