@@ -62,6 +62,7 @@ export interface ProductTrustLine {
 // ── Root product ──
 
 export interface Product {
+  _id?: string
   id: string
   slug: string
   name: string

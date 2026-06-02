@@ -11,7 +11,7 @@
 // don't retype anything.
 // ═══════════════════════════════════════════════════════════════
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -110,10 +110,7 @@ export function TrackOrderPage() {
     const next = `${submitted.orderNumber}|${submitted.email}`
     if (next === lastSyncedRef.current) return
     lastSyncedRef.current = next
-    setParams(
-      { orderNumber: submitted.orderNumber, email: submitted.email },
-      { replace: true },
-    )
+    setParams({ orderNumber: submitted.orderNumber, email: submitted.email }, { replace: true })
   }, [submitted, setParams])
 
   const onSubmit = (values: LookupValues) => setSubmitted(values)
@@ -141,8 +138,8 @@ export function TrackOrderPage() {
           Where is my order?
         </h1>
         <p className="mt-3 t-body text-graphite max-w-150">
-          Enter the order number and email you used at checkout. We will show you the latest
-          status, and this page updates itself as your order moves.
+          Enter the order number and email you used at checkout. We will show you the latest status,
+          and this page updates itself as your order moves.
         </p>
       </header>
 
@@ -190,12 +187,7 @@ export function TrackOrderPage() {
               )}
             />
             <div className="sm:col-span-2 flex flex-wrap items-center gap-3">
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                disabled={lookupLoading}
-              >
+              <Button type="submit" variant="primary" size="lg" disabled={lookupLoading}>
                 {lookupLoading ? 'Looking up…' : lookupSucceeded ? 'Refresh' : 'Find my order'}
               </Button>
               {submitted ? (
@@ -238,9 +230,9 @@ function NotFoundPanel() {
     <div className="border border-coral/50 bg-blush p-5 lg:p-6 flex flex-col gap-2">
       <div className="t-eyebrow text-coral">Not found</div>
       <p className="m-0 text-[14.5px] text-berry leading-relaxed">
-        We could not match that order number and email. Both fields must be exactly what you used
-        at checkout. Double check the confirmation email we sent. If it still does not work,
-        reach us at hi@mensaproducts.com and we will sort it out.
+        We could not match that order number and email. Both fields must be exactly what you used at
+        checkout. Double check the confirmation email we sent. If it still does not work, reach us
+        at hi@mensaproducts.com and we will sort it out.
       </p>
     </div>
   )
