@@ -15,6 +15,7 @@ import { ArrowLeft, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { confirm } from '@/components/ui/confirm'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -149,9 +150,15 @@ export function ContentEditorPage() {
     }
   }
 
-  const onDelete = () => {
+  const onDelete = async () => {
     if (!id) return
-    if (!confirm('Delete this post? This cannot be undone.')) return
+    const ok = await confirm({
+      title: 'Delete this post?',
+      description: 'This cannot be undone.',
+      confirmLabel: 'Delete',
+      tone: 'destructive',
+    })
+    if (!ok) return
     deleteMutation.mutate(id, {
       onSuccess: () => navigate('/content'),
     })

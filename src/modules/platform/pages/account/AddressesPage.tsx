@@ -42,6 +42,7 @@ import {
 } from '@/lib/network/api/user.api'
 import type { UserAddress } from '@/lib/network/types/user.types'
 import { useSeo } from '@/lib/seo'
+import { confirm } from '@/components/ui/confirm'
 
 // Same shape as the checkout address fieldset, plus an optional label.
 const formSchema = z.object({
@@ -183,14 +184,15 @@ function AddressRow({ address, onEdit }: { address: UserAddress; onEdit: () => v
             ) : null}
             <DropdownMenuSeparator className="bg-(--hairline-soft)" />
             <DropdownMenuItem
-              onSelect={() => {
-                if (
-                  window.confirm(
-                    'Remove this address from your account? Past orders that used it are unaffected.',
-                  )
-                ) {
-                  del.mutate(address._id)
-                }
+              onSelect={async () => {
+                const ok = await confirm({
+                  title: 'Remove this address?',
+                  description:
+                    'It will be deleted from your account. Past orders that used it are unaffected.',
+                  confirmLabel: 'Remove',
+                  tone: 'destructive',
+                })
+                if (ok) del.mutate(address._id)
               }}
               className="text-[13px] text-(--err)"
             >

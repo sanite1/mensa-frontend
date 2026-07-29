@@ -16,6 +16,7 @@ import { Plus, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { confirm } from '@/components/ui/confirm'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -415,15 +416,16 @@ export function ProductFormPage() {
     }
   }
 
-  const onDelete = () => {
+  const onDelete = async () => {
     if (!slugParam) return
-    if (
-      !window.confirm(
-        `Archive "${product?.name ?? slugParam}"? It will be hidden from the shop but kept in the catalogue. You can reactivate later.`,
-      )
-    ) {
-      return
-    }
+    const ok = await confirm({
+      title: `Archive "${product?.name ?? slugParam}"?`,
+      description:
+        'It will be hidden from the shop but kept in the catalogue. You can reactivate later.',
+      confirmLabel: 'Archive',
+      tone: 'destructive',
+    })
+    if (!ok) return
     deleteMutation.mutate(slugParam, {
       onSuccess: () => navigate('/products'),
     })

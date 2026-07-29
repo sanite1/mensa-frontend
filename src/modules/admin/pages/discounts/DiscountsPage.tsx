@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { Plus, MoreVertical, Eye, EyeOff, Trash2, Pencil } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { confirm } from '@/components/ui/confirm'
 import { Input } from '@/components/ui/input'
 import {
   Form,
@@ -272,14 +273,15 @@ function Row({ d, isLast, onEdit }: { d: Discount; isLast: boolean; onEdit: () =
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-hairline-soft" />
             <DropdownMenuItem
-              onSelect={() => {
-                if (
-                  window.confirm(
-                    `Delete ${d.code}? This cannot be undone. (Existing orders that used it are unaffected.)`,
-                  )
-                ) {
-                  del.mutate(d._id)
-                }
+              onSelect={async () => {
+                const ok = await confirm({
+                  title: `Delete ${d.code}?`,
+                  description:
+                    'This cannot be undone. Existing orders that used it are unaffected.',
+                  confirmLabel: 'Delete',
+                  tone: 'destructive',
+                })
+                if (ok) del.mutate(d._id)
               }}
               className="text-[13px] text-(--err)"
             >

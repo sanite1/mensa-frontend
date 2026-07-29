@@ -11,6 +11,7 @@ import { useMemo, useState } from 'react'
 import { Search, Trash2, Download } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { confirm } from '@/components/ui/confirm'
 import {
   useAdminSubscribers,
   useDeleteSubscriber,
@@ -77,8 +78,14 @@ export function NewsletterPage() {
     URL.revokeObjectURL(url)
   }
 
-  const onDelete = (sub: NewsletterSubscriber) => {
-    if (!confirm(`Remove ${sub.email}? They can resubscribe later if they want.`)) return
+  const onDelete = async (sub: NewsletterSubscriber) => {
+    const ok = await confirm({
+      title: `Remove ${sub.email}?`,
+      description: 'They can resubscribe later if they want.',
+      confirmLabel: 'Remove',
+      tone: 'destructive',
+    })
+    if (!ok) return
     deleteMutation.mutate(sub._id)
   }
 

@@ -12,6 +12,7 @@ import { ArrowLeft, CheckCircle2, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { confirm } from '@/components/ui/confirm'
 import {
   useAdminPartnership,
   useVerifyPartnership,
@@ -53,14 +54,20 @@ export function PartnershipDetailPage() {
     )
   }
 
-  const decide = (decision: 'verified' | 'rejected') => {
+  const decide = async (decision: 'verified' | 'rejected') => {
     if (!id) return
     if (org.verificationStatus === decision) {
       toast.error(`Partnership is already ${decision}.`)
       return
     }
     if (decision === 'rejected' && !note.trim()) {
-      if (!confirm('Reject without a note? The team will not see a reason later.')) return
+      const ok = await confirm({
+        title: 'Reject without a note?',
+        description: 'The team will not see a reason later.',
+        confirmLabel: 'Reject anyway',
+        tone: 'destructive',
+      })
+      if (!ok) return
     }
     verifyMutation.mutate({
       id,

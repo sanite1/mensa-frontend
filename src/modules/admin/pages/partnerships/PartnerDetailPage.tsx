@@ -10,6 +10,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, CheckCircle2, XCircle } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { prompt } from '@/components/ui/confirm'
 import {
   useAdminPartner,
   useApprovePartner,
@@ -60,9 +61,16 @@ export function PartnerDetailPage() {
     approve.mutate({ id, body: { commissionRate: parsedRate } })
   }
 
-  const onReject = () => {
+  const onReject = async () => {
     if (!id) return
-    const reason = window.prompt('Reason for rejection (optional, kept internal):') ?? ''
+    const reason = await prompt({
+      title: 'Reject application?',
+      description: 'Add an internal note explaining the decision. Optional.',
+      placeholder: 'Reason (optional, kept internal)',
+      multiline: true,
+      confirmLabel: 'Reject',
+      tone: 'destructive',
+    })
     if (reason === null) return
     reject.mutate({ id, body: { rejectionReason: reason.trim() || undefined } })
   }

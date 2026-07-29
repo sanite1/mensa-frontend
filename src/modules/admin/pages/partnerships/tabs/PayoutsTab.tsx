@@ -10,6 +10,7 @@ import { Check, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { prompt } from '@/components/ui/confirm'
 import {
   useAdminPayouts,
   useMarkPayoutPaid,
@@ -213,8 +214,15 @@ function StatusBadge({ status }: { status: string }) {
 
 function RejectButton({ payoutId }: { payoutId: string }) {
   const reject = useRejectPayout()
-  const onClick = () => {
-    const note = window.prompt('Reason for rejecting (optional, shown to partner):') ?? ''
+  const onClick = async () => {
+    const note = await prompt({
+      title: 'Reject this payout?',
+      description: 'Add a short note the partner will see. Optional.',
+      placeholder: 'Reason (shown to partner)',
+      multiline: true,
+      confirmLabel: 'Reject',
+      tone: 'destructive',
+    })
     if (note === null) return
     reject.mutate({ id: payoutId, body: { adminNote: note.trim() || undefined } })
   }
