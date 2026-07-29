@@ -964,7 +964,6 @@ function VariantsSection({
               key={field.id}
               index={index}
               onRemove={() => remove(index)}
-              canRemove={fields.length > 1}
               form={form}
             />
           ))
@@ -1056,12 +1055,10 @@ function OptionTypesField({ form }: { form: ReturnType<typeof useForm<FormValues
 function VariantRow({
   index,
   onRemove,
-  canRemove,
   form,
 }: {
   index: number
   onRemove: () => void
-  canRemove: boolean
   form: ReturnType<typeof useForm<FormValues>>
 }) {
   const optionTypes = form.watch('optionTypes') ?? []
@@ -1078,16 +1075,14 @@ function VariantRow({
             SKU · {computedSku}
           </span>
         </div>
-        {canRemove ? (
-          <button
-            type="button"
-            onClick={onRemove}
-            className="text-mute hover:text-err"
-            aria-label="Remove variant"
-          >
-            <X size={16} strokeWidth={1.6} />
-          </button>
-        ) : null}
+        <button
+          type="button"
+          onClick={onRemove}
+          className="text-mute hover:text-err"
+          aria-label="Remove variant"
+        >
+          <X size={16} strokeWidth={1.6} />
+        </button>
       </div>
 
       {/* Option value inputs — one per declared option type. Each input
