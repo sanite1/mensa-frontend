@@ -252,21 +252,20 @@ export function ProductFormPage() {
     name: 'trustLines',
   })
 
-  // Track whether the user has manually edited the slug. If not, keep it in
-  // sync with the name (create mode only).
-  const slugManuallyEdited = useRef(false)
+  // Slug is derived from the name and cannot be edited by hand — mirror it
+  // live on every keystroke, in both create and edit mode. Renaming an
+  // existing product will change its URL on save; the backend redirect
+  // handles bookmarked links.
   const nameValue = form.watch('name')
   const slugValue = form.watch('slug')
 
   useEffect(() => {
-    if (isEditMode) return
-    if (slugManuallyEdited.current) return
     const generated = slugify(nameValue || '')
     if (generated !== slugValue) {
       form.setValue('slug', generated, { shouldValidate: false })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nameValue, isEditMode])
+  }, [nameValue])
 
   // Populate form when editing.
   const product = productQuery.data?.data?.product
@@ -308,7 +307,6 @@ export function ProductFormPage() {
       isSoldOut: product.isSoldOut ?? false,
       showSizeGuide: product.showSizeGuide ?? false,
     })
-    slugManuallyEdited.current = true
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product, isEditMode])
 
@@ -496,14 +494,14 @@ export function ProductFormPage() {
                       <Input
                         placeholder="pack-of-5-pants"
                         {...field}
-                        onChange={(e) => {
-                          slugManuallyEdited.current = true
-                          field.onChange(e)
-                        }}
+                        disabled
+                        readOnly
+                        aria-readonly
+                        className="cursor-not-allowed"
                       />
                     </FormControl>
                     <FormDescription>
-                      Lowercase letters, numbers, and dashes. Appears in the URL.
+                      Generated from the name. Appears in the URL and cannot be edited by hand.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
