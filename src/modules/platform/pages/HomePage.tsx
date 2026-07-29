@@ -23,6 +23,7 @@ import {
 } from '@/components/chrome/icons'
 import { Photo } from '@/components/shop/Photo'
 import { ShopCard } from '@/components/shop/ShopCard'
+import heroImage from '@/assets/hero.png'
 
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
 import { BigNumber } from '@/components/editorial/BigNumber'
@@ -95,10 +96,10 @@ function Hero() {
           <Photo
             tone="blush"
             ratio="auto"
-            label="HERO · pack of three"
-            sublabel="warm tones, soft light"
+            src={heroImage}
+            alt="Mensa reusable period pant in black on a blush pink background"
             className="h-full!"
-            // priority="eager"
+            priority="eager"
           />
         </div>
       </div>
