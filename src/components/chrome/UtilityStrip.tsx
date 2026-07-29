@@ -1,19 +1,11 @@
 // ─────────────────────────────────────────────────────────────────────────
 // UtilityStrip — top dark strip on desktop/tablet headers.
 // Mobile uses a slimmer marquee-style version inside HeaderMobile.
-//
-// Left-hand promo (free delivery line) is gated behind the
-// `features.freeDelivery` flag so it can be flipped on per environment
-// without editing this file.
 // ─────────────────────────────────────────────────────────────────────────
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { IconTruck } from './icons'
 import { CurrencyPicker } from './CurrencyPicker'
-import {
-  features,
-  FREE_DELIVERY_THRESHOLD_LABEL,
-} from '@/lib/features'
 
 interface UtilityStripProps {
   compact?: boolean
@@ -28,16 +20,7 @@ export function UtilityStrip({ compact = false }: UtilityStripProps) {
       )}
     >
       <div className="flex items-center gap-2.5 opacity-[0.92]">
-        {features.freeDelivery ? (
-          <>
-            <IconTruck size={15} />
-            <span>
-              Free delivery in Abuja &amp; Lagos over {FREE_DELIVERY_THRESHOLD_LABEL}
-            </span>
-          </>
-        ) : (
-          <span>Reusable period products. Made in Abuja.</span>
-        )}
+        <span>Reusable period products. Made in Abuja.</span>
       </div>
       <div className="flex items-center gap-5.5 opacity-85">
         <Link

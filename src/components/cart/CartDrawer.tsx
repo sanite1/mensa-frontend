@@ -6,7 +6,6 @@
 // runtime plugin dependencies and behaves consistently in every browser.
 // Mounted once at the platform layout level so it works on every route.
 // ─────────────────────────────────────────────────────────────────────────
-import type { CSSProperties } from 'react'
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
@@ -15,7 +14,6 @@ import { useCartStore, type CartLine } from '@/lib/network/stores/cart.store'
 import { useFormatPrice } from '@/lib/currency'
 import { Photo } from '@/components/shop/Photo'
 import { IconArrowRight, IconClose } from '@/components/chrome/icons'
-import { features, FREE_DELIVERY_THRESHOLD_KOBO } from '@/lib/features'
 
 export function CartDrawer() {
   const isOpen = useCartStore((s) => s.isDrawerOpen)
@@ -44,9 +42,6 @@ export function CartDrawer() {
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [isOpen, closeDrawer])
-
-  const remainingToFreeDelivery = Math.max(0, FREE_DELIVERY_THRESHOLD_KOBO - subtotalKobo)
-  const qualifiesForFreeDelivery = subtotalKobo >= FREE_DELIVERY_THRESHOLD_KOBO
 
   return (
     <>
@@ -93,15 +88,6 @@ export function CartDrawer() {
           </button>
         </div>
 
-        {/* Free delivery progress — only when the promo is active. */}
-        {features.freeDelivery && lines.length > 0 ? (
-          <FreeDeliveryStrip
-            qualifies={qualifiesForFreeDelivery}
-            remaining={remainingToFreeDelivery}
-            subtotal={subtotalKobo}
-          />
-        ) : null}
-
         {/* Body */}
         {lines.length === 0 ? (
           <EmptyState onClose={closeDrawer} />
@@ -125,49 +111,6 @@ export function CartDrawer() {
 }
 
 // ─────────────────────────────────────────────────────────────────
-function FreeDeliveryStrip({
-  qualifies,
-  remaining,
-  subtotal,
-}: {
-  qualifies: boolean
-  remaining: number
-  subtotal: number
-}) {
-  const formatPrice = useFormatPrice()
-  const progress = qualifies
-    ? 100
-    : Math.min(100, Math.max(0, (subtotal / FREE_DELIVERY_THRESHOLD_KOBO) * 100))
-
-  // Progress width is dynamic. Surface it as a CSS variable so the
-  // Tailwind arbitrary-value class can consume it without an inline style
-  // attribute fighting the layout intent.
-  const cssVar = { '--progress': `${progress}%` } as CSSProperties
-
-  return (
-    <div className="px-6 py-3 bg-cream-soft border-b border-hairline-soft">
-      <div className="t-body-s text-graphite">
-        {qualifies ? (
-          <>
-            Free delivery in Abuja &amp; Lagos <strong className="text-ink">unlocked.</strong>
-          </>
-        ) : (
-          <>Add {formatPrice(remaining)} more for free delivery in Abuja &amp; Lagos.</>
-        )}
-      </div>
-      <div className="mt-2 w-full overflow-hidden h-1 bg-hairline-soft">
-        <div
-          className={cn(
-            'h-full transition-all w-(--progress)',
-            qualifies ? 'bg-ok' : 'bg-pink',
-          )}
-          style={cssVar}
-        />
-      </div>
-    </div>
-  )
-}
-
 // ─────────────────────────────────────────────────────────────────
 function LineItem({ line }: { line: CartLine }) {
   const updateQty = useCartStore((s) => s.updateQty)

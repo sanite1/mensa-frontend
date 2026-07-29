@@ -12,7 +12,6 @@ import { CategoryChips } from '@/components/shop/CategoryChips'
 import { SizeGuideDialog } from '@/components/shop/SizeGuideDialog'
 import { useSeo } from '@/lib/seo'
 import { IconArrowRight, IconChevronRight } from '@/components/chrome/icons'
-import { features, FREE_DELIVERY_THRESHOLD_LABEL } from '@/lib/features'
 
 function isCategory(value: string | null): value is ProductCategory {
   return value === 'pants' || value === 'pads' || value === 'bundles' || value === 'education'
@@ -50,7 +49,7 @@ export function ShopPage() {
     : {
         title: 'Shop',
         description:
-          'Reusable period pants, reusable pads, the starter set, and our education range. Free delivery in Abuja and Lagos.',
+          'Reusable period pants, reusable pads, the starter set, and our education range. Nationwide delivery from our studio in Abuja.',
       }
   useSeo(seoMeta)
   // Search term lands here from the navbar SearchOverlay (See all products
@@ -153,21 +152,9 @@ function PageHeader({ productCount }: { productCount: number }) {
       {/* Trust strip */}
       <div className="flex items-baseline justify-between gap-6 flex-wrap mt-6">
         <p className="m-0 text-graphite max-w-155 text-[clamp(15px,2vw,18px)] leading-[1.55]">
-          {productCount > 0 ? (
-            <>
-              {productCount} products. One promise. Built to last five years.
-              {features.freeDelivery
-                ? ` Free delivery on orders over ${FREE_DELIVERY_THRESHOLD_LABEL}.`
-                : ''}
-            </>
-          ) : (
-            <>
-              One promise. Built to last five years.
-              {features.freeDelivery
-                ? ` Free delivery on orders over ${FREE_DELIVERY_THRESHOLD_LABEL}.`
-                : ''}
-            </>
-          )}
+          {productCount > 0
+            ? `${productCount} products. One promise. Built to last five years.`
+            : 'One promise. Built to last five years.'}
         </p>
         <div className="flex items-center gap-3.5 text-[13px] text-(--graphite) flex-wrap">
           <span className="inline-flex items-center gap-1.5">

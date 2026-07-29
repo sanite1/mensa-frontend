@@ -10,7 +10,6 @@
 // Cart-aware: shows the cart badge from cart.store.
 // ─────────────────────────────────────────────────────────────────────────
 import { useRef, useState } from 'react'
-import { features, FREE_DELIVERY_THRESHOLD_LABEL } from '@/lib/features'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useAuthStore, useIsAuthenticated } from '@/lib/network/stores/auth.store'
@@ -80,7 +79,6 @@ export function Header() {
       <div className="hidden md:block">
         <UtilityStrip />
       </div>
-      <MobileBanner />
 
       {/* DESKTOP (≥ lg) */}
       <DesktopRow
@@ -130,18 +128,6 @@ export function Header() {
 
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
-  )
-}
-
-// ── Mobile-only top banner (slim, no currency / track) ──
-function MobileBanner() {
-  // Only shown when the free-delivery flag is on. Hidden otherwise so the
-  // header doesn't surface a promo we aren't honoring.
-  if (!features.freeDelivery) return null
-  return (
-    <div className="md:hidden bg-ink text-paper text-center py-1.75 px-4 text-[11.5px] tracking-[0.04em]">
-      Free delivery in Abuja &amp; Lagos over {FREE_DELIVERY_THRESHOLD_LABEL}
-    </div>
   )
 }
 

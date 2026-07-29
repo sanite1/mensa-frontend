@@ -32,7 +32,6 @@ import {
 } from '@/components/chrome/icons'
 import type { Product, ProductVariant, TrustIcon } from '@/lib/network/types/product.types'
 import type { ComponentType } from 'react'
-import { features, FREE_DELIVERY_THRESHOLD_LABEL } from '@/lib/features'
 
 // Map of icon shorthand to the corresponding Mensa icon component.
 const TRUST_ICONS: Record<TrustIcon, ComponentType<{ size?: number }>> = {
@@ -401,19 +400,12 @@ function ProductInfo({
         </Button>
       </div>
 
-      {/* Trust block — admin authored per product. The free delivery promo
-          is layered in only when the global feature flag is on; otherwise
-          the section is fully driven by product.trustLines. */}
+      {/* Trust block — admin-authored per product via product.trustLines. */}
       {(() => {
         const trustLines = product.trustLines ?? []
-        if (trustLines.length === 0 && !features.freeDelivery) return null
+        if (trustLines.length === 0) return null
         return (
           <div className="flex flex-col gap-2.5 pt-1.5">
-            {features.freeDelivery ? (
-              <TrustLine icon={<IconTruck size={16} />}>
-                Free delivery in Abuja &amp; Lagos over {FREE_DELIVERY_THRESHOLD_LABEL}
-              </TrustLine>
-            ) : null}
             {trustLines.map((line) => {
               const Icon = TRUST_ICONS[line.icon] ?? IconCheck
               return (

@@ -84,7 +84,7 @@ function Hero() {
         <TrustStrip
           items={[
             { text: 'Designed & sewn in Abuja' },
-            { text: 'Free delivery in Abuja & Lagos' },
+            { text: 'Nationwide delivery, 2 to 5 days' },
             { text: 'Five-year wear · replaces 250+ disposables' },
           ]}
         />
