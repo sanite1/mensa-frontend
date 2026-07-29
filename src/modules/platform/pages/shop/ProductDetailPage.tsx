@@ -49,6 +49,7 @@ const CATEGORY_LABEL: Record<Product['category'], string> = {
   pads: 'Reusable pads',
   bundles: 'Bundles',
   education: 'Education',
+  advocacy: 'Fashion · Advocacy',
 }
 
 export function ProductDetailPage() {

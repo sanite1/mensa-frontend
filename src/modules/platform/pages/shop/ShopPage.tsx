@@ -14,7 +14,13 @@ import { useSeo } from '@/lib/seo'
 import { IconArrowRight, IconChevronRight } from '@/components/chrome/icons'
 
 function isCategory(value: string | null): value is ProductCategory {
-  return value === 'pants' || value === 'pads' || value === 'bundles' || value === 'education'
+  return (
+    value === 'pants' ||
+    value === 'pads' ||
+    value === 'bundles' ||
+    value === 'education' ||
+    value === 'advocacy'
+  )
 }
 
 const CATEGORY_SEO: Record<ProductCategory, { title: string; description: string }> = {
@@ -37,6 +43,11 @@ const CATEGORY_SEO: Record<ProductCategory, { title: string; description: string
     title: 'Education',
     description:
       'My Cycoo guide, FLOW Game, and Period Conversations — Mensa education products for classrooms and homes across Nigeria.',
+  },
+  advocacy: {
+    title: 'Fashion items · Period advocacy',
+    description:
+      'Wearables that carry the message. Pins, tees, and everyday pieces that turn period conversations into culture.',
   },
 }
 

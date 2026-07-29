@@ -17,6 +17,7 @@ export const SHOP_CATEGORIES: CategoryOption[] = [
   { id: 'pads', label: 'Reusable pads' },
   { id: 'bundles', label: 'Bundles' },
   { id: 'education', label: 'Education' },
+  { id: 'advocacy', label: 'Fashion items · Period advocacy' },
 ]
 
 interface CategoryChipsProps {

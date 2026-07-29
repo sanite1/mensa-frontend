@@ -27,6 +27,7 @@ const CATEGORIES: { id: ProductCategory | 'all'; label: string }[] = [
   { id: 'pads', label: 'Reusable pads' },
   { id: 'bundles', label: 'Bundles' },
   { id: 'education', label: 'Education' },
+  { id: 'advocacy', label: 'Fashion items · Period advocacy' },
 ]
 
 const CATEGORY_LABEL: Record<ProductCategory, string> = {
@@ -34,6 +35,7 @@ const CATEGORY_LABEL: Record<ProductCategory, string> = {
   pads: 'Pads',
   bundles: 'Bundles',
   education: 'Education',
+  advocacy: 'Advocacy',
 }
 
 // Grid columns are kept on the className with an arbitrary value so the

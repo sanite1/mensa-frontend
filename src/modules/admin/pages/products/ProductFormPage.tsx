@@ -98,7 +98,7 @@ const formSchema = z.object({
     .min(1, 'Slug is required.')
     .max(120)
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase letters, numbers, and dashes.'),
-  category: z.enum(['pants', 'pads', 'bundles', 'education']),
+  category: z.enum(['pants', 'pads', 'bundles', 'education', 'advocacy']),
   subheading: z.string().max(220).default(''),
   shortDescription: z.string().max(280).default(''),
   description: z.string().default(''),
@@ -522,6 +522,7 @@ export function ProductFormPage() {
                           { value: 'pads', label: 'Reusable pads' },
                           { value: 'bundles', label: 'Bundles' },
                           { value: 'education', label: 'Education' },
+                          { value: 'advocacy', label: 'Fashion items · Period advocacy' },
                         ]}
                       />
                     </FormControl>
