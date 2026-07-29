@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils'
  *   secondary outline/ink    counterpart to primary
  *   soft      blush/berry    in-section calls inside blush surfaces
  *   ghost     transparent    chrome / inline links
+ *   danger    err/paper      destructive confirm (archive, delete, reject)
  *
  * Variants use Tailwind theme tokens (text-paper, bg-ink, …) which are
  * defined in src/index.css @theme. This is more robust than arbitrary
@@ -36,6 +37,7 @@ const buttonVariants = cva(
           'border border-ink bg-transparent text-ink hover:bg-ink hover:text-paper!',
         soft: 'bg-blush text-berry hover:bg-blush-2',
         ghost: 'bg-transparent text-ink hover:bg-cream',
+        danger: 'bg-err text-paper hover:opacity-90',
       },
       // NOTE: CVA silently produces *no* class when a `size`/`variant` value
       // is not in this map — buttons render with browser-default styling and
