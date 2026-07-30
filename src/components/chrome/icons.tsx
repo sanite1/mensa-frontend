@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// Re-export of lucide icons under the names used in the design files, so
-// chrome / page code reads the same as the source JSX. All icons inherit
-// strokeWidth=1.6 to match the hand-drawn feel from the brief.
-// ─────────────────────────────────────────────────────────────────────────
+// Re-exports lucide icons under the names used in the design files, all with strokeWidth 1.6 to match the brief.
 import {
   Search,
   User,

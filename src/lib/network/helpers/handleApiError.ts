@@ -2,10 +2,7 @@ import type { AxiosError } from 'axios'
 import { toast } from 'sonner'
 import type { ApiErrorBody } from '../api'
 
-/**
- * Extracts a clean error shape from any thrown error. Matches the backend
- * envelope `{ statusCode, message, details? }`.
- */
+/** Extracts the backend error envelope `{ statusCode, message, details? }` from any thrown error. */
 export function handleApiError(error: unknown): ApiErrorBody {
   const axiosError = error as AxiosError<ApiErrorBody>
 
@@ -20,11 +17,7 @@ export function handleApiError(error: unknown): ApiErrorBody {
   return { statusCode: 0, message: 'Something went wrong. Please try again.' }
 }
 
-/**
- * Toasts the parsed error message. Drop-in `onError` for React Query
- * mutations — `onError: handleApiError` alone parses the error and then
- * discards it, which is how upload failures went silent.
- */
+/** Toasts the parsed error message. Use this as mutation `onError`, bare `handleApiError` parses then discards the error, which is how upload failures went silent. */
 export function toastApiError(error: unknown): void {
   toast.error(handleApiError(error).message)
 }

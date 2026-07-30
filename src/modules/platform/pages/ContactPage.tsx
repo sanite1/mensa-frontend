@@ -1,14 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /contact — get in touch
-//
-// Three section composition:
-//   1. Hero with intent + supporting copy
-//   2. Channels card (email / phone / address / socials)
-//   3. Form (POST /contact -> support inbox)
-//
-// On success we swap the form for a confirmation panel so the
-// visitor knows the message landed without needing a second tab.
-// ═══════════════════════════════════════════════════════════════
+// /contact, hero + channels + form (POST /contact). On success the form swaps for a confirmation panel.
 
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'

@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /terms — terms of service.
-//
-// Describes the rules of using mensaproducts.com today. Working
-// draft pending legal review — final version should be approved
-// by counsel before launch.
-// ═══════════════════════════════════════════════════════════════
+// /terms of service. Working draft, counsel must approve the final version before launch.
 
 import { Link } from 'react-router-dom'
 import { LegalLayout, type LegalSection } from './LegalLayout'

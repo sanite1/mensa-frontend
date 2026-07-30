@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // Dialog — centred modal primitive (Radix Dialog under the hood).
-// Distinct from Sheet (which slides in from a side). Use for focused,
-// product-context modals like the size guide.
-// ─────────────────────────────────────────────────────────────────────────
 'use client'
 
 import * as React from 'react'

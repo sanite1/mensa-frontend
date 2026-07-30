@@ -1,14 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// Header — single responsive component:
-//   ≥ lg (1024)  → desktop layout: utility strip + 3-col grid (logo / nav / icons)
-//   md – lg      → tablet: compact utility strip + hamburger / logo / icons
-//   < md         → mobile: slim free-delivery banner + 4-col grid
-//
-// State: tracks mega menu open (desktop) and mobile drawer open (mobile).
-// Auth-aware: shows the account icon as link to /login if signed out, or
-// dropdown menu if signed in.
-// Cart-aware: shows the cart badge from cart.store.
-// ─────────────────────────────────────────────────────────────────────────
+// Header — single responsive site header, auth and cart aware, owns the mega menu and mobile drawer state.
 import { useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
@@ -106,9 +96,7 @@ export function Header() {
         onSearchClick={openSearch}
       />
 
-      {/* MEGA MENU (desktop only) — absolutely positioned so it overlays the
-          page content below instead of pushing it down. Fade in on open;
-          link clicks dismiss immediately so navigation feels crisp. */}
+      {/* Mega menu, desktop only, absolutely positioned so it overlays rather than pushes content. */}
       {megaOpen ? (
         <div
           className="hidden lg:block absolute left-0 right-0 top-full z-30 shadow-[0_24px_60px_-20px_rgba(26,20,16,0.18)] animate-in fade-in duration-150"

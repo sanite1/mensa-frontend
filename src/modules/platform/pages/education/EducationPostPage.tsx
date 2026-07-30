@@ -1,9 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /education/:slug — single education guide.
-//
-// Same data backend as the journal post page, framed as a guide
-// rather than an essay. Uses the shared Markdown renderer.
-// ═══════════════════════════════════════════════════════════════
+// /education/:slug single guide, same backend as the journal post page.
 
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'

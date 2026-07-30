@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /content/new + /content/:id/edit (admin)
-//
-// One page handles both modes. Markdown body lives in a textarea
-// for now; richer editor can land later without changing the API.
-// Status flip (draft ↔ published) is a single switch on the form.
-// ═══════════════════════════════════════════════════════════════
+// /content/new + /content/:id/edit (admin).
 
 import { useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -546,9 +540,7 @@ function Select({
 }
 
 // ─── Cover image uploader ────────────────────────────────────────
-// Uploads to /admin/content/upload-image (Cloudinary under the hood)
-// and stores the returned url + publicId in the form. The image only
-// attaches to the post when the form is saved.
+// Uploads to /admin/content/upload-image, the returned url + publicId only attach to the post on save.
 function CoverImageField({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const upload = useUploadContentImage()

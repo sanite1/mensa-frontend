@@ -1,8 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// Admin 404 — utility shell, no editorial flourish. Renders inside
-// the AdminLayout (sidebar + topbar) so admins always have a way
-// back via the navigation chrome.
-// ═══════════════════════════════════════════════════════════════
+// Admin 404 — utility shell, no editorial flourish. Renders inside.
 
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'

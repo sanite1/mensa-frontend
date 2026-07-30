@@ -1,16 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // ShopCard — product tile used in the Shop grid.
-//
-//   [ image (4:5) with optional pill badge top-left ]
-//   [ italic Newsreader name, 2 lines max ]
-//   [ price (with optional strikethrough old price + save chip) ]
-//   [ mono caps subheading as a tag ]
-//   [ stars + rating, only when metadata.rating present ]
-//
-// Stack layout (no side-by-side name/price) so long names like "Reusable
-// Pads, Pack of 5, Heavy" never crowd the price column. Subheading sits at
-// the bottom like a quiet category tag.
-// ─────────────────────────────────────────────────────────────────────────
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useFormatPrice } from '@/lib/currency'

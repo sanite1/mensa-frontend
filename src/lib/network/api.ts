@@ -24,13 +24,7 @@ export interface Paginated<T> {
   }
 }
 
-/**
- * Typed JSON wrapper around the raw axios instance. Each method returns the
- * parsed `ApiResponse<T>` envelope directly (no `.data` step at call sites).
- *
- * For multipart/form-data uploads, bypass this and import `axios` from
- * `./axios` so the FormData boundary is set correctly.
- */
+/** Typed JSON wrapper over axios returning the `ApiResponse<T>` envelope. For multipart uploads bypass this and import `axios` from `./axios` so the FormData boundary is set correctly. */
 export const api = {
   get: async <T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> => {
     const res = await axios.get<ApiResponse<T>>(url, config)

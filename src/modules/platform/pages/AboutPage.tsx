@@ -1,13 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /about — Mensa Our Story (editorial composition).
-//
-// Eight-section editorial walk-through of the brand, in this order:
-//   Hero · Mission · Origin · Manufacturing · Founders · Impact ·
-//   Press · Partnerships · FinalCta
-//
-// Like the homepage this is a single long composition — each section
-// owns its own surface tone and horizontal padding for proper rhythm.
-// ═══════════════════════════════════════════════════════════════
+// /about, Our Story editorial composition. Each section owns its own surface tone and padding.
 
 import { Link } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
@@ -281,11 +272,8 @@ function MStat({ n, label }: { n: string; label: string }) {
   )
 }
 
-// ─── FOUNDERS ────────────────────────────────────────────────────
 // ─── FOUNDER ─────────────────────────────────────────────────────
-// Single founder editorial layout: large environmental portrait on the
-// left, eyebrow + name + role + narrative + a row of stat tiles + a
-// pull-quote on the right. Tuned for one person rather than a team grid.
+// Single founder layout, tuned for one person rather than a team grid.
 function Founders() {
   const milestones: { n: string; label: string }[] = [
     { n: '14', label: 'Years old at the IDP camp that started it all' },
@@ -374,10 +362,7 @@ function Founders() {
 }
 
 // ─── IMPACT ──────────────────────────────────────────────────────
-// Per-product math instead of unverifiable adoption numbers — these
-// are facts about how the product itself is built, not customer
-// counts. Once we have real shipping data and consented partner
-// rosters, swap in those numbers and pull a quarterly-update note.
+// Product facts only, no customer counts. Swap in real shipping numbers once they exist.
 function Impact() {
   const stats: { n: string; label: string }[] = [
     { n: '5 yrs', label: 'Useful life of one pair, washed every cycle' },
@@ -422,9 +407,7 @@ function Impact() {
 
 // ─── PRESS STRIP ─────────────────────────────────────────────────
 function PressStrip() {
-  // Press masthead styling: each outlet renders in its native typographic
-  // tone. We restrict to two fonts (display vs sans) and two italic / weight
-  // variants, so a small map of Tailwind class strings covers every case.
+  // Each outlet renders in its native masthead tone via a small map of class strings.
   const press: { name: string; classes: string }[] = [
     { name: 'TechCabal', classes: 'font-display italic font-bold' },
     { name: 'Pulse Nigeria', classes: 'font-sans font-bold' },
@@ -460,10 +443,7 @@ function PressStrip() {
 }
 
 // ─── PARTNERSHIPS ────────────────────────────────────────────────
-// Pre-launch, so no real partner roster to name. We describe what each
-// tier of partnership offers and point readers at /partnerships to
-// apply. Swap in named partners + counts once they are real and have
-// consented to being credited.
+// No real partner roster yet, swap in named partners only once they consent to credit.
 function Partnerships() {
   const blocks: { kind: string; offer: string; copy: string }[] = [
     {

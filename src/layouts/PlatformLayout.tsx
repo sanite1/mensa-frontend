@@ -1,7 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // PlatformLayout — main route shell for mensaproducts.com (customer surface).
-// Wraps Header + page <Outlet/> + Footer + the global CartDrawer.
-// ─────────────────────────────────────────────────────────────────────────
 import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Header } from '@/components/chrome/Header'
@@ -10,9 +7,7 @@ import { CartDrawer } from '@/components/cart/CartDrawer'
 import { captureReferralFromUrl } from '@/lib/referral'
 
 export function PlatformLayout() {
-  // Capture `?ref=CODE` on every navigation so partner attribution works
-  // regardless of which page the visitor lands on. The helper is a no-op
-  // when the param is absent.
+  // Capture `?ref=CODE` on every navigation, a no op when the param is absent.
   const location = useLocation()
   useEffect(() => {
     captureReferralFromUrl()

@@ -1,6 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// content.api.ts — public + admin endpoints for ContentPost
-// ═══════════════════════════════════════════════════════════════
+// content.api.ts — public + admin endpoints for ContentPost.
 
 import {
   keepPreviousData,
@@ -175,11 +173,8 @@ export const useDeleteContentPost = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// POST /api/v1/admin/content/upload-image  (multipart)
-// Standalone cover upload — returns { url, publicId } for the editor to
-// stash in the post's coverImage on save.
-// ══════════════════════════════════════════════
+// ─── POST /api/v1/admin/content/upload-image  (multipart) ────
+// Standalone cover upload, returns { url, publicId } for the editor to stash in coverImage on save.
 
 const uploadContentImageFn = async (
   file: File,

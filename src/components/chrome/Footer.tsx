@@ -1,9 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // Footer — single responsive component.
-//   ≥ lg : full 5-column layout with big "Periods made convenient." headline
-//   md  : 3 columns, condensed headline
-//   < md: stacked, accordion columns
-// ─────────────────────────────────────────────────────────────────────────
 import { Link } from 'react-router-dom'
 import { useState, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'

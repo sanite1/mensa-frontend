@@ -1,11 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /privacy — privacy policy.
-//
-// Content describes how the site actually handles data today
-// (Paystack for payments, Sendbox for shipping, Mailerlite for
-// newsletter). Treat as a working draft pending legal review for
-// full NDPR compliance.
-// ═══════════════════════════════════════════════════════════════
+// /privacy policy. Working draft pending legal review for full NDPR compliance.
 
 import { LegalLayout, type LegalSection } from './LegalLayout'
 import { useSeo } from '@/lib/seo'

@@ -1,7 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// CategoryChips — pill style category selector for the Shop page filter
-// bar. `active=null` means "All".
-// ─────────────────────────────────────────────────────────────────────────
+// CategoryChips — pill style category selector for the Shop page filter.
 import { cn } from '@/lib/utils'
 import type { ProductCategory } from '@/lib/network/types/product.types'
 

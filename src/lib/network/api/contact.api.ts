@@ -1,6 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// contact.api.ts — public POST /contact
-// ═══════════════════════════════════════════════════════════════
+// contact.api.ts — public POST /contact.
 
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'

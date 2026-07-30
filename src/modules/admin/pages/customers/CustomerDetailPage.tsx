@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /customers/:id (admin)
-//
-// Customer profile, lifetime value, saved addresses, full order
-// history. Read only for now; account edits go through the user
-// directly via password reset / their own account UI.
-// ═══════════════════════════════════════════════════════════════
+// /customers/:id (admin).
 
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, CheckCircle2, XCircle } from 'lucide-react'

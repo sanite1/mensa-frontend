@@ -1,6 +1,4 @@
-// Organisations sub-view inside /partnerships (admin).
-// Lifted out of the old PartnershipsListPage so the parent can host
-// three tabs without becoming an 800-line file.
+// Organisations sub-view inside /partnerships (admin), lifted out of PartnershipsListPage.
 
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'

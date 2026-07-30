@@ -1,13 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // Gallery — responsive PDP image gallery.
-//   Desktop (lg) : main image + vertical thumb strip on the left.
-//   Tablet  (md) : main image + horizontal thumb strip below.
-//   Mobile  (sm) : main image + animated dot indicators.
-//
-// When the product has no images yet, the gallery falls back to a set of
-// varied tone backed placeholder tiles (hero / flat / detail / pack) so the
-// admin can preview the PDP layout before uploading real Cloudinary assets.
-// ─────────────────────────────────────────────────────────────────────────
 import type { CSSProperties } from 'react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
@@ -37,9 +28,7 @@ const BADGE_TONE_CLASS: Record<string, string> = {
   ink: 'bg-ink',
 }
 
-// Placeholder slides shown when a product has no Cloudinary images.
-// Different tones give the gallery visual rhythm so the PDP doesn't read
-// as broken pre upload.
+// Placeholder slides for products with no Cloudinary images, varied tones so the PDP does not read as broken.
 const PLACEHOLDER_SLIDES: Slide[] = [
   { key: 'placeholder-hero', alt: '', tone: 'blush', label: 'hero' },
   { key: 'placeholder-flat', alt: '', tone: 'blush', label: 'flat' },
@@ -166,10 +155,7 @@ function Thumbs({
   onPick: (i: number) => void
   layout: 'vertical' | 'horizontal'
 }) {
-  // Horizontal layout splits evenly across however many slides we have.
-  // Store the full grid-template-columns string in a CSS variable so the
-  // className can consume it via the parenthesis shorthand instead of an
-  // arbitrary-value bracket class.
+  // Horizontal layout splits evenly per slide, grid template lives in a CSS variable for the class shorthand.
   const horizontalVars: CSSProperties =
     layout === 'horizontal'
       ? ({ '--thumb-cols': `repeat(${slides.length},1fr)` } as CSSProperties)

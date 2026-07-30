@@ -1,9 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /forgot-password — request a password reset link.
-// Backend is silent on unknown emails (no enumeration leak), so
-// the page shows a confirmation state regardless of whether the
-// email is registered.
-// ═══════════════════════════════════════════════════════════════
+// /forgot-password page. Backend is silent on unknown emails (no enumeration leak), so we always show the confirmation state.
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'

@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// AdminAuthLayout — full-bleed wrapper for the admin sign-in page. No
-// sidebar / topbar. Ink background to set tonal expectation that this
-// surface is the admin tool.
-// ─────────────────────────────────────────────────────────────────────────
+// AdminAuthLayout — full bleed ink wrapper for the admin sign in page, no sidebar or topbar.
 import { Outlet } from 'react-router-dom'
 
 export function AdminAuthLayout() {

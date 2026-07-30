@@ -1,11 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /* — catch-all 404.
-//
-// Renders for any path that doesn't match a mounted route. The
-// page returns a 200 (it's a client-side render) but reads as a
-// 404 to the visitor. Editorial tone matches the rest of the
-// brand surfaces.
-// ═══════════════════════════════════════════════════════════════
+// Catch-all 404 page. Client-side render, so the HTTP status is still 200.
 
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'

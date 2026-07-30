@@ -1,9 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// order.types.ts
-//
-// Mirror of the backend IOrder + checkout DTOs. All monetary
-// values are kobo (₦1 = 100 kobo) stored as integers — never floats.
-// ═══════════════════════════════════════════════════════════════
+// order.types.ts — mirror of backend IOrder + checkout DTOs. All monetary values are integer kobo, never floats.
 
 import type { Pagination } from './common.types'
 

@@ -1,8 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// discount.api.ts — raw fns + React Query hooks for the discount
-// module. Public surface is a single apply-preview mutation;
-// everything else is admin-only.
-// ═══════════════════════════════════════════════════════════════
+// discount.api.ts — discount endpoints. Public surface is one apply preview mutation, everything else is admin only.
 
 import {
   keepPreviousData,
@@ -32,9 +28,7 @@ export const discountKeys = {
     [...discountKeys.all, 'admin', 'detail', id] as const,
 }
 
-// ══════════════════════════════════════════════
-// 1. POST /api/v1/checkout/apply-discount (public preview)
-// ══════════════════════════════════════════════
+// ─── 1. POST /api/v1/checkout/apply-discount (public preview) ────
 
 const applyDiscountFn = async (
   body: ApplyDiscountInput,
@@ -42,15 +36,11 @@ const applyDiscountFn = async (
   return api.post<ApplyDiscountResponseData>('/checkout/apply-discount', body)
 }
 
-// We deliberately do not toast on error here — the checkout page renders
-// the message inline next to the code input so the customer sees it
-// where they typed.
+// No error toast here, checkout renders the message inline next to the code input.
 export const useApplyDiscount = () =>
   useMutation({ mutationFn: applyDiscountFn })
 
-// ══════════════════════════════════════════════
-// 2. GET /api/v1/admin/discounts
-// ══════════════════════════════════════════════
+// ─── 2. GET /api/v1/admin/discounts ──────────────
 
 const adminListDiscountsFn = async (
   params?: ListDiscountsParams,
@@ -65,9 +55,7 @@ export const useAdminDiscounts = (params?: ListDiscountsParams) =>
     placeholderData: keepPreviousData,
   })
 
-// ══════════════════════════════════════════════
-// 3. GET /api/v1/admin/discounts/:id
-// ══════════════════════════════════════════════
+// ─── 3. GET /api/v1/admin/discounts/:id ──────────
 
 const adminGetDiscountFn = async (
   id: string,
@@ -82,9 +70,7 @@ export const useAdminDiscount = (id: string | undefined) =>
     enabled: !!id,
   })
 
-// ══════════════════════════════════════════════
-// 4. POST /api/v1/admin/discounts
-// ══════════════════════════════════════════════
+// ─── 4. POST /api/v1/admin/discounts ─────────────
 
 const adminCreateDiscountFn = async (
   payload: CreateDiscountInput,
@@ -106,9 +92,7 @@ export const useCreateDiscount = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 5. PUT /api/v1/admin/discounts/:id
-// ══════════════════════════════════════════════
+// ─── 5. PUT /api/v1/admin/discounts/:id ──────────
 
 const adminUpdateDiscountFn = async ({
   id,
@@ -134,9 +118,7 @@ export const useUpdateDiscount = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 6. DELETE /api/v1/admin/discounts/:id
-// ══════════════════════════════════════════════
+// ─── 6. DELETE /api/v1/admin/discounts/:id ───────
 
 const adminDeleteDiscountFn = async (
   id: string,

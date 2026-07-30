@@ -1,13 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
 // Markdown — minimal subset renderer for ContentPost bodies.
-//
-// We parse a small slice of markdown by hand to avoid a dependency
-// for our launch content set: # / ## / ### headings, blank-line
-// paragraph breaks, unordered lists (`- `), inline **bold** and
-// *italic*. Anything else renders as a plain paragraph. Swap for
-// `react-markdown` if the body content grows complex enough to
-// need tables, code blocks, or images.
-// ═══════════════════════════════════════════════════════════════
 
 type Block =
   | { kind: 'h2'; text: string }

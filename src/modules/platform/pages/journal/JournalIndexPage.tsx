@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /journal — public listing of journal posts.
-//
-// Reads from GET /content?kind=journal which only returns
-// published posts. Posts are authored in the admin Content CMS
-// (kind=journal, status=published) and appear here automatically.
-// ═══════════════════════════════════════════════════════════════
+// /journal listing. GET /content?kind=journal returns published posts only.
 
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -28,9 +22,7 @@ const CATEGORY_LABEL: Record<ContentCategory, string> = {
   care: 'Care',
 }
 
-// Deterministic placeholder tone per slug so a post keeps the same
-// background tile across reloads, even before a real cover image
-// is uploaded.
+// Deterministic placeholder tone per slug so a post keeps the same tile across reloads.
 const PLACEHOLDER_TONES = ['stripe', 'cream', 'blush', 'ink'] as const
 type PlaceholderTone = (typeof PLACEHOLDER_TONES)[number]
 function toneForSlug(slug: string): PlaceholderTone {
@@ -50,9 +42,7 @@ export function JournalIndexPage() {
       'Plain spoken writing about periods, products, and the people we serve. Field notes, product teardowns, and community stories from the Mensa team.',
   })
   const [category, setCategory] = useState<ContentCategory | 'all'>('all')
-  // `q` is the live input value (re-renders on every keystroke for
-  // responsive feedback). `debouncedQ` is what actually goes into the
-  // React Query key, throttled so we don't fire a request per char.
+  // `q` is the live input, `debouncedQ` feeds the query key so we don't fire a request per keystroke.
   const [q, setQ] = useState('')
   const debouncedQ = useDebounced(q, 250)
 
@@ -69,14 +59,11 @@ export function JournalIndexPage() {
   const query = useContentList(params)
   const posts: ContentPost[] = query.data?.data?.items ?? []
   const isSearching = debouncedQ.trim().length > 0
-  // Hide the big "feature" treatment whenever the user is filtering or
-  // searching — a feature card off the front page reads as the most
-  // important post, not "first thing that matched your typo".
+  // Hide the feature treatment while filtering or searching, it would overweight the first match.
   const showFeature = !isSearching && category === 'all'
   const [feature, ...rest] = posts
 
-  // Categories present on the current result set — keeps the chip
-  // strip from offering filters that match nothing.
+  // Only offer category chips that match something in the current result set.
   const visibleCategories = useMemo(() => {
     const set = new Set<ContentCategory>()
     for (const p of posts) set.add(p.category)

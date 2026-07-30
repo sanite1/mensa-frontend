@@ -1,20 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// product.api.ts — raw async functions + React Query hooks
-//
-// Public endpoints:
-//   1. listProductsFn       useProducts
-//   2. getProductFn         useProduct
-//
-// Admin endpoints (require admin role + Bearer auth):
-//   3. adminListProductsFn  useAdminProducts
-//   4. adminGetProductFn    useAdminProduct
-//   5. createProductFn      useCreateProduct
-//   6. updateProductFn      useUpdateProduct
-//   7. deleteProductFn      useDeleteProduct
-//   8. uploadProductImageFn useUploadProductImage  (multipart)
-//   9. removeProductImageFn useRemoveProductImage
-//   10. reorderImagesFn     useReorderProductImages
-// ═══════════════════════════════════════════════════════════════
+// product.api.ts — raw async functions + React Query hooks.
 
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -42,9 +26,7 @@ export const productKeys = {
   adminDetail: (slug: string) => [...productKeys.all, 'admin', 'detail', slug] as const,
 }
 
-// ══════════════════════════════════════════════
-// 1. GET /api/v1/products  (public, paginated)
-// ══════════════════════════════════════════════
+// ─── 1. GET /api/v1/products  (public, paginated) ────
 
 const listProductsFn = async (
   params?: ProductListParams,
@@ -59,9 +41,7 @@ export const useProducts = (params?: ProductListParams) =>
     placeholderData: keepPreviousData,
   })
 
-// ══════════════════════════════════════════════
-// 2. GET /api/v1/products/:slug  (public)
-// ══════════════════════════════════════════════
+// ─── 2. GET /api/v1/products/:slug  (public) ─────
 
 const getProductFn = async (slug: string): Promise<ApiResponse<ProductResponseData>> => {
   return api.get<ProductResponseData>(`/products/${slug}`)
@@ -74,9 +54,7 @@ export const useProduct = (slug: string | undefined) =>
     enabled: !!slug,
   })
 
-// ══════════════════════════════════════════════
-// 3. GET /api/v1/admin/products  (admin, includes inactive)
-// ══════════════════════════════════════════════
+// ─── 3. GET /api/v1/admin/products  (admin, includes inactive) ────
 
 const adminListProductsFn = async (
   params?: ProductListParams,
@@ -91,9 +69,7 @@ export const useAdminProducts = (params?: ProductListParams) =>
     placeholderData: keepPreviousData,
   })
 
-// ══════════════════════════════════════════════
-// 4. GET /api/v1/admin/products/:slug  (admin)
-// ══════════════════════════════════════════════
+// ─── 4. GET /api/v1/admin/products/:slug  (admin) ────
 
 const adminGetProductFn = async (
   slug: string,
@@ -108,9 +84,7 @@ export const useAdminProduct = (slug: string | undefined) =>
     enabled: !!slug,
   })
 
-// ══════════════════════════════════════════════
-// 5. POST /api/v1/admin/products  (admin create)
-// ══════════════════════════════════════════════
+// ─── 5. POST /api/v1/admin/products  (admin create) ────
 
 const createProductFn = async (
   payload: CreateProductInput,
@@ -132,9 +106,7 @@ export const useCreateProduct = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 6. PUT /api/v1/admin/products/:slug  (admin update)
-// ══════════════════════════════════════════════
+// ─── 6. PUT /api/v1/admin/products/:slug  (admin update) ────
 
 const updateProductFn = async ({
   slug,
@@ -160,9 +132,7 @@ export const useUpdateProduct = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 7. DELETE /api/v1/admin/products/:slug  (admin soft delete)
-// ══════════════════════════════════════════════
+// ─── 7. DELETE /api/v1/admin/products/:slug  (admin soft delete) ────
 
 const deleteProductFn = async (slug: string): Promise<ApiResponse<null>> => {
   return api.delete<null>(`/admin/products/${slug}`)
@@ -182,9 +152,7 @@ export const useDeleteProduct = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 8. POST /api/v1/admin/products/:slug/images  (multipart)
-// ══════════════════════════════════════════════
+// ─── 8. POST /api/v1/admin/products/:slug/images  (multipart) ────
 
 const uploadProductImageFn = async ({
   slug,
@@ -221,9 +189,7 @@ export const useUploadProductImage = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 9. DELETE /api/v1/admin/products/:slug/images/:imageId
-// ══════════════════════════════════════════════
+// ─── 9. DELETE /api/v1/admin/products/:slug/images/:imageId ────
 
 const removeProductImageFn = async ({
   slug,
@@ -250,9 +216,7 @@ export const useRemoveProductImage = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 10. PUT /api/v1/admin/products/:slug/images/order
-// ══════════════════════════════════════════════
+// ─── 10. PUT /api/v1/admin/products/:slug/images/order ────
 
 const reorderProductImagesFn = async ({
   slug,

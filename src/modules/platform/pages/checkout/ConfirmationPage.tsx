@@ -1,17 +1,5 @@
-// ═══════════════════════════════════════════════════════════════
-// /checkout/confirmation/:orderNumber
-//
-// Landing page after Paystack closes successfully. The actual
-// "paid" status is set asynchronously by the Paystack webhook, so
-// when this page first renders the order may still be in 'pending'
-// state. We polling-refresh every few seconds until either
-// payment.status flips to 'paid' (success), 'failed' (so we can
-// tell the customer), or we hit a timeout.
-//
-// Auth flow: a logged-in user with a matching email gets the
-// order auto-resolved. A guest must enter their email once (we
-// remember it in the URL so refresh keeps working).
-// ═══════════════════════════════════════════════════════════════
+// /checkout/confirmation/:orderNumber. Paid status arrives async via the Paystack webhook,
+// so the page polls until payment.status settles. Guests enter their email once, kept in the URL.
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom'
@@ -58,11 +46,8 @@ export function ConfirmationPage() {
   const user = useAuthStore((s) => s.user)
   const clearCart = useCartStore((s) => s.clearCart)
 
-  // We try, in order: ?email= on the URL, the logged-in user's email,
-  // the email the customer entered at checkout (stashed in
-  // sessionStorage before we redirected them to Paystack). The hosted
-  // Paystack flow does not preserve URL params, so sessionStorage is
-  // the path that "just works" after a successful redirect back.
+  // Email resolution order: ?email= param, logged in user, then sessionStorage stash.
+  // Hosted Paystack drops URL params, so the stash is what works after the redirect back.
   const urlEmail = params.get('email')?.trim() ?? ''
   const stashedEmail = useMemo(() => {
     if (!orderNumber) return ''
@@ -88,10 +73,7 @@ export function ConfirmationPage() {
   const paymentStatus = order?.payment.status
   const refetch = trackQuery.refetch
 
-  // ── Verify-on-return ─────────────────────────────────────────────
-  // On first paint with a known orderNumber, ask our backend to ping
-  // Paystack directly. This collapses the wait-for-webhook latency to
-  // a single round trip and works even when the webhook never lands.
+  // Verify on return, backend pings Paystack directly so we don't depend on the webhook landing.
   const verify = useVerifyCheckout()
   const verifyAttempted = useRef(false)
 
@@ -109,9 +91,7 @@ export function ConfirmationPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderNumber])
 
-  // Poll the public lookup as a fallback. Mostly catches the case where
-  // the verify call returned 'pending' (Paystack hadn't yet settled in
-  // their own DB) but does settle a few seconds later.
+  // Poll as a fallback for when verify returned 'pending' but Paystack settles seconds later.
   useEffect(() => {
     if (!order || paymentStatus !== 'pending') return
     const id = setInterval(() => {
@@ -125,10 +105,7 @@ export function ConfirmationPage() {
     }
   }, [order, paymentStatus, refetch])
 
-  // Once we have confirmation that the order is paid, drop the cart and
-  // discard the stashed email. Both are one-shots tied to this orderNumber.
-  // We also clear the referral code so a future, unrelated purchase doesn't
-  // keep crediting the same partner — re-clicking the link will set it again.
+  // On paid: clear cart, stash, and referral code so unrelated future purchases stop crediting the partner.
   useEffect(() => {
     if (paymentStatus !== 'paid') return
     clearCart()
@@ -259,11 +236,7 @@ export function ConfirmationPage() {
         </p>
         {!paid && !failed ? (
           <div className="mt-8 mx-auto flex flex-col items-center gap-5 px-6 py-7 max-w-md bg-cream-soft border border-hairline-soft">
-            {/* Spinner — paper ring with a pink quadrant rotating on top.
-                Tailwind's animate-spin handles the rotation; the border
-                trick gives us a tidy spinner without an SVG dependency.
-                The border-top-color uses an arbitrary class because we
-                need it scoped to the top edge only, which has no shorthand. */}
+            {/* Border trick spinner, no SVG needed. border-t-pink scopes the color to the top edge. */}
             <div
               className="relative animate-spin w-12 h-12 rounded-full border-[3px] border-hairline border-t-pink"
               aria-hidden="true"

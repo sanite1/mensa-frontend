@@ -1,15 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // Confirm / Prompt — imperative replacement for window.confirm/prompt.
-//
-// Usage:
-//   const ok = await confirm({ title: 'Archive product?', description: '...' })
-//   if (!ok) return
-//
-//   const note = await prompt({ title: 'Reason for rejection', placeholder: '...' })
-//   if (note === null) return // user cancelled
-//
-// Rendered by <ConfirmHost /> which sits once at the app root next to Toaster.
-// ─────────────────────────────────────────────────────────────────────────
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from 'zustand'
 import { createStore } from 'zustand/vanilla'

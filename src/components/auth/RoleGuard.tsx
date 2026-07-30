@@ -1,15 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // RoleGuard — layout route that restricts children to specified roles.
-// Use AuthGuard as the outer wrapper first; RoleGuard assumes a user is
-// already signed in.
-//
-// Usage:
-//   <Route element={<AuthGuard />}>
-//     <Route element={<RoleGuard allowed={['admin']} />}>
-//       <Route path="/admin" element={<DashboardPage />} />
-//     </Route>
-//   </Route>
-// ─────────────────────────────────────────────────────────────────────────
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuthStore } from '@/lib/network/stores/auth.store'
 import type { UserRole } from '@/lib/network/types/auth.types'

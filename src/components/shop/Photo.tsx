@@ -1,13 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // Photo — placeholder / image block used in product cards and PDP.
-// Shows the supplied src when available; otherwise renders a tone backed
-// placeholder with a tiny mono label so the layout still feels alive.
-//
-// Tailwind-only layout. The few values that have to come in at runtime
-// (aspect ratio from a prop, object-position from a prop) are routed via
-// CSS custom properties and consumed by arbitrary-value Tailwind classes
-// so the className still owns the styling intent.
-// ─────────────────────────────────────────────────────────────────────────
 import type { CSSProperties, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
@@ -25,10 +16,7 @@ interface PhotoProps {
   label?: ReactNode
   sublabel?: ReactNode
   className?: string
-  /** Loading hint. Defaults to `lazy` because most Photos render below
-   *  the fold (PDP gallery thumbs, shop grid past the first row, journal
-   *  cards, etc.). Pass `eager` for above-the-fold hero usage so the
-   *  largest contentful paint isn't deferred. */
+  /** Loading hint, defaults to `lazy`. Pass `eager` for above the fold heroes so LCP is not deferred. */
   priority?: 'lazy' | 'eager'
 }
 
@@ -59,9 +47,7 @@ export function Photo({
   const textColorClass =
     tone === 'ink' || tone === 'pink' ? 'text-paper' : 'text-graphite'
 
-  // Aspect ratio + object position must come in at render time. We
-  // surface them as CSS custom properties so the className can reference
-  // them via arbitrary-value classes.
+  // Runtime aspect ratio and object position surface as CSS custom properties for the classes.
   const cssVars: CSSProperties = {
     '--photo-ratio': ratio,
     '--photo-obj': objectPos ?? 'center',

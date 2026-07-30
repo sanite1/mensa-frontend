@@ -1,9 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // MobileDrawer — slide-in from the left on mobile.
-// Built on shadcn Sheet (Radix Dialog under the hood) for a11y + focus
-// management, restyled to the Mensa design (cream-soft search, large
-// editorial nav items, blush social dots).
-// ─────────────────────────────────────────────────────────────────────────
 import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet'

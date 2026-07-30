@@ -1,12 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /partner — partner dashboard
-//
-// Available to signed-in users with role 'partner'. Shows:
-//   - Pending + available + lifetime balances
-//   - Copyable referral link
-//   - Commission history
-//   - Payout history + "Request payout" button (when balance >= min)
-// ═══════════════════════════════════════════════════════════════
+// /partner dashboard, role 'partner' only. Balances, referral link, commission and payout history.
 
 import { useState } from 'react'
 import { Copy, ExternalLink, Pencil } from 'lucide-react'

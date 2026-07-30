@@ -1,12 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// paystack.ts — lazy-load the Paystack v2 inline SDK and expose a
-// promise-shaped "resume transaction" helper.
-//
-// The backend's /checkout/initialize call already creates the
-// transaction and returns an accessCode + reference. On the
-// frontend we just open Paystack's inline modal pointed at that
-// access code and resolve / reject based on the callback.
-// ═══════════════════════════════════════════════════════════════
+// paystack.ts — lazy loads the Paystack v2 inline SDK and resumes a backend created transaction by access code.
 
 const SCRIPT_SRC = 'https://js.paystack.co/v2/inline.js'
 
@@ -72,12 +64,7 @@ export type PaystackOutcome =
   | { status: 'cancelled' }
   | { status: 'error'; message: string }
 
-/**
- * Open the Paystack inline modal for a backend-initialized transaction
- * (we already have an access code + reference). Resolves once the modal
- * closes with the customer's outcome — never rejects so the caller can
- * branch cleanly on `status`.
- */
+/** Open the Paystack inline modal for a backend initialized transaction. Never rejects, callers branch on the resolved `status`. */
 export async function openPaystackInline(input: {
   publicKey: string
   email: string

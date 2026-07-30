@@ -1,7 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // UtilityStrip — top dark strip on desktop/tablet headers.
-// Mobile uses a slimmer marquee-style version inside HeaderMobile.
-// ─────────────────────────────────────────────────────────────────────────
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { IconTruck } from './icons'
@@ -35,10 +32,7 @@ export function UtilityStrip({ compact = false }: UtilityStripProps) {
           Help
         </Link>
         <span className="opacity-40">·</span>
-        {/* Display currency picker. NGN is canonical — switching here
-            converts displayed prices via static FX rates, but checkout
-            still charges in NGN. CheckoutPage shows a note when the
-            selected currency is not NGN. */}
+        {/* Currency picker converts display prices only, checkout still charges NGN. */}
         <CurrencyPicker tone="dark" />
       </div>
     </div>

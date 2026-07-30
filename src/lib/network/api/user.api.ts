@@ -1,8 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// user.api.ts — raw fns + React Query hooks for the customer
-// "/me" surface. Right now it's address book only; profile editing
-// and notification prefs will land here later.
-// ═══════════════════════════════════════════════════════════════
+// user.api.ts — customer /me surface, currently address book only.
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -21,9 +17,7 @@ export const userKeys = {
   addresses: () => [...userKeys.all, 'addresses'] as const,
 }
 
-// ══════════════════════════════════════════════
-// 1. GET /api/v1/users/me/addresses
-// ══════════════════════════════════════════════
+// ─── 1. GET /api/v1/users/me/addresses ───────────
 
 const listMyAddressesFn = async (): Promise<ApiResponse<AddressesResponseData>> => {
   return api.get<AddressesResponseData>('/users/me/addresses')
@@ -36,9 +30,7 @@ export const useMyAddresses = (enabled = true) =>
     enabled,
   })
 
-// ══════════════════════════════════════════════
-// 2. POST /api/v1/users/me/addresses
-// ══════════════════════════════════════════════
+// ─── 2. POST /api/v1/users/me/addresses ──────────
 
 const addMyAddressFn = async (
   payload: UserAddressInput,
@@ -67,9 +59,7 @@ export const useAddMyAddress = (opts: UseAddMyAddressOptions = {}) => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 3. PUT /api/v1/users/me/addresses/:id
-// ══════════════════════════════════════════════
+// ─── 3. PUT /api/v1/users/me/addresses/:id ───────
 
 const updateMyAddressFn = async ({
   id,
@@ -95,9 +85,7 @@ export const useUpdateMyAddress = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 4. PUT /api/v1/users/me/addresses/:id/default
-// ══════════════════════════════════════════════
+// ─── 4. PUT /api/v1/users/me/addresses/:id/default ────
 
 const setDefaultAddressFn = async (
   id: string,
@@ -119,9 +107,7 @@ export const useSetDefaultAddress = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 5. DELETE /api/v1/users/me/addresses/:id
-// ══════════════════════════════════════════════
+// ─── 5. DELETE /api/v1/users/me/addresses/:id ────
 
 const deleteMyAddressFn = async (
   id: string,

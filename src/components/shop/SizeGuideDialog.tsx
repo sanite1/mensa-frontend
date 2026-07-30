@@ -1,16 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// SizeGuideDialog
-//
-// Compact modal triggered from product pages. Mirrors the official
-// Mensa "Period pants — size charts" card (waist measurements in
-// inches). Designed to drop in next to the size picker on the PDP
-// without yanking the customer off the page.
-//
-// Usage:
-//   <SizeGuideDialog>
-//     <button>Size guide</button>
-//   </SizeGuideDialog>
-// ═══════════════════════════════════════════════════════════════
+// SizeGuideDialog — period pants size chart modal for the PDP, waist measurements in inches.
 
 import type { ReactNode } from 'react'
 

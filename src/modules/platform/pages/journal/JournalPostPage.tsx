@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /journal/:slug — single journal post.
-//
-// Fetches GET /content/:slug. The backend only returns published
-// posts on this surface — draft slugs 404 here, which is exactly
-// what we want (drafts live behind the admin CMS only).
-// ═══════════════════════════════════════════════════════════════
+// /journal/:slug single post. GET /content/:slug 404s for drafts by design.
 
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
@@ -72,9 +66,7 @@ export function JournalPostPage() {
 
   return (
     <article className="bg-paper">
-      {/* Hero — headline overlaid on the cover image so the header and
-          cover read as one editorial plate instead of two stacked
-          sections. Falls back to a blush surface when no cover exists. */}
+      {/* Headline overlays the cover image, falls back to a blush surface when no cover exists. */}
       <header className={`relative overflow-hidden ${hasCover ? '' : 'bg-blush'}`}>
         {hasCover ? (
           <>

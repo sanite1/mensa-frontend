@@ -1,16 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
 // /orders/:id (admin) — full order detail + fulfilment controls.
-//
-// Two columns on desktop, stacked on mobile:
-//   • Left:  status timeline, line items, customer + delivery info
-//   • Right: status update form (next allowed transitions, tracking
-//            override, admin note), payment block.
-//
-// The backend service is the single source of truth for which
-// transitions are legal — we still gate the UI by allowed status
-// list, but the server re-checks on PATCH so race conditions never
-// land the order in an illegal state.
-// ═══════════════════════════════════════════════════════════════
 
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -459,9 +447,7 @@ function FormPair({
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
-// Status chip with tone classes resolved at the call site so the
-// component itself stays inline-style-free.
+// Status chip with tone classes resolved at the call site, keeps the component free of inline styles.
 function StatusChip({ toneClass, label }: { toneClass: string; label: string }) {
   return (
     <span

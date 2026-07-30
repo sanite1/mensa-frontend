@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /education — public listing of education guides.
-//
-// Same data model as the journal but framed as how-tos and
-// reference material rather than brand storytelling. Posts come
-// from the admin Content CMS with kind=education.
-// ═══════════════════════════════════════════════════════════════
+// /education listing, same data model as the journal but with kind=education.
 
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'

@@ -1,11 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// CartDrawer — slide in from the right when the header bag icon is
-// clicked or after Add to bag. Controlled by useCartStore.isDrawerOpen.
-//
-// Built with plain Tailwind transforms (no Radix Dialog), so it has zero
-// runtime plugin dependencies and behaves consistently in every browser.
-// Mounted once at the platform layout level so it works on every route.
-// ─────────────────────────────────────────────────────────────────────────
+// CartDrawer — cart panel that slides in from the right, controlled by useCartStore.isDrawerOpen, mounted once at the platform layout so it works on every route.
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'

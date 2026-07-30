@@ -1,12 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// MegaMenu — drops down under "Shop" on desktop. Four columns: Period
-// pants, Reusable pads, Education, and a blush feature card.
-//
-// Every product link is driven by the live catalogue via useProducts, so
-// the menu stays in lockstep with what's actually for sale. The feature
-// card prefers a product with slug "starter-set", falling back to the
-// first bundle in the catalogue.
-// ─────────────────────────────────────────────────────────────────────────
+// MegaMenu — desktop Shop dropdown. Product links are driven by the live catalogue via useProducts so the menu matches what is for sale.
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { IconArrowRight } from './icons'
@@ -79,9 +71,7 @@ interface MegaMenuProps {
 }
 
 export function MegaMenu({ onLinkClick }: MegaMenuProps = {}) {
-  // One catalogue fetch drives every column and the feature card. The
-  // page size is generous but the catalogue is small, so the payload
-  // stays tiny and TanStack Query caches it across renders.
+  // One catalogue fetch drives every column and the feature card, cached by TanStack Query.
   const query = useProducts({ pageSize: 60, sort: 'featured' })
   const products: Product[] = query.data?.data?.items ?? []
   const formatPrice = useFormatPrice()
@@ -102,9 +92,7 @@ export function MegaMenu({ onLinkClick }: MegaMenuProps = {}) {
       <Column title="Reusable pads" links={reusablePads} onLinkClick={onLinkClick} />
       <Column title="Education" links={education} onLinkClick={onLinkClick} />
 
-      {/* Feature card — reuses the bundle product's real name, subheading,
-          image and price. Hidden entirely when the catalogue has no bundle
-          to show, since a fake card is worse than no card. */}
+      {/* Feature card from the real bundle product, hidden when the catalogue has none. */}
       {featured ? (
         <div className="relative overflow-hidden bg-blush rounded-lg p-6">
           <div className="t-eyebrow text-berry">New this season</div>

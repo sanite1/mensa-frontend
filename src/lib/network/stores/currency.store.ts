@@ -1,9 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
 // currency.store.ts — selected display currency.
-//
-// Persisted to localStorage so a visitor's choice survives reloads.
-// Defaults to NGN since the brand is NGN-first.
-// ═══════════════════════════════════════════════════════════════
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'

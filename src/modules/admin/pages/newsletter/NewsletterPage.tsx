@@ -1,11 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
 // /newsletter (admin) — subscriber list.
-//
-// Filter by status (subscribed / unsubscribed) and source.
-// Search by email substring. Includes an "Export visible as CSV"
-// affordance for the partnerships / education team to import into
-// Mailerlite while the automated sync is post-MVP.
-// ═══════════════════════════════════════════════════════════════
 
 import { useMemo, useState } from 'react'
 import { Search, Trash2, Download } from 'lucide-react'

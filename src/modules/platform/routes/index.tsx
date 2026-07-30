@@ -47,9 +47,7 @@ export function PlatformRoutes() {
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           </Route>
 
-          {/* Reset password is unguarded — the URL token is the auth check,
-              and a signed-in user clicking an email link should still be
-              able to set a new password. */}
+          {/* Reset password is unguarded, the URL token is the auth check, even for signed in users. */}
           <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* ─── Authenticated routes ─────────────────────────────────────── */}

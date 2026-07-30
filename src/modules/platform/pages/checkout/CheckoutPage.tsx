@@ -1,21 +1,5 @@
-// ═══════════════════════════════════════════════════════════════
-// /checkout
-//
-// Two column layout (single column on mobile):
-//   • Left:  contact + address + shipping picker + pay button
-//   • Right: sticky order summary
-//
-// Backend flow:
-//   1. cart state -> useShippingRates(destination)         (query)
-//   2. submit form  -> useInitializeCheckout()              (mutation)
-//      backend snapshots lines, reserves stock, returns
-//      access code + reference + public key.
-//   3. openPaystackInline()                                 (modal)
-//   4. on success  -> clear cart, route to /checkout/confirmation/:ref
-//      on cancel   -> stay; stock will be released by markOrderFailed
-//                     once Paystack webhooks the cancel event. We just
-//                     surface a toast.
-// ═══════════════════════════════════════════════════════════════
+// /checkout. Rates query, then useInitializeCheckout reserves stock and returns the Paystack handoff.
+// On cancel stock is released by markOrderFailed once the Paystack webhook fires, we only toast.
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -84,27 +68,18 @@ export function CheckoutPage() {
   const initialize = useInitializeCheckout()
   const formatPrice = useFormatPrice()
   const displayCurrency = useCurrencyStore((s) => s.currency)
-  // Paystack always charges in NGN. If the visitor is viewing a different
-  // currency we surface a small note so the bank-statement amount in NGN
-  // doesn't catch them off guard.
+  // Paystack always charges in NGN, warn visitors viewing another currency.
   const showCurrencyNote = displayCurrency !== 'NGN'
 
   // ── Discount state ───────────────────────────────────────────────
-  //
-  // applied is the *server-confirmed* discount preview. We keep it as
-  // local state separate from the input field so the customer can edit
-  // the code without instantly losing their previously-applied savings.
+  // `applied` is the server confirmed preview, kept separate from the input so edits don't drop it.
   const [codeInput, setCodeInput] = useState('')
   const [applied, setApplied] = useState<ApplyDiscountResponseData | null>(null)
   const [discountError, setDiscountError] = useState<string | null>(null)
   const applyDiscount = useApplyDiscount()
 
-  // ── Saved addresses (signed-in customers only) ──────────────────
-  //
-  // We fetch the address book up-front so the picker can render
-  // synchronously alongside the form. Selecting one prefills the
-  // form fields; tapping "Enter a new address" reverts to a blank
-  // form (selectedAddressId=null) without touching saved entries.
+  // ── Saved addresses (signed in customers only) ──────────────────
+  // Fetched up front so the picker renders alongside the form, selecting one prefills the fields.
   const addressesQuery = useMyAddresses(isAuthenticated)
   const savedAddresses: UserAddress[] = addressesQuery.data?.data?.addresses ?? []
   const [selectedAddressId, setSelectedAddressId] = useState<string | 'new' | null>(null)
@@ -118,12 +93,7 @@ export function CheckoutPage() {
     }
   }, [lines.length, navigate])
 
-  // ── Auto-pick the default saved address on first load ───────────
-  //
-  // Runs exactly once when the addresses query resolves. After that
-  // selectedAddressId is the customer's responsibility — switching
-  // saved addresses, or jumping to "Enter a new address", is a
-  // deliberate action they have to take.
+  // Auto pick the default saved address, exactly once when the addresses query resolves.
   const autoPickedRef = useRef(false)
   useEffect(() => {
     if (!isAuthenticated || autoPickedRef.current) return
@@ -220,17 +190,10 @@ export function CheckoutPage() {
 
   const shippingKobo = selectedRate?.amount ?? 0
 
-  // If the cart subtotal changes after a discount was applied (customer
-  // tweaked qty in another tab, line went out of stock, …) the saved
-  // kobo amount could be wrong. Drop the discount when subtotal changes.
+  // A subtotal change can invalidate the applied kobo amount, so drop the discount when it moves.
   useEffect(() => {
     if (!applied) return
-    // Re-derive what the discount should be at the current subtotal.
-    // For percent we can recompute locally; for fixed we keep the same
-    // kobo amount but clamp to the subtotal so we never owe the store.
-    // Simplest path: drop and force a re-apply if the subtotal moved.
-    // The customer's typed code is still in the input so re-applying
-    // is one click.
+    // The typed code stays in the input, so reapplying after the drop is one click.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subtotalKobo])
 
@@ -238,16 +201,8 @@ export function CheckoutPage() {
   const totalKobo = Math.max(0, subtotalKobo + shippingKobo - discountKobo)
 
   // ── Submit ──
-  //
-  // We hand the customer over to Paystack's *hosted* checkout (the
-  // authorization_url returned from /checkout/initialize) instead of the
-  // JS inline modal. Paystack itself redirects back to our confirmation
-  // page on completion, which means the redirect is guaranteed even when
-  // a browser blocks popups or a JS callback misses fires — both of
-  // which we saw in test mode through ngrok.
-  //
-  // We don't clearCart here because the user is leaving our domain. The
-  // confirmation page clears the cart once it observes the order as paid.
+  // Uses Paystack's hosted checkout, not the inline modal, so the redirect survives popup blockers.
+  // Don't clearCart here, the confirmation page clears it once the order is observed paid.
   const onSubmit = async (values: CheckoutValues) => {
     if (!selectedRate) {
       toast.error('Pick a shipping option to continue.')
@@ -277,19 +232,14 @@ export function CheckoutPage() {
         return
       }
 
-      // Stash the email so the confirmation page can resolve the order
-      // immediately when Paystack redirects the customer back, without
-      // making them retype it. Scoped to this tab via sessionStorage.
+      // Stash the email so the confirmation page can resolve the order without a retype.
       try {
         sessionStorage.setItem(`mensa-checkout-email:${data.orderNumber}`, values.customerEmail)
       } catch {
         // sessionStorage can throw in private modes; not worth blocking on.
       }
 
-      // Save the new address to the customer's book if they opted in.
-      // Fire-and-forget: we don't await it because the customer's about
-      // to leave the page for Paystack, and the address backend dedupes
-      // on line1+city+state+postal so a duplicate save is a no-op.
+      // Opt in address save, not awaited. Backend dedupes on line1+city+state+postal.
       const enteredNewAddress = selectedAddressId === 'new'
       if (isAuthenticated && values.saveAddress && enteredNewAddress) {
         addAddress.mutate({
@@ -298,9 +248,7 @@ export function CheckoutPage() {
         })
       }
 
-      // Hand off to Paystack's hosted checkout. Their page handles every
-      // edge case (3DS, OTP, cancel, back button) and redirects to the
-      // callback_url we set in /checkout/initialize on completion.
+      // Hand off to Paystack's hosted checkout, it redirects back to our callback_url on completion.
       window.location.href = data.authorizationUrl
     } catch (error) {
       toast.error(handleApiError(error).message)
@@ -373,10 +321,7 @@ export function CheckoutPage() {
               ) : null}
             </section>
 
-            {/* Saved address picker. Only shown to authenticated customers
-                with at least one saved address. Tapping a row prefills the
-                AddressForm below; tapping "Enter a new address" leaves the
-                form blank and turns on the "Save this address" checkbox. */}
+            {/* Saved address picker, authenticated customers with saved addresses only. */}
             {isAuthenticated && savedAddresses.length > 0 ? (
               <section className="flex flex-col gap-3">
                 <h2 className="font-serif italic text-2xl text-(--ink)">Delivery address</h2>
@@ -604,9 +549,7 @@ export function CheckoutPage() {
                 </span>
               </div>
 
-              {/* NGN-charge note. Paystack only handles Mensa's NGN account,
-                  so a visitor browsing in USD / GBP / EUR needs to know what
-                  will actually hit their card. */}
+              {/* Paystack charges NGN only, tell visitors browsing in another currency. */}
               {showCurrencyNote ? (
                 <div className="bg-cream-soft border border-hairline-soft px-3.5 py-2.5 text-[12px] text-graphite leading-relaxed">
                   Prices shown in {displayCurrency}. Your card will be charged{' '}
@@ -640,13 +583,7 @@ export function CheckoutPage() {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
-// DiscountEntry — collapsible "Have a code?" row that lives in the
-// order summary card. Two visual states:
-//   • Not applied: link toggles open an inline input + Apply button.
-//   • Applied:     compact pill with the code + a Remove action.
-// Errors render inline below the input where the customer typed.
-// ─────────────────────────────────────────────────────────────────
+// DiscountEntry, collapsible "Have a code?" row. Applied state renders a pill with a Remove action.
 interface DiscountEntryProps {
   applied: ApplyDiscountResponseData | null
   codeInput: string

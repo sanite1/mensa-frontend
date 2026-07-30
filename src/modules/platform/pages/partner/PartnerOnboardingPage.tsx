@@ -1,12 +1,5 @@
-// ═══════════════════════════════════════════════════════════════
-// /partner/onboarding?token=...
-//
-// Single-use link from the partner approval email. We:
-//   1. Verify the token (GET) to render a "Welcome, {name}" page
-//   2. Collect password + bank details + (optional) referral code
-//   3. POST /partners/onboarding/complete to activate
-//   4. Auto sign-in via /auth/login and redirect to /partner
-// ═══════════════════════════════════════════════════════════════
+// /partner/onboarding?token=…, single use link from the approval email.
+// Verify token, collect password and bank details, complete, then auto sign in and redirect to /partner.
 
 import { useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'

@@ -1,6 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // TrustLine — single row of the PDP trust block: coral icon + body copy.
-// ─────────────────────────────────────────────────────────────────────────
 import type { ReactNode } from 'react'
 
 interface TrustLineProps {

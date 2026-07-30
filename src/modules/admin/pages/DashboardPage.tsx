@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /  (admin dashboard)
-//
-// KPI cards + recent activity strip + low-stock callout, all
-// driven by GET /admin/stats. Stale time on the query is 60s so
-// flipping between tabs doesn't hammer the endpoint.
-// ═══════════════════════════════════════════════════════════════
+// /  (admin dashboard).
 import { Link } from 'react-router-dom'
 import { ArrowRight, AlertTriangle } from 'lucide-react'
 

@@ -1,11 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /shop/:slug — Product Detail Page.
-//
-// Layout:
-//   Desktop (lg) — two column hero: gallery left, info right.
-//   Tablet  (md) — stacked: gallery on top, info below.
-//   Mobile  (sm) — stacked + sticky Add to bag at the bottom.
-// ═══════════════════════════════════════════════════════════════
+// /shop/:slug Product Detail Page. Two column on desktop, stacked below lg, sticky Add to bag on mobile.
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -73,9 +66,7 @@ function ProductView({ product }: { product: Product }) {
   const metadata = product.metadata ?? {}
   const optionTypes = product.optionTypes ?? []
 
-  // SEO — use the hero image if we have one, otherwise the brand
-  // default falls through from the index.html default. (heroImage
-  // itself is declared further down for the rest of the view.)
+  // SEO uses the hero image when present, otherwise the index.html default falls through.
   const seoHeroUrl = (images.find((img) => img.order === 0) ?? images[0])?.url
   useSeo({
     title: product.name,

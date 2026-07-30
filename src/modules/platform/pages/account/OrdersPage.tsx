@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /account/orders — logged-in order history list.
-//
-// Each row shows the order number, item count, total, a status pill,
-// and (for in-flight orders) the estimated delivery window so the
-// customer doesn't have to click through to know what's next.
-// ═══════════════════════════════════════════════════════════════
+// /account/orders, order history list with status pill and ETA per row.
 
 import { Link } from 'react-router-dom'
 

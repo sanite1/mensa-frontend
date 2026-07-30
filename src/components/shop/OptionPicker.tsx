@@ -1,12 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// OptionPicker — renders one row of pill selectors per option type
-// declared on the product (Size, Color, etc.). Lifts the selection state
-// to the parent so the PDP can resolve it to a specific variant.
-//
-// Values that would yield an out of stock or inactive variant given the
-// other currently selected options are rendered struck through and still
-// clickable (so the user can pivot their selection).
-// ─────────────────────────────────────────────────────────────────────────
+// OptionPicker — renders one row of pill selectors per option type.
 import { cn } from '@/lib/utils'
 import type { ProductVariant } from '@/lib/network/types/product.types'
 
@@ -55,9 +47,7 @@ export function OptionPicker({
             <div className="flex gap-2 flex-wrap">
               {values.map((value) => {
                 const isSelected = selectedOptions[type] === value
-                // Combine this candidate with the rest of the current
-                // selection. If no active in-stock variant matches, mark
-                // it visually as out of stock.
+                // Mark the value out of stock when no active variant matches it plus the current selection.
                 const candidate = { ...selectedOptions, [type]: value }
                 const matching = variants.find(
                   (v) =>

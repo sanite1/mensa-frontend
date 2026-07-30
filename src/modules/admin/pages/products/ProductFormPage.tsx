@@ -1,12 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /products/new and /products/:slug/edit
-//
-// Single page handles both modes. When :slug is present, it
-// fetches the product, populates the form, and renders the image
-// uploader. On /products/new, the form is blank and the image
-// section is hidden (images require an existing product to attach
-// to — admin is redirected to /edit after a successful create).
-// ═══════════════════════════════════════════════════════════════
+// /products/new and /products/:slug/edit.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -193,9 +185,7 @@ const slugify = (input: string): string =>
     .replace(/-+/g, '-')
     .slice(0, 120)
 
-// ═══════════════════════════════════════════════════════════════
-//  Page
-// ═══════════════════════════════════════════════════════════════
+// ─── Page ────────────────────────────────────────
 
 export function ProductFormPage() {
   const { slug: slugParam } = useParams<{ slug: string }>()
@@ -252,10 +242,7 @@ export function ProductFormPage() {
     name: 'trustLines',
   })
 
-  // Slug is derived from the name and cannot be edited by hand — mirror it
-  // live on every keystroke, in both create and edit mode. Renaming an
-  // existing product will change its URL on save; the backend redirect
-  // handles bookmarked links.
+  // Slug mirrors the name live and is never hand edited. Renaming changes the URL on save, backend redirects cover old links.
   const nameValue = form.watch('name')
   const slugValue = form.watch('slug')
 
@@ -389,9 +376,7 @@ export function ProductFormPage() {
           const newSlug = res.data?.product.slug
           if (!newSlug) return
 
-          // If the admin selected images during create, upload them now that
-          // the product exists. Sequential so we don't slam Cloudinary, and
-          // failures don't block the rest from uploading.
+          // Upload create-mode images now that the product exists, sequentially so failures do not block the rest.
           if (pendingImages.length > 0) {
             for (const { file } of pendingImages) {
               try {
@@ -826,10 +811,7 @@ export function ProductFormPage() {
             )}
           </Section>
 
-          {/* ── Images ───────────────────────────────────────────────
-              Edit mode: hits Cloudinary directly via the upload hook.
-              Create mode: holds File objects locally with object URL
-              previews; uploaded after the product is created. */}
+          {/* ── Images: edit mode uploads straight to Cloudinary, create mode holds Files locally until the product exists ── */}
           {isEditMode && product ? (
             <ImagesSection slug={product.slug} images={product.images ?? []} eyebrow="08" />
           ) : (
@@ -879,9 +861,7 @@ export function ProductFormPage() {
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Section wrapper
-// ═══════════════════════════════════════════════════════════════
+// ─── Section wrapper ─────────────────────────────
 function Section({
   title,
   eyebrow,
@@ -909,16 +889,9 @@ function Section({
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Variants section
-//
-//  Lifted to its own component so we can react to changes in
-//  `optionTypes` from inside it (via form.watch) without rerunning
-//  the whole page component on every keystroke. Empty state guides
-//  the admin: define option types first, then add variants. A
-//  sizeless escape hatch (single variant with no option types) is
-//  inlined under the empty state for products like books.
-// ═══════════════════════════════════════════════════════════════
+// ─── Variants section ────────────────────────────
+// Own component so form.watch on `optionTypes` does not rerun the whole page per keystroke.
+// The empty state inlines a sizeless escape hatch (one variant, no option types) for products like books.
 function VariantsSection({
   form,
   fields,
@@ -933,9 +906,7 @@ function VariantsSection({
   const optionTypes = form.watch('optionTypes') ?? []
   const hasOptionTypes = optionTypes.length > 0
   const hasVariants = fields.length > 0
-  // Add variant is only useful once the admin has either declared
-  // option types (so the variant row knows what fields to show) or
-  // already added at least one variant.
+  // Add variant only makes sense once option types exist or a first variant is present.
   const addVariantEnabled = hasOptionTypes || hasVariants
 
   return (
@@ -1003,15 +974,9 @@ function VariantsSection({
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Option types field — local string state, commits on blur
-//
-//  Editing the optionTypes array on every keystroke causes variant rows
-//  to remount their option inputs (each keyed by type name) and confuses
-//  react-hook-form's register/unregister cycle. By keeping the raw text
-//  in local state and only writing the parsed array to the form on blur,
-//  variant rows update once, not on every character.
-// ═══════════════════════════════════════════════════════════════
+// ─── Option types field — local string state, commits on blur ────
+// Writing optionTypes per keystroke remounts variant option inputs (keyed by type name) and
+// confuses RHF register/unregister, so the parsed array is only written to the form on blur.
 function OptionTypesField({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const arrayValue = form.watch('optionTypes') ?? []
   // String key to detect external resets (e.g. when switching products).
@@ -1030,9 +995,7 @@ function OptionTypesField({ form }: { form: ReturnType<typeof useForm<FormValues
     form.setValue('optionTypes', parsed, { shouldDirty: true })
   }
 
-  // Plain wrappers (not FormItem/FormControl/FormLabel) because the optional
-  // optionTypes field isn't wrapped in a FormField — those shadcn components
-  // require a FormFieldContext and throw without one.
+  // Plain wrappers, the shadcn Form components throw without a FormField context and optionTypes has none.
   return (
     <div className="flex flex-col gap-2">
       <Label>Option types</Label>
@@ -1050,9 +1013,7 @@ function OptionTypesField({ form }: { form: ReturnType<typeof useForm<FormValues
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Variant row
-// ═══════════════════════════════════════════════════════════════
+// ─── Variant row ─────────────────────────────────
 function VariantRow({
   index,
   onRemove,
@@ -1086,11 +1047,7 @@ function VariantRow({
         </button>
       </div>
 
-      {/* Option value inputs — one per declared option type. Each input
-          registers a nested field path; react-hook-form holds the value via
-          ref so we don't fight a controlled re-render on every keystroke.
-          Plain wrappers (not shadcn FormItem/FormControl) because there's
-          no FormField context for these dynamic field names. */}
+      {/* One input per option type, registered via nested paths. Plain wrappers since these dynamic names have no FormField context. */}
       {optionTypes.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
           {optionTypes.map((type: string) => (
@@ -1100,9 +1057,7 @@ function VariantRow({
                 placeholder={type === 'Size' ? 'M' : type === 'Color' ? 'Black' : type}
                 defaultValue={variantOptions[type] ?? ''}
                 {...form.register(
-                  // The Zod schema types `options` as Record<string, string>
-                  // so dynamic keys are valid at runtime, but the TS
-                  // Path<FormValues> doesn't enumerate every string. Cast.
+                  // Zod allows dynamic `options` keys at runtime but Path<FormValues> cannot enumerate them. Cast.
                   `variants.${index}.options.${type}` as `variants.${number}.options.${string}`,
                 )}
               />
@@ -1164,9 +1119,7 @@ function VariantRow({
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Accordion row (Product details / Care instructions / etc.)
-// ═══════════════════════════════════════════════════════════════
+// ─── Accordion row (Product details / Care instructions / etc.) ────
 function AccordionRow({
   index,
   onRemove,
@@ -1239,9 +1192,7 @@ function AccordionRow({
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Images section
-// ═══════════════════════════════════════════════════════════════
+// ─── Images section ──────────────────────────────
 type ImgItem = { _id: string; url: string; alt: string; order: number }
 
 function ImagesSection({
@@ -1348,9 +1299,7 @@ function ImagesSection({
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Trust line row
-// ═══════════════════════════════════════════════════════════════
+// ─── Trust line row ──────────────────────────────
 function TrustLineRow({
   index,
   onRemove,
@@ -1409,15 +1358,9 @@ function TrustLineRow({
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Pending images section (create mode)
-//
-//  The image upload endpoint requires an existing product slug, but the
-//  admin shouldn't have to fill out a form, save, and only then think
-//  about images. So during create we accept files into local component
-//  state with object URL previews, then upload them in onSubmit's success
-//  callback once the product has a real slug.
-// ═══════════════════════════════════════════════════════════════
+// ─── Pending images section (create mode) ────────
+// The upload endpoint needs a product slug, so during create files sit in local state
+// with object URL previews and upload in onSubmit's success callback.
 function PendingImagesSection({
   eyebrow,
   pending,
@@ -1519,9 +1462,7 @@ function PendingImagesSection({
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Small form inputs
-// ═══════════════════════════════════════════════════════════════
+// ─── Small form inputs ───────────────────────────
 
 function NairaInput({
   value,

@@ -1,11 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
 // /products (admin) — catalogue table.
-//
-// Lists every product including archived (isActive=false) so the
-// admin can reactivate or audit removed SKUs. Search + category
-// filter operate against the full result set in memory (8 SKUs at
-// launch; we'll move filters server side when the catalogue grows).
-// ═══════════════════════════════════════════════════════════════
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Eye, EyeOff, MoreVertical, PackageX, PackageCheck, Plus, Search } from 'lucide-react'

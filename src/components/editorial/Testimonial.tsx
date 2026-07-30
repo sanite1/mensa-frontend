@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// Testimonial — italic Newsreader pull-quote with a name + location
-// byline. Used in the homepage Voices section; the design alternates
-// paper and blush tone backgrounds across the three columns.
-// ─────────────────────────────────────────────────────────────────────────
+// Testimonial — italic Newsreader pull quote with name and location byline.
 import { Stars } from '@/components/shop/Stars'
 import { cn } from '@/lib/utils'
 
@@ -16,9 +12,7 @@ interface TestimonialProps {
   rating?: number
 }
 
-// The blush tone uses a colour blend that has no Tailwind theme token,
-// so it's surfaced as an arbitrary-value class (the design's berry at
-// 0.7 alpha). All other tone-driven classes are theme tokens.
+// Blush tone is a colour blend with no theme token, hence the one arbitrary value class.
 const TONE = {
   paper: {
     surface: 'bg-paper border border-hairline-soft',

@@ -1,8 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /shop — collection grid for all active products.
-// Category filter is reflected in the URL (?category=pants) so back
-// button works the way customers expect.
-// ═══════════════════════════════════════════════════════════════
+// /shop collection grid. Category filter lives in ?category= so the back button behaves.
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useProducts } from '@/lib/network/api/product.api'
@@ -63,9 +59,7 @@ export function ShopPage() {
           'Reusable period pants, reusable pads, the starter set, and our education range. Nationwide delivery from our studio in Abuja.',
       }
   useSeo(seoMeta)
-  // Search term lands here from the navbar SearchOverlay (See all products
-  // link goes to /shop?q=...). Filtering happens client-side against the
-  // already-loaded catalogue since the full list is small.
+  // ?q= comes from the navbar SearchOverlay, filtered client side since the catalogue is small.
   const searchQuery = (searchParams.get('q') ?? '').trim().toLowerCase()
 
   // Fetch all products (no pagination at launch — 8 SKUs).

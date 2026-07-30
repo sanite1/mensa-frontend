@@ -1,16 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// tracking.ts — order-tracking helpers shared by FulfilmentTimeline,
-// the /account/orders list, and anywhere else that needs a friendly
-// "Estimated delivery" string.
-//
-// Lead times are tuned for Mensa's two shipping methods:
-//   inhouse   — same-day or next-day in Abuja / Lagos rider network
-//   sendbox   — 2 to 5 working days nationwide
-//
-// Once shipped we anchor the ETA to `shippedAt`. Before shipping
-// we anchor to `paidAt` (or createdAt as a fallback) and add the
-// pack-out cushion to be realistic.
-// ═══════════════════════════════════════════════════════════════
+// tracking.ts — estimated delivery helpers. ETA anchors to shippedAt once shipped, else paidAt plus a pack out cushion.
 
 import type { Order } from '@/lib/network/types/order.types'
 

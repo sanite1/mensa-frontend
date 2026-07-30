@@ -1,15 +1,5 @@
-// ═══════════════════════════════════════════════════════════════
-// /  — Mensa homepage (editorial composition).
-//
-// Surface rhythm matches the design board:
-//   paper → ink → paper → cream → blush → paper → cream → paper → blush
-//
-// Sections are intentionally a single long composition (no shared
-// "page" wrapper) so each section can own its own horizontal padding,
-// background and breathing space. Most product data is hard-coded
-// editorial copy — the Shop teaser pulls from the real catalogue via
-// useProducts so the four cards always reflect what's actually for sale.
-// ═══════════════════════════════════════════════════════════════
+// Homepage editorial composition, sections own their own padding and surface tone.
+// Copy is hard coded except the Shop teaser, which pulls live catalogue via useProducts.
 
 import { Link } from 'react-router-dom'
 
@@ -83,9 +73,7 @@ function Hero() {
           </div>
         </div>
 
-        {/* Hidden on mobile where the MicroTrust marquee below already
-            carries the same trust language, and stacked hero copy makes
-            this list feel like busywork. */}
+        {/* Hidden on mobile, the MicroTrust marquee below already carries this trust language. */}
         <div className="hidden lg:block">
           <TrustStrip
             items={[
@@ -121,10 +109,7 @@ function MicroTrust() {
     { icon: <IconLeaf size={18} />, text: '5 year lifetime, zero monthly cost' },
     { icon: <IconUser size={18} />, text: 'Designed & sewn in Abuja' },
   ]
-  // Mobile/tablet: infinite marquee — the track renders two identical
-  // copies of the list back-to-back, and a `translateX(-50%)` animation
-  // scrolls the second copy in exactly as the first scrolls out.
-  // Desktop (lg+): the original static four-across grid.
+  // Mobile marquee needs two copies of the list, translateX(-50%) loops them seamlessly. Desktop is a static grid.
   const doubled = [...items, ...items]
   return (
     <section className="bg-ink text-paper py-5 overflow-hidden">
@@ -332,9 +317,7 @@ function EduCard({ tone, product }: { tone: 'blush' | 'cream'; product: Product 
         alt={image?.alt ?? product.name}
       />
       <div className="flex flex-col">
-        {/* The text block centers itself in the space the tall image
-            creates, so short catalogue copy never leaves a dead void
-            between the heading and the price row. */}
+        {/* my-auto centers short catalogue copy in the space the tall image creates. */}
         <div className="my-auto">
           <div className="font-mono text-[11px] tracking-[0.12em] text-berry uppercase">
             {product.name}

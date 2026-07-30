@@ -1,12 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // TrustStrip — horizontal row of trust badges (icon optional + text).
-// Used at the foot of the hero on the homepage and reused for the about
-// hero band. The design uses it as a quiet, hairline-bordered footer
-// inside larger sections rather than a banner.
-//
-// Text colour is caller-driven (defaults to muted graphite). Routed via
-// a CSS variable so the strip stays inline-style-free in the layout.
-// ─────────────────────────────────────────────────────────────────────────
 import type { CSSProperties, ReactNode } from 'react'
 
 interface TrustStripItem {

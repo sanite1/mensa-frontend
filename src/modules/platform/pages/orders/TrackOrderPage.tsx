@@ -1,15 +1,5 @@
-// ═══════════════════════════════════════════════════════════════
-// /orders/track — public order tracker.
-//
-// Lookup by order number + email (the email is a soft PIN —
-// both must match what was used at checkout). Renders a
-// FulfilmentTimeline that polls live while the order is in
-// flight (paid but not delivered / cancelled).
-//
-// Deep-link form: /orders/track?orderNumber=MS-2026-00001&email=foo@bar.com
-// The orderShipped email links here pre-filled so customers
-// don't retype anything.
-// ═══════════════════════════════════════════════════════════════
+// /orders/track public tracker, email acts as a soft PIN alongside the order number.
+// Deep linkable via ?orderNumber=…&email=…, the orderShipped email links here prefilled.
 
 import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -83,8 +73,7 @@ export function TrackOrderPage() {
   const order = trackQuery.data?.data?.order
 
   // ── Live polling while the order is still moving ──────────────────
-  // We only poll when we have an order, payment is confirmed, and we
-  // haven't hit a terminal fulfilment state (delivered or cancelled).
+  // Poll only for paid orders that haven't reached a terminal fulfilment state.
   const isInFlight =
     !!order &&
     order.payment.status === 'paid' &&
@@ -101,9 +90,7 @@ export function TrackOrderPage() {
   }, [isInFlight, refetch])
 
   // ── Keep the URL in sync with the looked-up values ────────────────
-  // So a refresh / share preserves context, and the back/forward
-  // buttons feel sensible. We only write when the user submits the
-  // form — the initial URL values pass straight through.
+  // Written only on form submit so refresh, share, and history feel sensible.
   const lastSyncedRef = useRef<string>('')
   useEffect(() => {
     if (!submitted) return
@@ -121,9 +108,7 @@ export function TrackOrderPage() {
     form.reset({ orderNumber: '', email: '' })
   }
 
-  // Determine the user-facing state. We need to be careful because
-  // `useTrackOrder` returns isError on 404, which we treat as a "not
-  // found" message rather than a generic failure.
+  // useTrackOrder returns isError on 404, treated as "not found" rather than a generic failure.
   const lookupFailed = !!submitted && trackQuery.isError
   const lookupSucceeded = !!submitted && !!order
   const lookupLoading = !!submitted && trackQuery.isFetching && !order

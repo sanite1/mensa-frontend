@@ -1,8 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /reset-password?token=…  — set a new password using the token
-// from the email link. useResetPassword navigates to /login on
-// success.
-// ═══════════════════════════════════════════════════════════════
+// /reset-password?token=… page. useResetPassword navigates to /login on success.
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'

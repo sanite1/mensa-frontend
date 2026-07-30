@@ -1,21 +1,5 @@
-// ═══════════════════════════════════════════════════════════════
-// /partnerships — public partnership entry point.
-//
-// Two distinct programmes share the page:
-//
-//   1. Organisation — schools / NGOs / councils. Existing flow,
-//      submits to POST /b2b/apply, admin verifies, then they get
-//      B2B pricing.
-//
-//   2. Individual — referral / affiliate. Submits to
-//      POST /partners/apply, admin approves, partner gets an
-//      onboarding email with a one-time link to set their password,
-//      bank details, and referral code. They then earn a commission
-//      on every paid order placed via their referral link.
-//
-// Tabs are a query param (?as=org|individual) so the link from the
-// header / footer can deep-link to either programme.
-// ═══════════════════════════════════════════════════════════════
+// /partnerships. Org tab posts to /b2b/apply, individual (referral) tab posts to /partners/apply.
+// Tabs live in the ?as=org|individual query param so header and footer links can deep link.
 
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -84,7 +68,7 @@ function Hero() {
         <div className="inline-flex items-center gap-3 text-coral">
           <span aria-hidden className="w-7 h-px bg-current opacity-60" />
           <span className="font-mono text-[11px] tracking-widest uppercase font-medium">
-            Partnerships · For organisations and individuals
+            Partnerships · For orgs and individuals
           </span>
         </div>
         <span className="font-mono text-[10.5px] tracking-widest uppercase text-mute">
@@ -96,9 +80,7 @@ function Hero() {
         <h1 className="m-0 font-display italic font-semibold text-[clamp(40px,8vw,128px)] leading-[0.95] tracking-tighter text-ink">
           Help us put reusable
           <br />
-          <span className="pl-[6%] lg:pl-[8%] block">
-            period products in every
-          </span>
+          <span className="pl-[6%] lg:pl-[8%] block">period products in every</span>
           <span className="pl-[14%] lg:pl-[18%] block">
             girl's <span className="text-pink">first kit.</span>
           </span>
@@ -123,11 +105,7 @@ function Hero() {
 }
 
 // ─── TIERS ───────────────────────────────────────────────────────
-// ─── TIERS ───────────────────────────────────────────────────────
-// Describe what each partnership tier *gets* rather than counts of
-// active partners — we are pre-launch and any number printed here
-// would be fabricated. Revisit once Purple Pact + Mensa have a real
-// roster to credit.
+// Describe what tiers get, not partner counts, any number printed here would be fabricated.
 function Tiers() {
   const blocks: { kind: string; offer: string; copy: string }[] = [
     {
@@ -184,9 +162,7 @@ function ApplicationSection({
   mode: Mode
   onModeChange: (m: Mode) => void
 }) {
-  // Already-approved individual partners come back to this page to sign
-  // in. Surface a contextual link next to the tab strip — points to the
-  // dashboard if they're already signed in as a partner, login otherwise.
+  // Contextual link for approved partners, dashboard when signed in, login otherwise.
   const user = useAuthStore((s) => s.user)
   const isPartner = user?.role === 'partner'
 
@@ -253,9 +229,7 @@ function ApplicationSection({
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Organisation form
-// ═══════════════════════════════════════════════════════════════
+// ─── ORGANISATION FORM ───────────────────────────────────────────
 
 const orgSchema = z.object({
   name: z.string().trim().min(2, 'Organisation name is required.').max(200),
@@ -275,7 +249,11 @@ const ORG_TYPES: { value: B2BOrgType; label: string; description: string }[] = [
   { value: 'school', label: 'School', description: 'Public or private, primary through tertiary.' },
   { value: 'ngo', label: 'NGO', description: 'Non-profits working on health, gender, education.' },
   { value: 'council', label: 'Council', description: 'Local, state, or federal government.' },
-  { value: 'other', label: 'Other', description: 'Corporates, religious bodies, community groups.' },
+  {
+    value: 'other',
+    label: 'Other',
+    description: 'Corporates, religious bodies, community groups.',
+  },
 ]
 
 function OrgApplicationForm() {
@@ -416,12 +394,7 @@ function OrgApplicationForm() {
               <FormItem>
                 <FormLabel>Contact phone</FormLabel>
                 <FormControl>
-                  <Input
-                    type="tel"
-                    placeholder="+234 803 000 0000"
-                    autoComplete="tel"
-                    {...field}
-                  />
+                  <Input type="tel" placeholder="+234 803 000 0000" autoComplete="tel" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -475,9 +448,7 @@ function OrgApplicationForm() {
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Individual form (referral / affiliate)
-// ═══════════════════════════════════════════════════════════════
+// ─── INDIVIDUAL FORM (referral / affiliate) ──────────────────────
 
 const individualSchema = z.object({
   name: z.string().trim().min(2, 'Your name is required.').max(120),
@@ -533,8 +504,8 @@ function IndividualApplicationForm() {
         <div className="t-eyebrow text-mute mb-3">How it works</div>
         <ol className="m-0 pl-5 flex flex-col gap-2 text-graphite t-body-s">
           <li>
-            Apply with your details. We review within five working days. If you create content
-            or have an audience that fits, mention it in the notes.
+            Apply with your details. We review within five working days. If you create content or
+            have an audience that fits, mention it in the notes.
           </li>
           <li>
             On approval we email you a one-time link to set your password, bank details, and the
@@ -653,17 +624,9 @@ function IndividualApplicationForm() {
   )
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  Success panel
-// ═══════════════════════════════════════════════════════════════
+// ─── SUCCESS PANEL ───────────────────────────────────────────────
 
-function SuccessPanel({
-  onReset,
-  kind,
-}: {
-  onReset: () => void
-  kind: 'org' | 'individual'
-}) {
+function SuccessPanel({ onReset, kind }: { onReset: () => void; kind: 'org' | 'individual' }) {
   return (
     <div className="bg-cream-soft border border-hairline-soft p-8 md:p-12 text-center">
       <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-ok/10 text-ok mb-5">

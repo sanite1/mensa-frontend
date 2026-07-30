@@ -1,11 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /returns — returns and exchanges policy.
-//
-// Hygiene-restricted product means no returns on period items.
-// The page leads with that honestly, then explains the exception
-// (wrong / damaged / wrong-size items reported within 3 days) and
-// the report path (email with order number + photo + note).
-// ═══════════════════════════════════════════════════════════════
+// /returns policy page. No returns on hygiene items, exceptions reported within 3 days by email.
 
 import { Link } from 'react-router-dom'
 import { ShieldOff, Camera, Mail, Sparkles } from 'lucide-react'

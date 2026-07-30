@@ -1,9 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /partnerships/individuals/:id (admin)
-//
-// Approve / reject pending partner applications. For active
-// partners, edit the commission rate or suspend / re-activate.
-// ═══════════════════════════════════════════════════════════════
+// /partnerships/individuals/:id (admin).
 
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'

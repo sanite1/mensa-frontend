@@ -1,6 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// user.types.ts — mirrors backend src/interfaces/user.interface.ts
-// ═══════════════════════════════════════════════════════════════
+// user.types.ts — mirrors backend src/interfaces/user.interface.ts.
 
 export interface UserAddress {
   _id: string

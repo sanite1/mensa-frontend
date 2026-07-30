@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// admin.api.ts — cross-cutting admin endpoints
-//
-// Currently: GET /admin/stats for the dashboard. Future customer
-// list/detail and partnership endpoints land here too once they
-// outgrow the per-domain api files.
-// ═══════════════════════════════════════════════════════════════
+// admin.api.ts — cross-cutting admin endpoints.
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { api } from '../api'

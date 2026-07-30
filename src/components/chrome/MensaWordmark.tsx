@@ -1,17 +1,5 @@
-// ─────────────────────────────────────────────────────────────────────────
-// Mensa brand mark — renders the official lockup PNG (Mensa wordmark +
-// "PERIOD PRODUCTS" sub-mark) at the requested height.
-//
-// API mirrors the design primitive:
-//   tone="pink"  default — for light surfaces, no filter
-//   tone="paper" — inverts the lockup to white for dark surfaces (footer)
-//   tone="ink"   — turns the lockup black for high-contrast contexts
-//
-// Height is a runtime number; we route it through a CSS variable so the
-// Tailwind arbitrary-value class can consume it without surfacing as a
-// regular inline style. The tone filter likewise becomes a Tailwind class
-// per option so there's no inline style on the path here.
-// ─────────────────────────────────────────────────────────────────────────
+// MensaWordmark — official lockup PNG at a requested height with pink, paper, and ink tone filters.
+// Height threads through a CSS variable so Tailwind classes consume it without inline styles.
 import type { CSSProperties } from 'react'
 import { cn } from '@/lib/utils'
 import logoSrc from '@/assets/mensa_logo.png'
@@ -22,9 +10,7 @@ interface MensaMarkProps {
   className?: string
 }
 
-// Arbitrary-value filter classes so Tailwind generates exactly the
-// declaration we need (no `filter-` theme token covers these brand-
-// specific filter recipes).
+// Arbitrary value filter classes, no `filter-` theme token covers these brand recipes.
 const TONE_FILTER_CLASS: Record<NonNullable<MensaMarkProps['tone']>, string> = {
   pink: '',
   paper: 'filter-[brightness(0)_invert(1)]',

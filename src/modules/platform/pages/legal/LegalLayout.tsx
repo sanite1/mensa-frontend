@@ -1,11 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// LegalLayout — shared shell for /privacy and /terms.
-//
-// Both legal pages share the same editorial chrome: dotted eyebrow,
-// big italic title, "last updated" stamp, a draft notice while we
-// haven't had counsel review the copy, and a max-width body column
-// that takes a list of section blocks.
-// ═══════════════════════════════════════════════════════════════
+// LegalLayout, shared shell for /privacy and /terms, includes a draft notice pending counsel review.
 
 import type { ReactNode } from 'react'
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'

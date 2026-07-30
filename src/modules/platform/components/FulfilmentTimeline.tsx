@@ -1,17 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// FulfilmentTimeline
-//
-// Stage-first tracker for an order. The card is built around a
-// single visual answer to the question "where is my order?" — a
-// large stage headline, a plain-English explanation, an ETA pill,
-// and a slim 4-step rail underneath for context.
-//
-// Pipeline: Paid -> Preparing -> Shipped -> Delivered
-// Sink:     Cancelled  (gets its own dedicated panel)
-//
-// Used on /orders/track, /checkout/confirmation/:orderNumber,
-// and /account/orders/:id.
-// ═══════════════════════════════════════════════════════════════
+// FulfilmentTimeline, order stage tracker. Cancelled renders its own panel outside the four step rail.
 
 import type { Order } from '@/lib/network/types/order.types'
 import { Check, Package, Truck, Sparkles, ClipboardCheck } from 'lucide-react'

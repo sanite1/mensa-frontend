@@ -1,16 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// b2b.api.ts — partnerships (B2BOrg) endpoints
-//
-// Public surface:
-//   - submitB2BOrg  (POST /b2b/apply)
-//
-// Admin surface:
-//   - useAdminPartnerships  (list + filter by verificationStatus)
-//   - useAdminPartnership   (single org)
-//   - useVerifyPartnership  (verify / reject)
-//
-// Quotes, pricing tiers, and invoicing land in a later sprint.
-// ═══════════════════════════════════════════════════════════════
+// b2b.api.ts — partnerships (B2BOrg) endpoints.
 
 import {
   keepPreviousData,

@@ -1,6 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /account/orders/:id — logged-in order detail.
-// ═══════════════════════════════════════════════════════════════
+// /account/orders/:id, logged in order detail.
 
 import { Link, useParams } from 'react-router-dom'
 

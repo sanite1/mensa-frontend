@@ -1,22 +1,5 @@
-// ═══════════════════════════════════════════════════════════════
-// seo.ts — lightweight per-page meta-tag updates.
-//
-// We're a Vite SPA without SSR, so social link previews (which
-// don't run JS) fall back to whatever is in index.html. Real
-// users + JS-running bots (Google) see the per-page values that
-// this hook installs at runtime.
-//
-// Usage:
-//
-//   useSeo({
-//     title: 'Shop',
-//     description: 'Reusable period pants and pads ...',
-//   })
-//
-// Title gets the brand suffix appended automatically. Pass
-// `titleAsIs: true` if you want full control (used for very short
-// pages where the brand suffix would dominate).
-// ═══════════════════════════════════════════════════════════════
+// seo.ts — per page meta tag updates at runtime.
+// Vite SPA without SSR, so social crawlers that skip JS only ever see index.html defaults.
 
 import { useEffect } from 'react'
 

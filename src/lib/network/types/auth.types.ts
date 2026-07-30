@@ -1,7 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// auth.types.ts — request payloads + response shapes for /auth/*
-// Mirrors backend src/interfaces/user.interface.ts.
-// ═══════════════════════════════════════════════════════════════
+// auth.types.ts — request payloads + response shapes for /auth/*.
 
 export type UserRole = 'customer' | 'admin' | 'b2b_admin' | 'b2b_member' | 'partner'
 

@@ -1,12 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// auth.api.ts — raw async functions + React Query hooks
-//
-// Pattern: each endpoint gets a raw `<name>Fn` (for imperative use)
-// and a React Query hook (`use<Name>`).
-//
-// Every URL, method, payload, and response type is traced 1:1
-// from the backend route → controller → service → response.
-// ═══════════════════════════════════════════════════════════════
+// auth.api.ts — raw async functions + React Query hooks.
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
@@ -35,9 +27,7 @@ export const authKeys = {
   me: ['auth', 'me'] as const,
 }
 
-// ══════════════════════════════════════════════
-// 1. POST /api/v1/auth/register
-// ══════════════════════════════════════════════
+// ─── 1. POST /api/v1/auth/register ───────────────
 
 const registerFn = async (
   payload: RegisterPayload,
@@ -64,9 +54,7 @@ export const useRegister = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 2. POST /api/v1/auth/login
-// ══════════════════════════════════════════════
+// ─── 2. POST /api/v1/auth/login ──────────────────
 
 const loginFn = async (payload: LoginPayload): Promise<ApiResponse<LoginResponseData>> => {
   return api.post<LoginResponseData>('/auth/login', payload)
@@ -117,9 +105,7 @@ export const useLogin = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 3. POST /api/v1/auth/refresh
-// ══════════════════════════════════════════════
+// ─── 3. POST /api/v1/auth/refresh ────────────────
 
 const refreshFn = async (): Promise<ApiResponse<RefreshResponseData>> => {
   return api.post<RefreshResponseData>('/auth/refresh')
@@ -139,9 +125,7 @@ export const useRefresh = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 4. POST /api/v1/auth/logout (authenticated)
-// ══════════════════════════════════════════════
+// ─── 4. POST /api/v1/auth/logout (authenticated) ────
 
 const logoutFn = async (): Promise<ApiResponse<LogoutResponseData>> => {
   return api.post<LogoutResponseData>('/auth/logout')
@@ -175,9 +159,7 @@ export const useLogout = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 5. GET /api/v1/auth/me (authenticated)
-// ══════════════════════════════════════════════
+// ─── 5. GET /api/v1/auth/me (authenticated) ──────
 
 const getMeFn = async (): Promise<ApiResponse<GetMeResponseData>> => {
   return api.get<GetMeResponseData>('/auth/me')
@@ -199,9 +181,7 @@ export const useGetMe = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 6. POST /api/v1/auth/forgot-password
-// ══════════════════════════════════════════════
+// ─── 6. POST /api/v1/auth/forgot-password ────────
 
 const forgotPasswordFn = async (
   payload: ForgotPasswordPayload,
@@ -221,9 +201,7 @@ export const useForgotPassword = () => {
   })
 }
 
-// ══════════════════════════════════════════════
-// 7. POST /api/v1/auth/reset-password
-// ══════════════════════════════════════════════
+// ─── 7. POST /api/v1/auth/reset-password ─────────
 
 const resetPasswordFn = async (
   payload: ResetPasswordPayload,

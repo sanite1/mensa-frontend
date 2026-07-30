@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// PasswordField — password input with show/hide toggle, styled to match
-// the Mensa Input primitive. Drop in any react-hook-form context the same
-// way you'd use <Input />.
-// ─────────────────────────────────────────────────────────────────────────
+// PasswordField, password input with show/hide toggle, use it like <Input />.
 import { useState, forwardRef } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { cn } from '@/lib/utils'

@@ -1,13 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
 // /partnerships (admin) — top-level partnerships hub.
-//
-// Tabs:
-//   - Organisations  (B2BOrg verification)
-//   - Individuals    (Partner programme applications)
-//   - Payouts        (manual partner payout queue)
-//
-// Tab state is encoded in ?tab= so admin can deep-link to any view.
-// ═══════════════════════════════════════════════════════════════
 
 import { useSearchParams } from 'react-router-dom'
 import { cn } from '@/lib/utils'

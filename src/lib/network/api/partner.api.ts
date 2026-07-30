@@ -1,14 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// partner.api.ts — Partner programme (individual referrals)
-//
-// Public hooks:        useApplyAsPartner, useVerifyOnboardingToken,
-//                      useCompletePartnerOnboarding
-// Authed (partner):    usePartnerDashboard, useRequestPayout
-// Admin:               useAdminPartners, useAdminPartner,
-//                      useApprovePartner, useRejectPartner,
-//                      useUpdatePartner, useAdminPayouts,
-//                      useMarkPayoutPaid, useRejectPayout
-// ═══════════════════════════════════════════════════════════════
+// partner.api.ts — Partner programme (individual referrals).
 
 import {
   keepPreviousData,

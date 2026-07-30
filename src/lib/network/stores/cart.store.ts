@@ -76,9 +76,7 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'mensa-cart',
-      // Only persist the lines. Drawer open state should never survive a
-      // reload — nothing more jarring than reopening the page with the cart
-      // drawer wide open.
+      // Persist lines only, drawer open state should never survive a reload.
       partialize: (state) => ({ lines: state.lines }),
       // Explicit merge so methods from the current store are preserved on
       // rehydration even if old localStorage data has a different shape.

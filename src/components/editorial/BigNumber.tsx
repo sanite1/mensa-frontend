@@ -1,12 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// BigNumber — large italic editorial numeral used in the pillars / mission
-// / manufacturing sections. Mirrors the design's BigNumber helper.
-//
-// Colour and pixel size are caller-driven, so we thread them through CSS
-// custom properties consumed by Tailwind arbitrary-value classes. That
-// keeps the layout intent on the className without dropping back to a
-// generic style attribute.
-// ─────────────────────────────────────────────────────────────────────────
+// BigNumber — large italic editorial numeral. Colour and size thread through CSS custom properties so no inline style attribute is needed.
 import type { CSSProperties, ReactNode } from 'react'
 
 interface BigNumberProps {

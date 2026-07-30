@@ -1,6 +1,4 @@
-// Individuals (partner programme) sub-view inside /partnerships (admin).
-// Lists Partner applications across statuses, links each to a detail
-// page where admin can approve, reject, or update.
+// Individuals (partner programme) sub-view inside /partnerships (admin), links each application to its detail page.
 
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'

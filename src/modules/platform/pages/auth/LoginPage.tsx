@@ -1,7 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /login — sign in with email + password.
-// Side-effects (toast, store, navigate) handled inside useLogin.
-// ═══════════════════════════════════════════════════════════════
+// /login page. Side effects (toast, store, navigate) live inside useLogin.
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'

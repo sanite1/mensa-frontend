@@ -1,11 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
 // CurrencyPicker — dropdown in the utility strip.
-//
-// Display-only: switching here changes prices across the site but
-// Paystack still charges in NGN at checkout. The CheckoutPage
-// surfaces a small note when the selected currency != NGN so the
-// customer is not surprised.
-// ═══════════════════════════════════════════════════════════════
 
 import {
   DropdownMenu,

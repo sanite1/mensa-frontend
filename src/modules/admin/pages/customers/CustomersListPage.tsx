@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /customers (admin)
-//
-// Searchable, paginated customer list. Search runs server side so
-// it works against the full user table, not just the page loaded.
-// Each row links to /customers/:id for the detail view.
-// ═══════════════════════════════════════════════════════════════
+// /customers (admin).
 
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'

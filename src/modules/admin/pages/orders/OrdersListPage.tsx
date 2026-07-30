@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
 // /orders (admin) — read-only orders table for Sprint 3.
-//
-// Sprint 4 will add filters, search, status mutation, and a per
-// order detail page. For now this just surfaces what's coming in
-// so the team can spot-check the checkout pipeline.
-// ═══════════════════════════════════════════════════════════════
 
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -195,10 +189,7 @@ function Row({ order, isLast }: { order: Order; isLast: boolean }) {
 }
 
 function StatusChip({ status }: { status: PaymentStatus }) {
-  // Tone class lookup keeps the chip Tailwind-only. The hex fallbacks
-  // from the old inline style are preserved as arbitrary-value classes
-  // so any environment without the CSS vars still renders the right
-  // colours.
+  // Tone class lookup keeps the chip Tailwind only, hex fallbacks preserved for environments without the CSS vars.
   const toneClass =
     status === 'paid'
       ? 'bg-[#E5F1E1] text-[#2F6B3A]'

@@ -1,8 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /account — minimal account overview stub. Expanded in Sprint 4
-// (orders, addresses, preferences). For Sprint 1, it confirms the
-// auth flow worked end-to-end.
-// ═══════════════════════════════════════════════════════════════
+// /account, minimal account overview, to be expanded with preferences later.
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/lib/network/stores/auth.store'

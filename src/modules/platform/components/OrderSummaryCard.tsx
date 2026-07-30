@@ -1,15 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// OrderSummaryCard
-//
-// The shared "this is your order" panel reused on three screens:
-//   • /checkout/confirmation/:orderNumber
-//   • /orders/track          (public lookup)
-//   • /account/orders/:id    (logged-in detail)
-//
-// It owns the visual rhythm of an order: status chip, line list,
-// totals, address, tracking link. Anything else (page chrome,
-// header copy, action buttons) is the caller's job.
-// ═══════════════════════════════════════════════════════════════
+// OrderSummaryCard, shared order panel (status chip, lines, totals, address). Page chrome is the caller's job.
 
 import type { Order } from '@/lib/network/types/order.types'
 import { Photo } from '@/components/shop/Photo'

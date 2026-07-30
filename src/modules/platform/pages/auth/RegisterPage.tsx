@@ -1,8 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /register — create a customer account.
-// Backend hashes password, signs tokens, sends welcome email, and
-// auto-logs the user in. useRegister handles store + navigation.
-// ═══════════════════════════════════════════════════════════════
+// /register page. Backend auto logs the user in, useRegister handles store and navigation.
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'

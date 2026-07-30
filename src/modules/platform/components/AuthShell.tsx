@@ -1,9 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// AuthShell — shared wrapper for the four auth pages (Login, Register,
-// Forgot, Reset). Provides the editorial structure: eyebrow + italic
-// headline + subtitle, all sitting on a cream-soft section behind a
-// paper card with hairline border.
-// ─────────────────────────────────────────────────────────────────────────
+// AuthShell, shared card wrapper (eyebrow, headline, subtitle) for the four auth pages.
 import type { ReactNode } from 'react'
 
 interface AuthShellProps {

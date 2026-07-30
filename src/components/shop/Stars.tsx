@@ -1,6 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // Stars — tiny star rating row, mirrors the design Stars helper.
-// ─────────────────────────────────────────────────────────────────────────
 interface StarsProps {
   value: number
   size?: number

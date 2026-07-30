@@ -1,9 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /content (admin)
-//
-// Lists all journal + education posts with filters. Acts as the
-// jump-off to ContentEditorPage for create and edit.
-// ═══════════════════════════════════════════════════════════════
+// /content (admin).
 
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'

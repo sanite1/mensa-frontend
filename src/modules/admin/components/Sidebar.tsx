@@ -1,11 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // Admin sidebar — dark ink rail with section links.
-//
-//   ≥ lg : permanently visible to the left of the main content
-//   < lg : hidden; rendered as a slide-in drawer with overlay when isOpen
-//
-// Active state uses a pink left border + paper text.
-// ─────────────────────────────────────────────────────────────────────────
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,

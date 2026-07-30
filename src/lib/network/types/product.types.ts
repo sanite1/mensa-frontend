@@ -1,6 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// product.types.ts — mirrors backend src/interfaces/product.interface.ts
-// ═══════════════════════════════════════════════════════════════
+// product.types.ts — mirrors backend src/interfaces/product.interface.ts.
 
 export type ProductCategory =
   | 'pants'

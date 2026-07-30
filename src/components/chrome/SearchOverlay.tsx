@@ -1,12 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// SearchOverlay
-//
-// Full-width slide-down that the navbar search icon opens. Searches
-// products and journal posts in parallel against the existing
-// public list endpoints (both support `?q=`). Debounced 250ms so
-// keystrokes don't hammer the API. Closes on Escape, click outside,
-// route change, or selecting a result.
-// ═══════════════════════════════════════════════════════════════
+// SearchOverlay — slide down search over products and journal posts, debounced 250ms, closes on Escape, outside click, or route change.
 
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'

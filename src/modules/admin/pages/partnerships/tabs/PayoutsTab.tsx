@@ -1,9 +1,5 @@
-// Payouts tab inside /partnerships (admin).
-//
-// Lists every PartnerPayoutRequest filtered by status. Admin pays
-// manually (outside the system) then records the reference here
-// to mark paid. Rejection puts the commissions back to 'available'
-// so the partner can re-request.
+// Payouts tab inside /partnerships (admin). Admin pays manually then records the reference here to mark paid.
+// Rejection puts commissions back to 'available' so the partner can re-request.
 
 import { useMemo, useState } from 'react'
 import { Check, X } from 'lucide-react'

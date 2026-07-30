@@ -1,13 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// AdminLayout — sidebar + topbar shell for the authenticated admin
-// surface. Uses cream-soft for the main canvas to differentiate from the
-// pure-paper platform surface.
-//
-// Mobile menu state lives here because both the Topbar (hamburger) and
-// the Sidebar (drawer panel + overlay) need to read/write it. Closing
-// happens on: tapping the overlay, hitting Escape, clicking a nav link
-// inside the sidebar, or resizing past the lg breakpoint.
-// ─────────────────────────────────────────────────────────────────────────
+// AdminLayout — sidebar + topbar shell. Mobile menu state lives here because Topbar and Sidebar both read and write it.
 import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Sidebar } from '@/modules/admin/components/Sidebar'
@@ -17,9 +8,7 @@ export function AdminLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const location = useLocation()
 
-  // Auto-close the drawer whenever the route changes (i.e. the user
-  // clicked a nav link). Without this, the drawer would stay open on
-  // top of the new page.
+  // Close the drawer on route change so it does not sit open over the new page.
   useEffect(() => {
     setIsMenuOpen(false)
   }, [location.pathname])

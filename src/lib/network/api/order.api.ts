@@ -1,16 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// order.api.ts — raw async functions + React Query hooks
-//
-// Public + customer endpoints:
-//   1. getShippingRatesFn    useShippingRates
-//   2. initializeCheckoutFn  useInitializeCheckout
-//   3. listMyOrdersFn        useMyOrders         (auth)
-//   4. getMyOrderFn          useMyOrder          (auth)
-//   5. trackOrderFn          useTrackOrder       (public)
-//
-// Admin endpoints (require admin role):
-//   6. adminListOrdersFn     useAdminOrders
-// ═══════════════════════════════════════════════════════════════
+// order.api.ts — raw async functions + React Query hooks.
 
 import {
   keepPreviousData,
@@ -49,9 +37,7 @@ export const orderKeys = {
     [...orderKeys.all, 'shippingRates', input] as const,
 }
 
-// ══════════════════════════════════════════════
-// 1. POST /api/v1/checkout/shipping-rates
-// ══════════════════════════════════════════════
+// ─── 1. POST /api/v1/checkout/shipping-rates ─────
 
 const getShippingRatesFn = async (
   body: ShippingRatesInput,
@@ -59,11 +45,7 @@ const getShippingRatesFn = async (
   return api.post<ShippingRatesResponseData>('/checkout/shipping-rates', body)
 }
 
-/**
- * Fetch live shipping options. Enabled lazily — only fires when the caller
- * has a complete destination + non-empty cart. Cache key includes the full
- * input so address changes refetch cleanly.
- */
+/** Fetch live shipping options, enabled only once the destination is complete and the cart has lines. */
 export const useShippingRates = (
   input: ShippingRatesInput | undefined,
   enabled = true,
@@ -82,9 +64,7 @@ export const useShippingRates = (
     staleTime: 30_000,
   })
 
-// ══════════════════════════════════════════════
-// 2. POST /api/v1/checkout/initialize
-// ══════════════════════════════════════════════
+// ─── 2. POST /api/v1/checkout/initialize ─────────
 
 const initializeCheckoutFn = async (
   body: InitializeCheckoutInput,
@@ -100,14 +80,9 @@ export const useInitializeCheckout = () =>
     },
   })
 
-// ══════════════════════════════════════════════
-// 2b. POST /api/v1/checkout/verify/:reference
-// ══════════════════════════════════════════════
-//
-// Asks our backend to hit Paystack's `transaction/verify` directly and
-// reconcile the local order. Called by the confirmation page on mount
-// so the customer sees an answer immediately instead of waiting on the
-// asynchronous webhook. Idempotent on the server side.
+// ─── 2b. POST /api/v1/checkout/verify/:reference ────
+// Backend verifies with Paystack directly so the confirmation page gets an answer
+// without waiting on the async webhook. Idempotent server side.
 
 const verifyCheckoutFn = async (
   reference: string,
@@ -118,9 +93,7 @@ const verifyCheckoutFn = async (
 export const useVerifyCheckout = () =>
   useMutation({ mutationFn: verifyCheckoutFn })
 
-// ══════════════════════════════════════════════
-// 3. GET /api/v1/orders  (auth, current user)
-// ══════════════════════════════════════════════
+// ─── 3. GET /api/v1/orders  (auth, current user) ────
 
 const listMyOrdersFn = async (
   params?: ListOrdersParams,
@@ -136,9 +109,7 @@ export const useMyOrders = (params?: ListOrdersParams, enabled = true) =>
     enabled,
   })
 
-// ══════════════════════════════════════════════
-// 4. GET /api/v1/orders/:id  (auth, current user)
-// ══════════════════════════════════════════════
+// ─── 4. GET /api/v1/orders/:id  (auth, current user) ────
 
 const getMyOrderFn = async (
   id: string,
@@ -153,9 +124,7 @@ export const useMyOrder = (id: string | undefined) =>
     enabled: !!id,
   })
 
-// ══════════════════════════════════════════════
-// 5. GET /api/v1/orders/track/:orderNumber?email=  (public)
-// ══════════════════════════════════════════════
+// ─── 5. GET /api/v1/orders/track/:orderNumber?email=  (public) ────
 
 const trackOrderFn = async (
   orderNumber: string,
@@ -166,11 +135,7 @@ const trackOrderFn = async (
   })
 }
 
-/**
- * Public order lookup. The email acts as a soft PIN — both fields must match
- * what was used at checkout. Disabled until both are non-empty so we don't
- * fire a partial request on every keystroke.
- */
+/** Public order lookup, the email acts as a soft PIN. Disabled until both fields are filled so partial requests never fire. */
 export const useTrackOrder = (
   orderNumber: string | undefined,
   email: string | undefined,
@@ -183,9 +148,7 @@ export const useTrackOrder = (
     retry: false,
   })
 
-// ══════════════════════════════════════════════
-// 6. GET /api/v1/admin/orders  (admin)
-// ══════════════════════════════════════════════
+// ─── 6. GET /api/v1/admin/orders  (admin) ────────
 
 const adminListOrdersFn = async (
   params?: ListOrdersParams,
@@ -200,9 +163,7 @@ export const useAdminOrders = (params?: ListOrdersParams) =>
     placeholderData: keepPreviousData,
   })
 
-// ══════════════════════════════════════════════
-// 7. GET /api/v1/admin/orders/:id  (admin)
-// ══════════════════════════════════════════════
+// ─── 7. GET /api/v1/admin/orders/:id  (admin) ────
 
 const adminGetOrderFn = async (
   id: string,
@@ -217,9 +178,7 @@ export const useAdminOrder = (id: string | undefined) =>
     enabled: !!id,
   })
 
-// ══════════════════════════════════════════════
-// 8. PATCH /api/v1/admin/orders/:id/fulfilment  (admin)
-// ══════════════════════════════════════════════
+// ─── 8. PATCH /api/v1/admin/orders/:id/fulfilment  (admin) ────
 
 const updateOrderFulfilmentFn = async ({
   id,

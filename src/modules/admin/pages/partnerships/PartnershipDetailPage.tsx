@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /partnerships/:id (admin)
-//
-// Inspect a B2BOrg application and verify or reject it. Once
-// verified, downstream tooling (pricing tiers, quotes, invoicing)
-// can rely on verificationStatus === 'verified'.
-// ═══════════════════════════════════════════════════════════════
+// /partnerships/:id (admin).
 
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'

@@ -1,16 +1,5 @@
-// ═══════════════════════════════════════════════════════════════
-// referral.ts — partner referral attribution helpers
-//
-// A visitor lands on any URL that includes `?ref=CODE`. We persist
-// the code locally for 30 days so a click today still credits the
-// partner if the visitor buys two weeks later. Checkout reads the
-// code from here and forwards it to /checkout/initialize, which
-// resolves and stores it on the resulting order. The webhook then
-// accrues the partner's commission.
-//
-// We keep this dependency-free (no React, no Zustand) so it can be
-// called from any layer — layout effect, checkout form, etc.
-// ═══════════════════════════════════════════════════════════════
+// referral.ts — partner referral attribution. Persists ?ref=CODE for 30 days, checkout forwards it to /checkout/initialize.
+// Kept dependency free (no React, no Zustand) so any layer can call it.
 
 const STORAGE_KEY = 'mensa-ref'
 const TTL_MS = 30 * 24 * 60 * 60 * 1000 // 30 days
@@ -57,13 +46,7 @@ function safeClearStorage(): void {
   }
 }
 
-/** Read `?ref=CODE` from the current URL and persist if present.
- *  Re-applying a fresh code OVERWRITES an earlier one — the
- *  most-recent-click wins. Returns the code we ended up storing, or
- *  null if nothing changed.
- *
- *  Safe to call on every navigation; it's a no-op when `?ref` is
- *  absent. */
+/** Read `?ref=CODE` from the URL and persist it. A fresh code overwrites an earlier one, most recent click wins. Returns the stored code, or null. */
 export function captureReferralFromUrl(): string | null {
   if (typeof window === 'undefined') return null
   const params = new URLSearchParams(window.location.search)

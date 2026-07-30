@@ -1,16 +1,5 @@
-// ═══════════════════════════════════════════════════════════════
-// AddressForm — reusable address fieldset for the checkout page
-// and (later) the account/addresses CRUD screens.
-//
-// Pattern: the parent owns the react-hook-form instance and the
-// Zod schema; AddressForm just renders the fields at the requested
-// path (default 'address'). This keeps it composable inside any
-// larger form without duplicating validation logic.
-//
-// Fields match the backend CheckoutAddressInput exactly:
-//   fullName · phone · line1 · line2? · city · state · country · postal?
-// Country is locked to "NG" for Sprint 3 since shipping is NG-only.
-// ═══════════════════════════════════════════════════════════════
+// AddressForm, reusable address fieldset. Parent owns the RHF instance and schema.
+// Fields mirror backend CheckoutAddressInput, country locked to "NG" while shipping is NG only.
 
 import { useEffect } from 'react'
 import { type Control, type FieldValues, type Path, type UseFormReturn } from 'react-hook-form'
@@ -73,9 +62,7 @@ export function AddressForm<TFieldValues extends FieldValues>({
   heading,
   className,
 }: AddressFormProps<TFieldValues>) {
-  // Keep country locked to NG for Sprint 3. Parents that want to relax this
-  // later can pass a different default; we just guard against accidental
-  // blank values after rehydration.
+  // Guard against blank country after rehydration, NG only for now.
   useEffect(() => {
     const countryPath = `${namePrefix}.country` as Path<TFieldValues>
     const current = form.getValues(countryPath)

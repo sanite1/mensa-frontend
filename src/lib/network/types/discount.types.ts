@@ -1,6 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// discount.types.ts — mirror of backend src/interfaces/discount.interface.ts
-// ═══════════════════════════════════════════════════════════════
+// discount.types.ts — mirror of backend src/interfaces/discount.interface.ts.
 
 import type { Pagination } from './common.types'
 

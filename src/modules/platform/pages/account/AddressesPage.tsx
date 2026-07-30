@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// /account/addresses — saved address book.
-//
-// Lists the customer's saved delivery addresses with edit / delete /
-// set-default actions. Add and edit use the same AddressForm fieldset
-// from checkout so the validation rules stay in lock-step.
-// ═══════════════════════════════════════════════════════════════
+// /account/addresses, saved address book. Reuses the checkout AddressForm so validation stays in sync.
 
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'

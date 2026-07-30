@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // Admin topbar — paper strip across the top of the main content area.
-// Shows the current admin user + sign out trigger. On screens below lg
-// also surfaces the hamburger that opens the mobile sidebar drawer.
-// ─────────────────────────────────────────────────────────────────────────
 import { ChevronDown, LogOut, Menu, User } from 'lucide-react'
 import {
   DropdownMenu,

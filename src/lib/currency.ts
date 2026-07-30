@@ -1,15 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
 // currency.ts — display-only currency model.
-//
-// Every price in the system is canonical in **NGN kobo** (integers,
-// 100 kobo = 1 naira). The customer can choose to view prices in
-// NGN, USD, GBP or EUR; the conversion is purely a display layer
-// and Paystack still charges in NGN at checkout.
-//
-// Exchange rates are static for launch. Swap `RATES` for a live
-// FX feed (e.g. openexchangerates.org / a backend cron) without
-// changing call sites.
-// ═══════════════════════════════════════════════════════════════
 
 export type CurrencyCode = 'NGN' | 'USD' | 'GBP' | 'EUR'
 

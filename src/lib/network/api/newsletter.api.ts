@@ -1,6 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// newsletter.api.ts — public subscribe + admin list / delete
-// ═══════════════════════════════════════════════════════════════
+// newsletter.api.ts — public subscribe + admin list / delete.
 
 import {
   keepPreviousData,

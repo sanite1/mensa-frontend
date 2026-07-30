@@ -1,10 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
 // /discounts (admin) — single-page CRUD.
-//
-// Discounts are short enough records that splitting into list + form
-// pages would just add navigation. Instead we show the table on the
-// page and pop a right-side Sheet for create + edit.
-// ═══════════════════════════════════════════════════════════════
 
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -46,10 +40,7 @@ import type {
 import { cn, formatNaira, koboToNaira, nairaToKobo } from '@/lib/utils'
 
 // ── Form schema ──────────────────────────────────────────────────
-//
-// `value` is captured as a plain number — the meaning depends on
-// `type`. For percent it's 1-100; for fixed it's whole NAIRA (more
-// natural for admin) which we convert to kobo before submit.
+// `value` meaning depends on `type`: percent is 1 to 100, fixed is whole naira converted to kobo before submit.
 
 const formSchema = z
   .object({
@@ -73,9 +64,7 @@ const formSchema = z
 
 type FormValues = z.infer<typeof formSchema>
 
-// Preset caps for the Max uses select. `null` = unlimited. Covers the
-// usual promo shapes: single-use, small influencer batches, and large
-// public campaigns. The sentinel '' maps to null.
+// Preset caps for the Max uses select, `null` (sentinel '') means unlimited.
 const MAX_USES_OPTIONS: { label: string; value: number | null }[] = [
   { label: 'Unlimited', value: null },
   { label: '1 (single use)', value: 1 },
@@ -158,9 +147,7 @@ export function DiscountsPage() {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
-// Table
-// ─────────────────────────────────────────────────────────────────
+// ─── Table ───────────────────────────────────────
 const TABLE_COLS = 'grid-cols-[1.4fr_1fr_1fr_1fr_1fr_0.9fr_44px]'
 
 function DiscountsTable({ items, onEdit }: { items: Discount[]; onEdit: (d: Discount) => void }) {
@@ -294,9 +281,7 @@ function Row({ d, isLast, onEdit }: { d: Discount; isLast: boolean; onEdit: () =
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
-// Form
-// ─────────────────────────────────────────────────────────────────
+// ─── Form ────────────────────────────────────────
 function DiscountForm({ initial, onDone }: { initial: Discount | null; onDone: () => void }) {
   const isEdit = !!initial
   const create = useCreateDiscount()
@@ -438,9 +423,7 @@ function DiscountForm({ initial, onDone }: { initial: Discount | null; onDone: (
             control={form.control}
             name="maxUses"
             render={({ field }) => {
-              // If an existing code has an off-preset cap (e.g. set via the
-              // API), surface it as an extra option so editing doesn't
-              // silently change the value.
+              // Surface an off-preset cap as an extra option so editing does not silently change it.
               const current = field.value ?? null
               const hasCurrent = MAX_USES_OPTIONS.some((o) => o.value === current)
               const options = hasCurrent

@@ -1,13 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
-// SectionEyebrow — small uppercase label with a hairline that precedes
-// every editorial section heading. Default tone is mute; sections on a
-// blush / berry / coral surface pass color="var(--berry)" etc.
-//
-// The colour prop is dynamic at runtime (caller-provided CSS value).
-// We thread it through a CSS custom property so the Tailwind class
-// stack can pick it up via text-(--c) / bg-(--c) without
-// using a regular inline style attribute.
-// ─────────────────────────────────────────────────────────────────────────
+// SectionEyebrow — uppercase label with hairline preceding section headings. Caller colour threads through a CSS custom property, not an inline style.
 import type { CSSProperties, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 

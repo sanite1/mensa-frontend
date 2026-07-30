@@ -1,7 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────
 // NavIconBtn — 40×40 icon-only header button with optional badge.
-// Renders a button by default; an <a> if href is provided.
-// ─────────────────────────────────────────────────────────────────────────
 import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'

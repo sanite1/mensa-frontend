@@ -1,8 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
-// Admin /login — same /auth/login backend as platform. useLogin
-// is module-aware: on the admin surface it only allows role=admin
-// through and navigates to / (the dashboard).
-// ═══════════════════════════════════════════════════════════════
+// Admin /login — same /auth/login backend as platform, useLogin only lets role=admin through on this surface.
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
