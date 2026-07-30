@@ -11,6 +11,8 @@ import {
   IconTruck,
   IconMail,
   IconChevronRight,
+  IconInstagram,
+  IconTikTok,
 } from './icons'
 
 interface MobileDrawerProps {
@@ -30,12 +32,13 @@ export function MobileDrawer({ open, onOpenChange }: MobileDrawerProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="left"
+        hideClose
         className="w-full max-w-md p-0 bg-(--paper) border-r border-(--hairline-soft)"
       >
         <SheetTitle className="sr-only">Mensa main menu</SheetTitle>
         {/* Top: logo + close */}
         <SheetHeader className="flex flex-row items-center justify-between p-0 px-4.5 py-3.5 border-b border-(--hairline-soft) space-y-0">
-          <MensaWordmark height={26} />
+          <MensaWordmark height={34} />
           <SheetClose
             className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-(--ink) hover:bg-(--cream)"
             aria-label="Close"
@@ -92,9 +95,12 @@ export function MobileDrawer({ open, onOpenChange }: MobileDrawerProps) {
         {/* Footer of drawer: socials, currency */}
         <div className="px-4.5 py-5.5 border-t border-(--hairline-soft) bg-(--cream-soft) flex items-center justify-between">
           <div className="flex gap-3.5">
-            <SocialDot label="IG" />
-            <SocialDot label="TT" />
-            <SocialDot label="X" />
+            <SocialLink label="Instagram" href="https://instagram.com/shopmensa_">
+              <IconInstagram size={16} />
+            </SocialLink>
+            <SocialLink label="TikTok" href="https://www.tiktok.com/@shopmensa">
+              <IconTikTok size={16} />
+            </SocialLink>
           </div>
           <CurrencyPicker tone="light" />
         </div>
@@ -125,10 +131,24 @@ function DrawerLink({
   )
 }
 
-function SocialDot({ label }: { label: string }) {
+function SocialLink({
+  label,
+  href,
+  children,
+}: {
+  label: string
+  href: string
+  children: ReactNode
+}) {
   return (
-    <span className="inline-flex items-center justify-center rounded-full border border-hairline bg-paper text-ink font-sans w-9 h-9 text-[11px] font-semibold tracking-[0.04em]">
-      {label}
-    </span>
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      className="inline-flex items-center justify-center rounded-full border border-hairline bg-paper text-ink w-9 h-9 hover:bg-cream"
+    >
+      {children}
+    </a>
   )
 }
