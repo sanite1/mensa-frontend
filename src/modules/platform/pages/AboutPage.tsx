@@ -99,11 +99,11 @@ function Hero() {
           </div> */}
         </div>
 
-        {/* Facts ticker */}
+        {/* Facts ticker — mobile keeps just Founded + Nationwide */}
         <div className="mt-5 lg:mt-7 pt-4 grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 border-t border-hairline">
           <Fact n="2025" label="Founded" />
-          <Fact n="Kubwa" label="Designed & sewn in Abuja" />
-          <Fact n="5 yrs" label="Useful life per pair" />
+          <Fact n="Kubwa" label="Designed & sewn in Abuja" className="hidden lg:block" />
+          <Fact n="5 yrs" label="Useful life per pair" className="hidden lg:block" />
           <Fact n="Nationwide" label="Delivery, 2 to 5 days" />
         </div>
       </div>
@@ -111,9 +111,9 @@ function Hero() {
   )
 }
 
-function Fact({ n, label }: { n: string; label: string }) {
+function Fact({ n, label, className }: { n: string; label: string; className?: string }) {
   return (
-    <div>
+    <div className={className}>
       <div className="font-display italic font-semibold text-[28px] leading-none text-ink">{n}</div>
       <div className="mt-1.5 font-mono text-[11px] tracking-[0.12em] text-mute uppercase">
         {label}
