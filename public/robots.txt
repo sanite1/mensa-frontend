@@ -15,3 +15,4 @@ Disallow: /partner
 Disallow: /partner/
 
 Sitemap: https://mensaproducts.com/sitemap.xml
+Sitemap: https://mensaproducts.com/sitemap-content.xml

@@ -29,6 +29,23 @@ export function JournalPostPage() {
     description: post?.excerpt,
     image: post?.coverImage?.url,
     type: post ? 'article' : 'website',
+    jsonLd: post
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: post.title,
+          description: post.excerpt || undefined,
+          image: post.coverImage?.url ? [post.coverImage.url] : undefined,
+          datePublished: post.publishedAt ?? post.createdAt,
+          author: { '@type': 'Person', name: post.authorName },
+          publisher: {
+            '@type': 'Organization',
+            name: 'Mensa Period Products',
+            logo: { '@type': 'ImageObject', url: 'https://mensaproducts.com/og-image.png' },
+          },
+          mainEntityOfPage: `https://mensaproducts.com/journal/${post.slug}`,
+        }
+      : undefined,
   })
 
   if (query.isLoading) {

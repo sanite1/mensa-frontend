@@ -63,10 +63,11 @@ describe('useSeo', () => {
     expect(metaContent('name', 'robots')).toBe('index, follow')
   })
 
-  it('falls back to the default image when none is given', () => {
+  it('falls back to the default image, absolutized, when none is given', () => {
     renderHook(() => useSeo({ title: 'X' }))
-    expect(metaContent('property', 'og:image')).toBe('/mensa-logo.png')
-    expect(metaContent('name', 'twitter:image')).toBe('/mensa-logo.png')
+    const expected = `${window.location.origin}/og-image.png`
+    expect(metaContent('property', 'og:image')).toBe(expected)
+    expect(metaContent('name', 'twitter:image')).toBe(expected)
   })
 
   it('uses a provided image when given', () => {

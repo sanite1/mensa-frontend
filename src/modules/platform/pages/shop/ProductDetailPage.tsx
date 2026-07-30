@@ -68,14 +68,46 @@ function ProductView({ product }: { product: Product }) {
 
   // SEO uses the hero image when present, otherwise the index.html default falls through.
   const seoHeroUrl = (images.find((img) => img.order === 0) ?? images[0])?.url
+  const seoDescription =
+    product.shortDescription ||
+    product.subheading ||
+    `${product.name} — reusable period products designed in Abuja.`
+  const anyInStock =
+    !product.isSoldOut && (product.variants ?? []).some((v) => v.isActive && v.stockCount > 0)
   useSeo({
     title: product.name,
-    description:
-      product.shortDescription ||
-      product.subheading ||
-      `${product.name} — reusable period products designed in Abuja.`,
+    description: seoDescription,
     image: seoHeroUrl,
     type: 'product',
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        description: seoDescription,
+        image: images.map((img) => img.url).filter(Boolean),
+        sku: product.slug,
+        brand: { '@type': 'Brand', name: 'Mensa Period Products' },
+        offers: {
+          '@type': 'Offer',
+          url: `https://mensaproducts.com/shop/${product.slug}`,
+          // Schema.org price is in the main currency unit, catalogue stores kobo.
+          price: ((product.salePrice ?? product.basePriceB2C) / 100).toFixed(2),
+          priceCurrency: 'NGN',
+          availability: anyInStock
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+        },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Shop', item: 'https://mensaproducts.com/shop' },
+          { '@type': 'ListItem', position: 2, name: product.name },
+        ],
+      },
+    ],
   })
 
   // Default selection: pull options from the first in stock variant.

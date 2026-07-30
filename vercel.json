@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/sitemap-content.xml", "destination": "https://mensa-backend.vercel.app/sitemap.xml" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
