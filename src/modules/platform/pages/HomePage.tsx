@@ -35,8 +35,6 @@ import { TrustStrip } from '@/components/editorial/TrustStrip'
 import { useProducts } from '@/lib/network/api/product.api'
 import { useFormatPrice } from '@/lib/currency'
 import type { Product } from '@/lib/network/types/product.types'
-import { useContentList } from '@/lib/network/api/content.api'
-import type { ContentPost } from '@/lib/network/types/content.types'
 import { useSeo } from '@/lib/seo'
 
 export function HomePage() {
@@ -53,7 +51,6 @@ export function HomePage() {
       <ShopTeaser />
       <BrandStory />
       <Education />
-      <Journal />
     </div>
   )
 }
@@ -372,69 +369,3 @@ function EduCard({ tone, product }: { tone: 'blush' | 'cream'; product: Product 
   )
 }
 
-// ─── JOURNAL ────────────────────────────────────────────────────
-// Reads the three most recent published journal posts straight from
-// the CMS. When the editorial team publishes a new post in the admin
-// Content tab (kind=journal, status=published) it shows up here on
-// the next page load — no code change required.
-function Journal() {
-  const query = useContentList({ kind: 'journal', pageSize: 3 })
-  const articles: ContentPost[] = query.data?.data?.items ?? []
-  // Stable placeholder tones per slug so the home page doesn't reshuffle
-  // between renders before cover images are uploaded.
-  const tones: Array<'stripe' | 'cream' | 'blush'> = ['stripe', 'cream', 'blush']
-
-  return (
-    <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-paper">
-      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-8 mb-12 lg:mb-14">
-        <div className="max-w-220">
-          <SectionEyebrow>From the journal</SectionEyebrow>
-          <h2 className="m-0 mt-5 text-ink font-display italic font-semibold text-[clamp(28px,4vw,56px)] leading-[1.02] tracking-tight">
-            Plain spoken writing about periods, products and the people we serve.
-          </h2>
-        </div>
-        <Link
-          to="/journal"
-          className="inline-flex items-center gap-2 text-[14.5px] font-medium text-ink no-underline self-start lg:self-auto border-b border-ink pb-1 whitespace-nowrap"
-        >
-          All articles <IconArrowRight size={16} />
-        </Link>
-      </div>
-      {articles.length === 0 ? (
-        <p className="t-body-s text-mute">New articles coming soon.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {articles.map((a: ContentPost, i: number) => (
-            <Link
-              key={a._id}
-              to={`/journal/${a.slug}`}
-              className="flex flex-col gap-4 no-underline group"
-            >
-              {a.coverImage?.url ? (
-                <img
-                  src={a.coverImage.url}
-                  alt={a.coverImage.alt || a.title}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full aspect-3/2 object-cover transition-transform duration-700 group-hover:scale-[1.02]"
-                />
-              ) : (
-                <Photo
-                  tone={tones[i % tones.length]}
-                  ratio="3/2"
-                  label={`${a.category.toUpperCase()} · editorial image`}
-                />
-              )}
-              <div className="font-mono text-[11px] tracking-widest text-mute uppercase">
-                {a.category} · {a.readMinutes} min read
-              </div>
-              <h3 className="m-0 font-display italic font-semibold text-[24px] leading-tight tracking-tight text-ink group-hover:text-pink-deep transition-colors">
-                {a.title}
-              </h3>
-            </Link>
-          ))}
-        </div>
-      )}
-    </section>
-  )
-}
