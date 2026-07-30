@@ -224,18 +224,17 @@ function Manufacturing() {
           <h2 className="m-0 mt-5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-[1.02] tracking-[-0.02em] text-ink">
             Sewn here.
             <br />
-            By women, paid well.
+            Stitched by hand.
           </h2>
           <p className="mt-6 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
-            Every Mensa pant is cut, sewn and packed in our Kubwa workshop. Twelve seamstresses,
-            paid above the FCT garment trade rate, work a single shift across a five day week. No
-            overnight runs, no overtime quotas, no rebadged imports.
+            Every Mensa pant is cut, sewn and packed in our Kubwa studio. Fabric, thread, elastic
+            and packaging all sourced here in Nigeria. No overnight runs, no rebadged imports.
           </p>
           <div className="mt-7 flex flex-col gap-3.5">
-            <MStat n="12" label="Seamstresses on payroll" />
-            <MStat n="36k+" label="Pants sewn since launch" />
-            <MStat n="100%" label="Materials sourced in Nigeria and the UAE" />
-            <MStat n="0" label="Sweatshop hours, ever" />
+            <MStat n="5k+" label="Pants sewn since launch" />
+            <MStat n="100%" label="Materials sourced in Nigeria" />
+            <MStat n="4 layers" label="Wicking, absorbent core, leakproof membrane, outer shell" />
+            <MStat n="5 yrs" label="Useful life of one pair" />
           </div>
         </div>
         <div className="grid grid-cols-2 grid-rows-2 gap-3.5 lg:min-h-175">
