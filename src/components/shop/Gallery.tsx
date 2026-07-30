@@ -1,6 +1,6 @@
-// Gallery — responsive PDP image gallery.
+// Gallery — responsive PDP image gallery. Auto advances every 5s, pauses after any manual pick or swipe.
 import type { CSSProperties } from 'react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import type { ProductImage } from '@/lib/network/types/product.types'
 import { Photo } from './Photo'
@@ -36,8 +36,14 @@ const PLACEHOLDER_SLIDES: Slide[] = [
   { key: 'placeholder-pack', alt: '', tone: 'cream', label: 'pack' },
 ]
 
+const AUTO_ADVANCE_MS = 5000
+// After a manual pick or swipe, hold auto advance for a while so the carousel does not fight the user.
+const RESUME_AFTER_MS = 12000
+
 export function Gallery({ images, productName, badge }: GalleryProps) {
   const [active, setActive] = useState(0)
+  const lastInteraction = useRef(0)
+  const touchStartX = useRef<number | null>(null)
 
   const slides: Slide[] =
     images.length > 0
@@ -49,6 +55,36 @@ export function Gallery({ images, productName, badge }: GalleryProps) {
         }))
       : PLACEHOLDER_SLIDES
 
+  const count = slides.length
+
+  // Auto advance, skipping while the user has recently interacted and
+  // while the tab is hidden.
+  useEffect(() => {
+    if (count <= 1) return
+    const id = setInterval(() => {
+      if (document.hidden) return
+      if (Date.now() - lastInteraction.current < RESUME_AFTER_MS) return
+      setActive((i) => (i + 1) % count)
+    }, AUTO_ADVANCE_MS)
+    return () => clearInterval(id)
+  }, [count])
+
+  const pick = (i: number) => {
+    lastInteraction.current = Date.now()
+    setActive(((i % count) + count) % count)
+  }
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0]?.clientX ?? null
+  }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return
+    const dx = (e.changedTouches[0]?.clientX ?? touchStartX.current) - touchStartX.current
+    touchStartX.current = null
+    if (Math.abs(dx) < 40) return
+    pick(dx < 0 ? active + 1 : active - 1)
+  }
+
   const main = slides[Math.min(active, slides.length - 1)]
   const counter = `${pad(active + 1)} / ${pad(slides.length)}`
 
@@ -56,32 +92,34 @@ export function Gallery({ images, productName, badge }: GalleryProps) {
     <div className="flex flex-col gap-3">
       {/* Desktop: thumbs left of main image */}
       <div className="hidden lg:grid grid-cols-[88px_1fr] gap-4">
-        <Thumbs slides={slides} active={active} onPick={setActive} layout="vertical" />
+        <Thumbs slides={slides} active={active} onPick={pick} layout="vertical" />
         <MainSlide slide={main} alt={main.alt || productName} badge={badge} counter={counter} />
       </div>
 
       {/* Tablet: main image then horizontal thumb strip */}
       <div className="hidden md:flex lg:hidden flex-col gap-3">
         <MainSlide slide={main} alt={main.alt || productName} badge={badge} counter={counter} />
-        <Thumbs slides={slides} active={active} onPick={setActive} layout="horizontal" />
+        <Thumbs slides={slides} active={active} onPick={pick} layout="horizontal" />
       </div>
 
-      {/* Mobile: main image + dot indicators */}
+      {/* Mobile: swipeable main image + dot indicators */}
       <div className="block md:hidden">
-        <MainSlide
-          slide={main}
-          alt={main.alt || productName}
-          ratio="1/1"
-          badge={badge}
-          counter={counter}
-        />
+        <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+          <MainSlide
+            slide={main}
+            alt={main.alt || productName}
+            ratio="1/1"
+            badge={badge}
+            counter={counter}
+          />
+        </div>
         {slides.length > 1 ? (
           <div className="flex justify-center gap-2 py-3.5">
             {slides.map((_, i) => (
               <button
                 key={i}
                 type="button"
-                onClick={() => setActive(i)}
+                onClick={() => pick(i)}
                 aria-label={`Show image ${i + 1}`}
                 className={cn(
                   'rounded-full transition-all h-1.75',
