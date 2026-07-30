@@ -280,26 +280,28 @@ function MobileRow({
   onSearchClick: () => void
 }) {
   return (
-    <div className="grid md:hidden items-center grid-cols-[auto_1fr_auto_auto] py-3 px-3.5 gap-1">
+    // 1fr_auto_1fr keeps the wordmark dead-centre in the viewport even
+    // though the right flank holds two icons and the left only one.
+    <div className="grid md:hidden items-center grid-cols-[1fr_auto_1fr] py-3 px-3.5 gap-1">
       <button
         type="button"
         onClick={onMenuClick}
         aria-label="Open menu"
-        className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-(--ink)"
+        className="inline-flex h-10 w-10 items-center justify-center justify-self-start rounded-sm text-(--ink)"
       >
         <IconMenu />
       </button>
-      <div className="flex justify-center">
-        <Link to="/" aria-label="Mensa home">
-          <MensaWordmark height={26} />
-        </Link>
+      <Link to="/" aria-label="Mensa home" className="justify-self-center">
+        <MensaWordmark height={26} />
+      </Link>
+      <div className="flex items-center gap-1 justify-self-end">
+        <NavIconBtn label="Search" onClick={onSearchClick}>
+          <IconSearch size={20} />
+        </NavIconBtn>
+        <NavIconBtn label="Cart" onClick={onCartClick} badge={cartBadge}>
+          <IconBag size={20} />
+        </NavIconBtn>
       </div>
-      <NavIconBtn label="Search" onClick={onSearchClick}>
-        <IconSearch size={20} />
-      </NavIconBtn>
-      <NavIconBtn label="Cart" onClick={onCartClick} badge={cartBadge}>
-        <IconBag size={20} />
-      </NavIconBtn>
     </div>
   )
 }
