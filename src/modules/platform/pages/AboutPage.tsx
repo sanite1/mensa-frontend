@@ -17,6 +17,14 @@ import { Button } from '@/components/ui/button'
 import { Photo } from '@/components/shop/Photo'
 import { IconArrowRight } from '@/components/chrome/icons'
 
+import aboutHero from '@/assets/about-mensa.jpg'
+import founderPortrait from '@/assets/kenny-1.jpg'
+import foundersEnvironmental from '@/assets/kenny-000.jpg'
+import productPackOfThree from '@/assets/mensa-pant-5.png'
+import myCycooCover from '@/assets/my-cycoo.jpg'
+import workshopSewingLine from '@/assets/sum_box.jpg'
+import invitationImage from '@/assets/invitation.jpg'
+
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
 import { BigNumber } from '@/components/editorial/BigNumber'
 import { useSeo } from '@/lib/seo'
@@ -91,21 +99,21 @@ function Hero() {
           <Photo
             tone="blush"
             ratio="21/9"
-            label="HERO · founders & workshop"
-            sublabel="warm tones, indoor studio"
+            src={aboutHero}
+            alt="Mensa founders and the Kubwa workshop"
           />
-          <div className="absolute left-4.5 top-4 flex items-center gap-2.5 px-3 py-2 rounded-sm bg-paper/90 backdrop-blur-xs text-ink font-mono text-[10.5px] tracking-widest uppercase">
+          {/* <div className="absolute left-4.5 top-4 flex items-center gap-2.5 px-3 py-2 rounded-sm bg-paper/90 backdrop-blur-xs text-ink font-mono text-[10.5px] tracking-widest uppercase">
             <span className="w-1.5 h-1.5 rounded-full bg-coral" />
             Plate 01 · Pack of 3 · Onyx Black
-          </div>
+          </div> */}
         </div>
 
         {/* Facts ticker */}
         <div className="mt-5 lg:mt-7 pt-4 grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 border-t border-hairline">
-          <Fact n="2023" label="Founded" />
-          <Fact n="12" label="Women on payroll" />
-          <Fact n="5,200" label="Customers served" />
-          <Fact n="27 / 36" label="Nigerian states reached" />
+          <Fact n="2025" label="Founded" />
+          <Fact n="Kubwa" label="Designed & sewn in Abuja" />
+          <Fact n="5 yrs" label="Useful life per pair" />
+          <Fact n="Nationwide" label="Delivery, 2 to 5 days" />
         </div>
       </div>
     </section>
@@ -177,12 +185,22 @@ function Origin() {
           <Photo
             tone="cream"
             ratio="3/4"
-            label="FOUNDERS · environmental portrait"
-            sublabel="warm light, indoor studio"
+            src={foundersEnvironmental}
+            alt="Kehinde Abereoje at the Mensa studio"
           />
           <div className="grid grid-rows-2 gap-3.5">
-            <Photo tone="blush" ratio="1/1" label="PRODUCT · pack of 3" />
-            <Photo tone="ink" ratio="1/1" label="MY CYCOO · guide cover" />
+            <Photo
+              tone="blush"
+              ratio="1/1"
+              src={productPackOfThree}
+              alt="Mensa reusable period pants, pack of three"
+            />
+            <Photo
+              tone="ink"
+              ratio="1/1"
+              src={myCycooCover}
+              alt="My Cycoo period education guide cover"
+            />
           </div>
         </div>
         <div>
@@ -218,7 +236,7 @@ function Origin() {
 function Manufacturing() {
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-paper">
-      <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.4fr] gap-10 lg:gap-16 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-stretch">
         <div>
           <SectionEyebrow>Manufacturing</SectionEyebrow>
           <h2 className="m-0 mt-5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-[1.02] tracking-[-0.02em] text-ink">
@@ -228,7 +246,10 @@ function Manufacturing() {
           </h2>
           <p className="mt-6 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
             Every Mensa pant is cut, sewn and packed in our Kubwa studio. Fabric, thread, elastic
-            and packaging all sourced here in Nigeria. No overnight runs, no rebadged imports.
+            and packaging all sourced here in Nigeria. Each pair moves through pattern, cut, sew,
+            gusset finish and final inspection in one place, in small runs, checked by the same
+            hands that built it. No overnight quotas, no rebadged imports, no lifting a design off
+            the shelf. Made in Nigeria, for the days we actually live.
           </p>
           <div className="mt-7 flex flex-col gap-3.5">
             <MStat n="5k+" label="Pants sewn since launch" />
@@ -237,19 +258,13 @@ function Manufacturing() {
             <MStat n="5 yrs" label="Useful life of one pair" />
           </div>
         </div>
-        <div className="grid grid-cols-2 grid-rows-2 gap-3.5 lg:min-h-175">
-          <div className="row-span-2">
-            <Photo
-              tone="stripe"
-              ratio="3/4"
-              label="WORKSHOP · sewing line"
-              sublabel="natural window light"
-              className="h-full!"
-            />
-          </div>
-          <Photo tone="cream" ratio="4/3" label="DETAIL · gusset stitching" />
-          <Photo tone="blush" ratio="4/3" label="PRODUCT · pack of 3" />
-        </div>
+        <Photo
+          tone="stripe"
+          ratio="auto"
+          src={workshopSewingLine}
+          alt="The Mensa workshop sewing line in Kubwa"
+          className="h-full!"
+        />
       </div>
     </section>
   )
@@ -257,8 +272,8 @@ function Manufacturing() {
 
 function MStat({ n, label }: { n: string; label: string }) {
   return (
-    <div className="grid grid-cols-[100px_1fr] gap-4 items-baseline pt-3 border-t border-hairline-soft">
-      <span className="font-display italic font-semibold text-[32px] text-coral leading-none">
+    <div className="grid grid-cols-[130px_1fr] gap-4 items-baseline pt-3 border-t border-hairline-soft">
+      <span className="font-display italic font-semibold text-[32px] text-coral leading-none whitespace-nowrap">
         {n}
       </span>
       <span className="text-ink text-[15px] leading-normal">{label}</span>
@@ -286,19 +301,20 @@ function Founders() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-16 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-16 items-stretch">
         {/* Portrait */}
-        <div className="relative">
+        <div className="relative h-full">
           <Photo
             tone="blush"
-            ratio="4/5"
-            label="PORTRAIT · KEHINDE ABEREOJE"
-            sublabel="natural light, founder at the studio"
+            ratio="auto"
+            src={founderPortrait}
+            alt="Kehinde Abereoje, founder of Mensa Period Products"
+            className="h-full!"
           />
-          <div className="absolute left-4 top-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper/95 backdrop-blur-xs text-ink font-mono text-[10.5px] tracking-widest uppercase">
+          {/* <div className="absolute left-4 top-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper/95 backdrop-blur-xs text-ink font-mono text-[10.5px] tracking-widest uppercase">
             <span className="w-1.5 h-1.5 rounded-full bg-coral" />
             Founder · Abuja
-          </div>
+          </div> */}
         </div>
 
         {/* Narrative */}
@@ -504,36 +520,50 @@ function Partnerships() {
 // ─── FINAL CTA ───────────────────────────────────────────────────
 function FinalCta() {
   return (
-    <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-blush">
-      <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-20 items-center">
-        <div>
-          <SectionEyebrow color="var(--berry)">The invitation</SectionEyebrow>
-          <h2 className="m-0 mt-5 font-display italic font-semibold text-[clamp(40px,8vw,96px)] leading-[0.96] tracking-tight text-berry">
-            Switch once.
-            <br />
-            Wear for <span className="text-ink">five years.</span>
+    <section className="px-5 md:px-10 lg:px-16 py-14 lg:py-20 bg-blush">
+      <div className="relative overflow-hidden min-h-90 lg:min-h-115">
+        {/* Background photo */}
+        <img
+          src={invitationImage}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+        />
+        {/* Overlay for legibility. Darker on the left where the copy sits,
+            fading out to the right so the image still reads through. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/55 to-ink/25"
+        />
+
+        {/* Content */}
+        <div className="relative flex flex-col justify-center gap-5 lg:gap-6 max-w-160 py-12 md:py-16 lg:py-20 px-6 md:px-10 lg:px-14 text-paper">
+          <SectionEyebrow color="var(--paper)">The invitation</SectionEyebrow>
+          <h2 className="m-0 font-display italic font-semibold text-[clamp(30px,5vw,52px)] leading-[1] tracking-tight text-paper">
+            Switch once. Wear for <span className="text-pink">five years.</span>
           </h2>
-          <p className="mt-6 max-w-135 text-[clamp(15px,2vw,19px)] leading-[1.55] text-berry opacity-85">
-            One pack of three pants replaces 250 disposables and lasts you sixty months. Start with
-            the Starter Set and let us know what you think, we read every review.
+          <p className="max-w-115 text-[clamp(14.5px,1.6vw,17px)] leading-[1.55] text-paper opacity-90">
+            One pack of three pants replaces 250 disposables. Start with the Starter Set and let us
+            know what you think.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild variant="ink" size="lg">
+          <div className="flex flex-wrap gap-3 mt-1">
+            <Button asChild variant="primary" size="lg">
               <Link to="/shop">
                 Shop the starter set <IconArrowRight size={16} />
               </Link>
             </Button>
-            <Button asChild variant="ghost" size="lg">
+            <Button
+              asChild
+              variant="secondary"
+              size="lg"
+              className="border-paper text-paper hover:bg-paper hover:text-ink!"
+            >
               <Link to="/journal">Read the journal</Link>
             </Button>
           </div>
         </div>
-        <Photo
-          tone="blush"
-          ratio="4/5"
-          label="FINAL · pack of 3"
-          sublabel="warm tones, soft light"
-        />
       </div>
     </section>
   )

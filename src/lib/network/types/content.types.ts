@@ -10,7 +10,7 @@ export interface ContentPost {
   category: ContentCategory
   excerpt: string
   body: string   // markdown
-  coverImage?: { url: string; alt: string }
+  coverImage?: { url: string; publicId?: string; alt: string }
   authorName: string
   authorBio?: string
   readMinutes: number

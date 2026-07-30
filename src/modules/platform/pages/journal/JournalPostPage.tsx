@@ -10,7 +10,6 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { Photo } from '@/components/shop/Photo'
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
 import { Markdown } from '@/components/editorial/Markdown'
 import { useContentPost } from '@/lib/network/api/content.api'
@@ -69,57 +68,76 @@ export function JournalPostPage() {
     )
   }
 
+  const hasCover = !!post.coverImage?.url
+
   return (
     <article className="bg-paper">
-      {/* Crumb */}
-      <div className="px-5 md:px-10 lg:px-16 pt-10 lg:pt-16">
-        <Link
-          to="/journal"
-          className="inline-flex items-center gap-2 text-[12px] uppercase tracking-widest font-medium text-ink no-underline hover:text-pink-deep"
-        >
-          <ArrowLeft size={14} /> The journal
-        </Link>
-      </div>
-
-      {/* Headline */}
-      <header className="px-5 md:px-10 lg:px-16 pt-8 pb-10 lg:pb-14">
-        <SectionEyebrow color="var(--berry)">
-          {CATEGORY_LABEL[post.category]} · {post.readMinutes} min read
-        </SectionEyebrow>
-        <h1 className="mt-6 font-display italic font-semibold text-[clamp(36px,6vw,88px)] leading-[0.95] tracking-tight text-ink max-w-260">
-          {post.title}
-        </h1>
-        {post.excerpt ? (
-          <p className="mt-6 t-body-l text-graphite max-w-150">{post.excerpt}</p>
+      {/* Hero — headline overlaid on the cover image so the header and
+          cover read as one editorial plate instead of two stacked
+          sections. Falls back to a blush surface when no cover exists. */}
+      <header className={`relative overflow-hidden ${hasCover ? '' : 'bg-blush'}`}>
+        {hasCover ? (
+          <>
+            <img
+              src={post.coverImage!.url}
+              alt={post.coverImage!.alt || post.title}
+              // Cover is the LCP element on the post page.
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            {/* Bottom-heavy scrim keeps the overlaid headline legible
+                without flattening the whole photo. */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/45 to-ink/20"
+            />
+          </>
         ) : null}
-        <div className="mt-8 pt-5 flex flex-wrap items-baseline gap-x-6 gap-y-2 border-t border-hairline text-[13px] text-mute font-mono uppercase tracking-widest">
-          <span className="text-ink not-italic">{post.authorName}</span>
-          <span>{formatPostDate(post.publishedAt ?? post.createdAt)}</span>
-          {post.eyebrow ? <span>{post.eyebrow}</span> : null}
+
+        <div className="relative flex flex-col min-h-115 lg:min-h-150 px-5 md:px-10 lg:px-16 pt-10 lg:pt-14 pb-10 lg:pb-14">
+          <Link
+            to="/journal"
+            className={`inline-flex items-center gap-2 self-start text-[12px] uppercase tracking-widest font-medium no-underline ${
+              hasCover ? 'text-paper/90 hover:text-paper' : 'text-ink hover:text-pink-deep'
+            }`}
+          >
+            <ArrowLeft size={14} /> The journal
+          </Link>
+
+          <div className="mt-auto pt-12">
+            <SectionEyebrow color={hasCover ? 'var(--pink)' : 'var(--berry)'}>
+              {CATEGORY_LABEL[post.category]} · {post.readMinutes} min read
+            </SectionEyebrow>
+            <h1
+              className={`mt-5 font-display italic font-semibold text-[clamp(34px,5.5vw,76px)] leading-[0.98] tracking-tight max-w-230 ${
+                hasCover ? 'text-paper' : 'text-ink'
+              }`}
+            >
+              {post.title}
+            </h1>
+            {post.excerpt ? (
+              <p
+                className={`mt-5 t-body-l max-w-150 ${
+                  hasCover ? 'text-paper/90' : 'text-graphite'
+                }`}
+              >
+                {post.excerpt}
+              </p>
+            ) : null}
+            <div
+              className={`mt-7 pt-5 flex flex-wrap items-baseline gap-x-6 gap-y-2 border-t text-[13px] font-mono uppercase tracking-widest ${
+                hasCover ? 'border-paper/25 text-paper/75' : 'border-hairline text-mute'
+              }`}
+            >
+              <span className={hasCover ? 'text-paper' : 'text-ink'}>{post.authorName}</span>
+              <span>{formatPostDate(post.publishedAt ?? post.createdAt)}</span>
+              {post.eyebrow ? <span>{post.eyebrow}</span> : null}
+            </div>
+          </div>
         </div>
       </header>
-
-      {/* Cover */}
-      <div className="px-5 md:px-10 lg:px-16">
-        {post.coverImage?.url ? (
-          <img
-            src={post.coverImage.url}
-            alt={post.coverImage.alt || post.title}
-            // Cover is the LCP element on the post page.
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-            className="w-full aspect-21/9 object-cover"
-          />
-        ) : (
-          <Photo
-            tone="blush"
-            ratio="21/9"
-            priority="eager"
-            label={`COVER · ${CATEGORY_LABEL[post.category]}`}
-          />
-        )}
-      </div>
 
       {/* Body */}
       <div className="px-5 md:px-10 lg:px-16 py-12 lg:py-20">

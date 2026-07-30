@@ -20,7 +20,7 @@ import { toast } from 'sonner'
 
 import { api } from '../api'
 import type { ApiResponse, Paginated } from '../api'
-import { handleApiError } from '../helpers/handleApiError'
+import { toastApiError } from '../helpers/handleApiError'
 import type {
   AdminPayoutListItem,
   PartnerBankAccount,
@@ -111,7 +111,7 @@ export const useApplyAsPartner = () =>
     onSuccess: (res) => {
       toast.success(res.message || 'Application received.')
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 
 // ── Public: onboarding verify + complete ────────────────────────
@@ -151,7 +151,7 @@ export const useCompletePartnerOnboarding = () =>
     onSuccess: (res) => {
       toast.success(res.message || 'Welcome aboard.')
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 
 // ── Authed: partner self dashboard ──────────────────────────────
@@ -185,7 +185,7 @@ export const useUpdateBankAccount = () => {
       toast.success(res.message || 'Bank account updated.')
       qc.invalidateQueries({ queryKey: partnerKeys.self() })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }
 
@@ -201,7 +201,7 @@ export const useRequestPayout = () => {
       toast.success(res.message || 'Payout requested.')
       qc.invalidateQueries({ queryKey: partnerKeys.self() })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }
 
@@ -259,7 +259,7 @@ export const useApprovePartner = () => {
       qc.invalidateQueries({ queryKey: partnerKeys.all })
       qc.invalidateQueries({ queryKey: partnerKeys.adminDetail(vars.id) })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }
 
@@ -285,7 +285,7 @@ export const useRejectPartner = () => {
       qc.invalidateQueries({ queryKey: partnerKeys.all })
       qc.invalidateQueries({ queryKey: partnerKeys.adminDetail(vars.id) })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }
 
@@ -311,7 +311,7 @@ export const useUpdatePartner = () => {
       qc.invalidateQueries({ queryKey: partnerKeys.all })
       qc.invalidateQueries({ queryKey: partnerKeys.adminDetail(vars.id) })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }
 
@@ -355,7 +355,7 @@ export const useMarkPayoutPaid = () => {
       toast.success(res.message || 'Payout marked paid.')
       qc.invalidateQueries({ queryKey: partnerKeys.all })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }
 
@@ -380,6 +380,6 @@ export const useRejectPayout = () => {
       toast.success(res.message || 'Payout rejected.')
       qc.invalidateQueries({ queryKey: partnerKeys.all })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }

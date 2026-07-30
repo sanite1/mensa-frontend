@@ -6,12 +6,12 @@
 // Status flip (draft ↔ published) is a single switch on the form.
 // ═══════════════════════════════════════════════════════════════
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ArrowLeft, Trash2 } from 'lucide-react'
+import { ArrowLeft, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -32,6 +32,7 @@ import {
   useCreateContentPost,
   useDeleteContentPost,
   useUpdateContentPost,
+  useUploadContentImage,
   type CreateContentPostInput,
 } from '@/lib/network/api/content.api'
 
@@ -52,6 +53,7 @@ const formSchema = z.object({
   readMinutes: z.number().int().min(1).max(120).default(5),
   status: z.enum(['draft', 'published']).default('draft'),
   coverImageUrl: z.string().url().or(z.literal('')).default(''),
+  coverImagePublicId: z.string().default(''),
   coverImageAlt: z.string().max(160).default(''),
 })
 type FormValues = z.infer<typeof formSchema>
@@ -69,6 +71,7 @@ const defaultValues: FormValues = {
   readMinutes: 5,
   status: 'draft',
   coverImageUrl: '',
+  coverImagePublicId: '',
   coverImageAlt: '',
 }
 
@@ -114,6 +117,7 @@ export function ContentEditorPage() {
       readMinutes: post.readMinutes ?? 5,
       status: post.status,
       coverImageUrl: post.coverImage?.url ?? '',
+      coverImagePublicId: post.coverImage?.publicId ?? '',
       coverImageAlt: post.coverImage?.alt ?? '',
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -133,7 +137,11 @@ export function ContentEditorPage() {
       readMinutes: values.readMinutes,
       status: values.status,
       coverImage: values.coverImageUrl
-        ? { url: values.coverImageUrl, alt: values.coverImageAlt }
+        ? {
+            url: values.coverImageUrl,
+            publicId: values.coverImagePublicId || undefined,
+            alt: values.coverImageAlt,
+          }
         : undefined,
     }
     if (isEdit && id) {
@@ -359,25 +367,7 @@ export function ContentEditorPage() {
           </Section>
 
           <Section title="Cover image" eyebrow="03">
-            <FormField
-              control={form.control}
-              name="coverImageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://res.cloudinary.com/…"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Paste a Cloudinary URL. A direct upload flow will land later.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <CoverImageField form={form} />
             <FormField
               control={form.control}
               name="coverImageAlt"
@@ -552,5 +542,78 @@ function Select({
         </option>
       ))}
     </select>
+  )
+}
+
+// ─── Cover image uploader ────────────────────────────────────────
+// Uploads to /admin/content/upload-image (Cloudinary under the hood)
+// and stores the returned url + publicId in the form. The image only
+// attaches to the post when the form is saved.
+function CoverImageField({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
+  const fileRef = useRef<HTMLInputElement | null>(null)
+  const upload = useUploadContentImage()
+  const url = form.watch('coverImageUrl')
+
+  const onPick = () => fileRef.current?.click()
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      toast.error('Only image files are allowed.')
+      return
+    }
+    upload.mutate(file, {
+      onSuccess: (res) => {
+        const data = res.data
+        if (!data) return
+        form.setValue('coverImageUrl', data.url, { shouldDirty: true })
+        form.setValue('coverImagePublicId', data.publicId, { shouldDirty: true })
+      },
+    })
+  }
+
+  const onRemove = () => {
+    form.setValue('coverImageUrl', '', { shouldDirty: true })
+    form.setValue('coverImagePublicId', '', { shouldDirty: true })
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <Label>Cover image</Label>
+      <input ref={fileRef} type="file" accept="image/*" onChange={onChange} className="hidden" />
+
+      {url ? (
+        <div className="relative overflow-hidden border border-hairline max-w-160">
+          <img src={url} alt="" className="w-full aspect-21/9 object-cover" />
+          <button
+            type="button"
+            onClick={onRemove}
+            aria-label="Remove cover image"
+            className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-paper/90 text-ink hover:bg-paper"
+          >
+            <X size={14} strokeWidth={1.8} />
+          </button>
+        </div>
+      ) : (
+        <div className="border border-dashed border-hairline bg-cream-soft py-10 px-6 text-center">
+          <p className="t-body-s text-mute m-0">No cover yet. Upload a wide image, 21:9 crops best.</p>
+        </div>
+      )}
+
+      <div>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={onPick}
+          disabled={upload.isPending}
+        >
+          <Upload size={14} strokeWidth={1.6} />
+          {upload.isPending ? 'Uploading…' : url ? 'Replace image' : 'Upload image'}
+        </Button>
+      </div>
+    </div>
   )
 }

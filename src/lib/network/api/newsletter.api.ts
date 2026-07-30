@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 
 import { api } from '../api'
 import type { ApiResponse, Paginated } from '../api'
-import { handleApiError } from '../helpers/handleApiError'
+import { toastApiError } from '../helpers/handleApiError'
 
 export type NewsletterSource =
   | 'footer'
@@ -67,7 +67,7 @@ export const useSubscribeToNewsletter = () =>
     onSuccess: (res) => {
       toast.success(res.message || 'You are on the list.')
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 
 // ── Admin: list ─────────────────────────────────────────────────
@@ -105,6 +105,6 @@ export const useDeleteSubscriber = () => {
       toast.success(res.message || 'Subscriber removed.')
       qc.invalidateQueries({ queryKey: newsletterKeys.all })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }

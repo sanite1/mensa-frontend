@@ -10,8 +10,9 @@ import {
 } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { api } from '../api'
+import { axios } from '../axios'
 import type { ApiResponse, Paginated } from '../api'
-import { handleApiError } from '../helpers/handleApiError'
+import { toastApiError } from '../helpers/handleApiError'
 import type {
   ContentCategory,
   ContentKind,
@@ -129,7 +130,7 @@ export const useCreateContentPost = () => {
       toast.success(res.message || 'Post created.')
       qc.invalidateQueries({ queryKey: contentKeys.all })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }
 
@@ -152,7 +153,7 @@ export const useUpdateContentPost = () => {
       qc.invalidateQueries({ queryKey: contentKeys.all })
       qc.invalidateQueries({ queryKey: contentKeys.adminDetail(vars.id) })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }
 
@@ -170,6 +171,35 @@ export const useDeleteContentPost = () => {
       toast.success(res.message || 'Post deleted.')
       qc.invalidateQueries({ queryKey: contentKeys.all })
     },
-    onError: handleApiError,
+    onError: toastApiError,
+  })
+}
+
+// ══════════════════════════════════════════════
+// POST /api/v1/admin/content/upload-image  (multipart)
+// Standalone cover upload — returns { url, publicId } for the editor to
+// stash in the post's coverImage on save.
+// ══════════════════════════════════════════════
+
+const uploadContentImageFn = async (
+  file: File,
+): Promise<ApiResponse<{ url: string; publicId: string }>> => {
+  const formData = new FormData()
+  formData.append('image', file)
+  const res = await axios.post<ApiResponse<{ url: string; publicId: string }>>(
+    '/admin/content/upload-image',
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } },
+  )
+  return res.data
+}
+
+export const useUploadContentImage = () => {
+  return useMutation({
+    mutationFn: uploadContentImageFn,
+    onSuccess: (res) => {
+      toast.success(res.message || 'Image uploaded.')
+    },
+    onError: toastApiError,
   })
 }

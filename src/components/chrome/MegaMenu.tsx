@@ -2,11 +2,18 @@
 // MegaMenu — drops down under "Shop" on desktop. Four columns: Period
 // pants, Reusable pads, Education, and a blush feature card.
 //
-// Slugs match those seeded by mensa-backend/src/scripts/seedProducts.ts.
+// Every product link is driven by the live catalogue via useProducts, so
+// the menu stays in lockstep with what's actually for sale. The feature
+// card prefers a product with slug "starter-set", falling back to the
+// first bundle in the catalogue.
 // ─────────────────────────────────────────────────────────────────────────
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { IconArrowRight } from './icons'
+import { useProducts } from '@/lib/network/api/product.api'
+import { useFormatPrice } from '@/lib/currency'
+import type { Product, ProductCategory } from '@/lib/network/types/product.types'
+import reusablePadPreview from '@/assets/reuseable-pad.jpg'
 
 interface MegaMenuLink {
   label: string
@@ -14,26 +21,24 @@ interface MegaMenuLink {
   href: string
 }
 
-const periodPants: MegaMenuLink[] = [
-  { label: 'Pack of 5', hint: '₦25,000', href: '/shop/pack-of-5-pants' },
-  { label: 'Pack of 3', hint: '₦16,500', href: '/shop/pack-of-3-pants' },
-  { label: 'Single pant', hint: '₦6,500', href: '/shop/single-pant' },
-  { label: 'Sport pant', hint: '₦7,500', href: '/shop/sport-pant' },
-  { label: 'See all pants', href: '/shop?category=pants' },
-]
-
-const reusablePads: MegaMenuLink[] = [
-  { label: 'Pack of 5, regular', hint: '₦4,500', href: '/shop/pads-regular' },
-  { label: 'Pack of 5, heavy', hint: '₦6,500', href: '/shop/pads-heavy' },
-  { label: 'See all pads', href: '/shop?category=pads' },
-]
-
-const education: MegaMenuLink[] = [
-  { label: 'My Cycoo', hint: '₦2,500', href: '/shop/my-cycoo' },
-  { label: 'Bulk for schools', href: '/partnerships' },
-  { label: 'NGO partnerships', href: '/partnerships' },
-  { label: 'See all education', href: '/shop?category=education' },
-]
+function useCategoryLinks(
+  products: Product[],
+  category: ProductCategory,
+  seeAllLabel: string,
+  max = 4,
+): MegaMenuLink[] {
+  const formatPrice = useFormatPrice()
+  const items = products
+    .filter((p) => p.category === category)
+    .slice(0, max)
+    .map((p) => ({
+      label: p.name,
+      hint: formatPrice(p.basePriceB2C),
+      href: `/shop/${p.slug}`,
+    }))
+  if (items.length === 0) return []
+  return [...items, { label: seeAllLabel, href: `/shop?category=${category}` }]
+}
 
 function Column({
   title,
@@ -44,12 +49,13 @@ function Column({
   links: MegaMenuLink[]
   onLinkClick?: () => void
 }) {
+  if (links.length === 0) return null
   return (
     <div>
       <div className="t-eyebrow mb-4.5 text-(--mute)">{title}</div>
       <ul className="m-0 flex list-none flex-col gap-3 p-0">
         {links.map((link) => (
-          <li key={link.label}>
+          <li key={link.href}>
             <Link
               to={link.href}
               onClick={onLinkClick}
@@ -73,36 +79,63 @@ interface MegaMenuProps {
 }
 
 export function MegaMenu({ onLinkClick }: MegaMenuProps = {}) {
+  // One catalogue fetch drives every column and the feature card. The
+  // page size is generous but the catalogue is small, so the payload
+  // stays tiny and TanStack Query caches it across renders.
+  const query = useProducts({ pageSize: 60, sort: 'featured' })
+  const products: Product[] = query.data?.data?.items ?? []
+  const formatPrice = useFormatPrice()
+
+  const periodPants = useCategoryLinks(products, 'pants', 'See all pants')
+  const reusablePads = useCategoryLinks(products, 'pads', 'See all pads')
+  const education = useCategoryLinks(products, 'education', 'See all education')
+
+  // Feature card — prefer the specific "starter-set" slug, fall back to
+  // the first bundle in the catalogue.
+  const featured =
+    products.find((p) => p.slug === 'starter-set') ??
+    products.find((p) => p.category === 'bundles')
+
   return (
     <div className="grid bg-paper border-t border-hairline-soft pt-10 px-12 pb-11 grid-cols-[1.2fr_1.2fr_1.2fr_1.6fr] gap-12">
       <Column title="Period pants" links={periodPants} onLinkClick={onLinkClick} />
       <Column title="Reusable pads" links={reusablePads} onLinkClick={onLinkClick} />
       <Column title="Education" links={education} onLinkClick={onLinkClick} />
 
-      {/* Feature card */}
-      <div className="relative overflow-hidden bg-blush rounded-lg p-6">
-        <div className="t-eyebrow text-berry">New this season</div>
-        <h3 className="mt-2 text-berry font-display italic font-semibold text-[30px] leading-[1.1] tracking-[-0.015em]">
-          The starter set
-        </h3>
-        <p className="mt-2 text-[14px] max-w-55 text-graphite">
-          3 pants + 5 reusable pads. Everything you need to switch.
-        </p>
-        <div className="mt-4.5 relative z-10">
-          <Button asChild variant="primary" size="sm">
-            <Link to="/shop/starter-set" onClick={onLinkClick}>
-              Shop the set · ₦22,500
-              <IconArrowRight size={14} />
-            </Link>
-          </Button>
+      {/* Feature card — reuses the bundle product's real name, subheading,
+          image and price. Hidden entirely when the catalogue has no bundle
+          to show, since a fake card is worse than no card. */}
+      {featured ? (
+        <div className="relative overflow-hidden bg-blush rounded-lg p-6">
+          <div className="t-eyebrow text-berry">New this season</div>
+          <h3 className="mt-2 text-berry font-display italic font-semibold text-[30px] leading-[1.1] tracking-[-0.015em]">
+            {featured.name}
+          </h3>
+          {featured.shortDescription ? (
+            <p className="mt-2 text-[14px] max-w-55 text-graphite">{featured.shortDescription}</p>
+          ) : null}
+          <div className="mt-4.5 relative z-10">
+            <Button asChild variant="primary" size="sm">
+              <Link to={`/shop/${featured.slug}`} onClick={onLinkClick}>
+                Shop the set · {formatPrice(featured.basePriceB2C)}
+                <IconArrowRight size={14} />
+              </Link>
+            </Button>
+          </div>
+          {/* Product preview — reusable pad photo in the corner frame the
+              old stripe placeholder used to occupy. */}
+          <div className="absolute -right-7.5 -top-2.5 w-35 h-45 rounded-md overflow-hidden bg-blush-stripe">
+            <img
+              src={reusablePadPreview}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
+          </div>
         </div>
-        {/* Placeholder until we have a real hero image for the starter set.
-            The blush stripe is an arbitrary background-image — no theme
-            token has a gradient equivalent. */}
-        <div className="absolute -right-7.5 -top-2.5 w-35 h-45 opacity-70 flex items-end rounded-md p-2 bg-blush-stripe">
-          <span className="t-micro text-berry opacity-70">product</span>
-        </div>
-      </div>
+      ) : null}
     </div>
   )
 }

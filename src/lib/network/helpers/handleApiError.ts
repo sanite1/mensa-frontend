@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios'
+import { toast } from 'sonner'
 import type { ApiErrorBody } from '../api'
 
 /**
@@ -17,4 +18,13 @@ export function handleApiError(error: unknown): ApiErrorBody {
   }
 
   return { statusCode: 0, message: 'Something went wrong. Please try again.' }
+}
+
+/**
+ * Toasts the parsed error message. Drop-in `onError` for React Query
+ * mutations — `onError: handleApiError` alone parses the error and then
+ * discards it, which is how upload failures went silent.
+ */
+export function toastApiError(error: unknown): void {
+  toast.error(handleApiError(error).message)
 }

@@ -23,13 +23,17 @@ import {
 } from '@/components/chrome/icons'
 import { Photo } from '@/components/shop/Photo'
 import { ShopCard } from '@/components/shop/ShopCard'
-import heroImage from '@/assets/hero.png'
+import heroImage from '@/assets/kenny-t.jpg'
+import foundersEnvironmental from '@/assets/kenny-000.jpg'
+import productPackOfThree from '@/assets/mensa-pant-5.png'
+import myCycooCover from '@/assets/my-cycoo.jpg'
 
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
 import { BigNumber } from '@/components/editorial/BigNumber'
 import { TrustStrip } from '@/components/editorial/TrustStrip'
 
 import { useProducts } from '@/lib/network/api/product.api'
+import { useFormatPrice } from '@/lib/currency'
 import type { Product } from '@/lib/network/types/product.types'
 import { useContentList } from '@/lib/network/api/content.api'
 import type { ContentPost } from '@/lib/network/types/content.types'
@@ -82,13 +86,18 @@ function Hero() {
           </div>
         </div>
 
-        <TrustStrip
-          items={[
-            { text: 'Designed & sewn in Abuja' },
-            { text: 'Nationwide delivery, 2 to 5 days' },
-            { text: 'Five-year wear · replaces 250+ disposables' },
-          ]}
-        />
+        {/* Hidden on mobile where the MicroTrust marquee below already
+            carries the same trust language, and stacked hero copy makes
+            this list feel like busywork. */}
+        <div className="hidden lg:block">
+          <TrustStrip
+            items={[
+              { text: 'Designed & sewn in Abuja' },
+              { text: 'Nationwide delivery, 2 to 5 days' },
+              { text: 'Five-year wear · replaces 250+ disposables' },
+            ]}
+          />
+        </div>
       </div>
 
       <div className="relative min-h-100 lg:min-h-180 order-1 lg:order-2">
@@ -115,9 +124,29 @@ function MicroTrust() {
     { icon: <IconLeaf size={18} />, text: '5 year lifetime, zero monthly cost' },
     { icon: <IconUser size={18} />, text: 'Designed & sewn in Abuja' },
   ]
+  // Mobile/tablet: infinite marquee — the track renders two identical
+  // copies of the list back-to-back, and a `translateX(-50%)` animation
+  // scrolls the second copy in exactly as the first scrolls out.
+  // Desktop (lg+): the original static four-across grid.
+  const doubled = [...items, ...items]
   return (
-    <section className="px-5 md:px-10 lg:px-16 py-5 bg-ink text-paper">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 items-center">
+    <section className="bg-ink text-paper py-5 overflow-hidden">
+      {/* Marquee — mobile and tablet only */}
+      <div className="flex w-max animate-marquee gap-10 pl-5 md:pl-10 lg:hidden">
+        {doubled.map((it, i) => (
+          <div
+            key={i}
+            aria-hidden={i >= items.length}
+            className="flex items-center gap-3 text-[13.5px] text-paper/90 whitespace-nowrap shrink-0"
+          >
+            <span className="text-pink">{it.icon}</span>
+            <span>{it.text}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Static grid — desktop only */}
+      <div className="hidden lg:grid px-16 grid-cols-4 gap-6 items-center">
         {items.map((it, i) => (
           <div key={i} className="flex items-center gap-3 text-[13.5px] text-paper/90">
             <span className="text-pink">{it.icon}</span>
@@ -239,16 +268,26 @@ function BrandStory() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-[2fr_1fr] gap-4">
+        <div className="grid grid-cols-[1.4fr_1fr] gap-3.5">
           <Photo
-            tone="stripe"
+            tone="cream"
             ratio="3/4"
-            label="FOUNDER · environmental portrait"
-            sublabel="warm tones, soft light"
+            src={foundersEnvironmental}
+            alt="Kehinde Abereoje at the Mensa studio"
           />
-          <div className="grid grid-rows-2 gap-4">
-            <Photo tone="ink" ratio="1/1" label="DETAIL · stitching" />
-            <Photo tone="cream" ratio="1/1" label="STUDIO · sewing room" />
+          <div className="grid grid-rows-2 gap-3.5">
+            <Photo
+              tone="blush"
+              ratio="1/1"
+              src={productPackOfThree}
+              alt="Mensa reusable period pants, pack of three"
+            />
+            <Photo
+              tone="ink"
+              ratio="1/1"
+              src={myCycooCover}
+              alt="My Cycoo period education guide cover"
+            />
           </div>
         </div>
       </div>
@@ -258,6 +297,14 @@ function BrandStory() {
 
 // ─── EDUCATION ──────────────────────────────────────────────────
 function Education() {
+  // Alternating card tones so the two cards read as a set even if the
+  // catalogue changes what ships in the education category over time.
+  const tones: Array<'blush' | 'cream'> = ['blush', 'cream']
+  const query = useProducts({ category: 'education', pageSize: 2, sort: 'featured' })
+  const products: Product[] = query.data?.data?.items ?? []
+
+  if (products.length === 0) return null
+
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-paper">
       <div className="max-w-220 mb-12 lg:mb-16">
@@ -267,55 +314,54 @@ function Education() {
         </h2>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-        <EduCard
-          tone="blush"
-          eyebrow="THE FLOW GAME · EDUCATORS EDITION"
-          title="Period conversations that do not feel like a lecture."
-          body="Fifty cards across four categories: Guess It, Say It, This or That, True or False. Built for classrooms, girls' nights and that one tricky workshop you've been putting off."
-          price="₦10,000"
-        />
-        <EduCard
-          tone="cream"
-          eyebrow="MY CYCOO · GUIDE TO MENSTRUAL HYGIENE"
-          title="A 60-page guide for every first period, and every one after."
-          body="Written with educators in Abuja. Plain language, pretty illustrations, zero euphemisms. The book we wish we'd had at ten."
-          price="₦7,500"
-        />
+        {products.map((product, i) => (
+          <EduCard key={product.slug ?? product.id} tone={tones[i % tones.length]} product={product} />
+        ))}
       </div>
     </section>
   )
 }
 
-interface EduCardProps {
-  tone: 'blush' | 'cream'
-  eyebrow: string
-  title: string
-  body: string
-  price: string
-}
-
-function EduCard({ tone, eyebrow, title, body, price }: EduCardProps) {
-  // Tone class lookup keeps the card Tailwind-only.
+function EduCard({ tone, product }: { tone: 'blush' | 'cream'; product: Product }) {
+  const formatPrice = useFormatPrice()
   const bgClass = tone === 'blush' ? 'bg-blush' : 'bg-cream-soft'
+  const image = product.images?.[0]
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-[1fr_1.1fr] gap-6 lg:gap-7 p-7 ${bgClass}`}>
       <Photo
         tone={tone === 'blush' ? 'blush' : 'cream'}
         ratio="4/5"
-        label="PRODUCT · editorial still"
+        src={image?.url}
+        alt={image?.alt ?? product.name}
       />
       <div className="flex flex-col">
-        <div className="font-mono text-[11px] tracking-[0.12em] text-berry uppercase">
-          {eyebrow}
+        {/* The text block centers itself in the space the tall image
+            creates, so short catalogue copy never leaves a dead void
+            between the heading and the price row. */}
+        <div className="my-auto">
+          <div className="font-mono text-[11px] tracking-[0.12em] text-berry uppercase">
+            {product.name}
+          </div>
+          <h3 className="m-0 mt-3.5 font-display italic font-semibold text-[28px] leading-[1.1] tracking-[-0.015em] text-ink">
+            {product.subheading || product.shortDescription}
+          </h3>
+          {product.shortDescription && product.subheading ? (
+            <p className="m-0 mt-3.5 text-graphite text-[15px] leading-[1.55]">
+              {product.shortDescription}
+            </p>
+          ) : null}
+          {product.description ? (
+            <p className="m-0 mt-3.5 text-graphite text-[15px] leading-[1.6] line-clamp-5">
+              {product.description}
+            </p>
+          ) : null}
         </div>
-        <h3 className="m-0 mt-3.5 font-display italic font-semibold text-[28px] leading-[1.1] tracking-[-0.015em] text-ink">
-          {title}
-        </h3>
-        <p className="m-0 mt-3.5 text-graphite text-[15px] leading-[1.55]">{body}</p>
-        <div className="mt-auto pt-6 flex items-baseline justify-between gap-3">
-          <span className="text-ink text-[16px] font-medium">{price}</span>
+        <div className="pt-6 flex items-baseline justify-between gap-3">
+          <span className="text-ink text-[16px] font-medium">
+            {formatPrice(product.basePriceB2C)}
+          </span>
           <Link
-            to="/shop"
+            to={`/shop/${product.slug}`}
             className="inline-flex items-center gap-2 text-ink no-underline text-[14px] font-medium border-b border-ink pb-0.75"
           >
             View product <IconArrowRight size={14} />
@@ -341,7 +387,7 @@ function Journal() {
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-paper">
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-8 mb-12 lg:mb-14">
-        <div>
+        <div className="max-w-220">
           <SectionEyebrow>From the journal</SectionEyebrow>
           <h2 className="m-0 mt-5 text-ink font-display italic font-semibold text-[clamp(28px,4vw,56px)] leading-[1.02] tracking-tight">
             Plain spoken writing about periods, products and the people we serve.
@@ -349,7 +395,7 @@ function Journal() {
         </div>
         <Link
           to="/journal"
-          className="inline-flex items-center gap-2 text-[14.5px] font-medium text-ink no-underline self-start lg:self-auto border-b border-ink pb-1"
+          className="inline-flex items-center gap-2 text-[14.5px] font-medium text-ink no-underline self-start lg:self-auto border-b border-ink pb-1 whitespace-nowrap"
         >
           All articles <IconArrowRight size={16} />
         </Link>

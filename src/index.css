@@ -76,6 +76,22 @@
   --color-input:                #E7DCCC;
   --color-ring:                 #FE718E;
   --radius:                     6px;
+
+  /* Infinite horizontal marquee. The track shifts left by 50% of its own
+     width, which is exactly one copy of the item list (we render the list
+     twice back-to-back), so the loop stays visually seamless. */
+  --animate-marquee: marquee 30s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none !important;
+  }
 }
 
 /* ─── CSS custom properties (runtime, not Tailwind-only) ─────────────────── */

@@ -21,7 +21,7 @@ import {
 import { toast } from 'sonner'
 import { api } from '../api'
 import type { ApiResponse, Paginated } from '../api'
-import { handleApiError } from '../helpers/handleApiError'
+import { toastApiError } from '../helpers/handleApiError'
 import type { B2BOrg, B2BOrgType, B2BVerificationStatus } from '../types/b2b.types'
 
 export interface SubmitB2BOrgInput {
@@ -68,7 +68,7 @@ export const useSubmitB2BOrg = () =>
     onSuccess: (res) => {
       toast.success(res.message || 'Application received.')
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 
 // ── Admin ────────────────────────────────────────────────────────
@@ -122,6 +122,6 @@ export const useVerifyPartnership = () => {
       qc.invalidateQueries({ queryKey: partnershipKeys.all })
       qc.invalidateQueries({ queryKey: partnershipKeys.adminDetail(vars.id) })
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
 }

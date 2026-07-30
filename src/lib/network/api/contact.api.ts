@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 
 import { api } from '../api'
 import type { ApiResponse } from '../api'
-import { handleApiError } from '../helpers/handleApiError'
+import { toastApiError } from '../helpers/handleApiError'
 
 export type ContactTopic = 'order' | 'product' | 'partnership' | 'press' | 'other'
 
@@ -31,5 +31,5 @@ export const useSubmitContact = () =>
     onSuccess: (res) => {
       toast.success(res.message || 'Your message is on its way.')
     },
-    onError: handleApiError,
+    onError: toastApiError,
   })
