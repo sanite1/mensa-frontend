@@ -51,12 +51,12 @@ function Hero() {
         <div className="inline-flex items-center gap-3 text-coral">
           <span aria-hidden className="w-7 h-px bg-current opacity-60" />
           <span className="font-mono text-[11px] tracking-[0.14em] uppercase font-medium">
-            Our story · Wuse II, Abuja
+            Our story · Kubwa, Abuja
           </span>
         </div>
-        <span className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-mute">
+        {/* <span className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-mute">
           Vol · 01 · May 2026
-        </span>
+        </span> */}
       </div>
 
       {/* Centerpiece statement */}
@@ -227,7 +227,7 @@ function Manufacturing() {
             By women, paid well.
           </h2>
           <p className="mt-6 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
-            Every Mensa pant is cut, sewn and packed in our Wuse II workshop. Twelve seamstresses,
+            Every Mensa pant is cut, sewn and packed in our Kubwa workshop. Twelve seamstresses,
             paid above the FCT garment trade rate, work a single shift across a five day week. No
             overnight runs, no overtime quotas, no rebadged imports.
           </p>
@@ -368,7 +368,7 @@ function Impact() {
     { n: '5 yrs', label: 'Useful life of one pair, washed every cycle' },
     { n: '250+', label: 'Disposable pads one pair replaces over five years' },
     { n: '4 layers', label: 'Wicking, absorbent core, leakproof membrane, outer shell' },
-    { n: '100%', label: 'Designed, cut and sewn in our Wuse II studio' },
+    { n: '100%', label: 'Designed, cut and sewn in our Kubwa studio' },
   ]
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-ink text-paper">

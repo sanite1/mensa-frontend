@@ -168,7 +168,7 @@ const SECTIONS: LegalSection[] = [
         >
           hi@mensaproducts.com
         </a>{' '}
-        or +234 707 534 5496. Our office is in Wuse II, Abuja.
+        or +234 707 534 5496. Our office is in Kubwa, Abuja.
       </p>
     ),
   },

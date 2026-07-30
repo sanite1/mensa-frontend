@@ -176,7 +176,7 @@ const SECTIONS: LegalSection[] = [
         >
           hi@mensaproducts.com
         </a>
-        . Our office is in Wuse II, Abuja.
+        . Our office is in Kubwa, Abuja.
       </p>
     ),
   },

@@ -215,7 +215,7 @@ function Channels() {
         <ChannelCard
           icon={<MapPin size={20} strokeWidth={1.6} />}
           label="Studio"
-          primary="Wuse II, Abuja, FCT"
+          primary="Kubwa, Abuja"
           note="By appointment only — book via email."
         />
       </div>
