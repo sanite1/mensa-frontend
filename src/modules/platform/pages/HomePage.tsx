@@ -13,7 +13,7 @@ import {
 } from '@/components/chrome/icons'
 import { Photo } from '@/components/shop/Photo'
 import { ShopCard } from '@/components/shop/ShopCard'
-import heroImage from '@/assets/kenny-t.jpg'
+import heroImage from '@/assets/hero.jpg'
 import foundersEnvironmental from '@/assets/kenny-000.jpg'
 import productPackOfThree from '@/assets/mensa-pant-5.png'
 import myCycooCover from '@/assets/my-cycoo.jpg'
