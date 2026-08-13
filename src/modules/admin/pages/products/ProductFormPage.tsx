@@ -1066,8 +1066,8 @@ function VariantRow({
         </div>
       ) : null}
 
-      {/* Stock + status inputs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* Stock, price + status inputs */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <FormField
           control={form.control}
           name={`variants.${index}.stockCount`}
@@ -1096,6 +1096,40 @@ function VariantRow({
         />
         <FormField
           control={form.control}
+          name={`variants.${index}.b2cPriceOverrideNaira`}
+          render={({ field }) => (
+            <FormItem>
+              <Label>Price (₦)</Label>
+              <FormControl>
+                <NullableNumberInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder={String(form.watch('basePriceB2CNaira') || '')}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={`variants.${index}.b2bPriceOverrideNaira`}
+          render={({ field }) => (
+            <FormItem>
+              <Label>B2B price (₦)</Label>
+              <FormControl>
+                <NullableNumberInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder={String(form.watch('basePriceB2BNaira') || '')}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name={`variants.${index}.isActive`}
           render={({ field }) => (
             <FormItem>
@@ -1115,6 +1149,9 @@ function VariantRow({
           )}
         />
       </div>
+      <p className="m-0 mt-2 t-body-s text-mute">
+        Leave a price blank to inherit the product base price.
+      </p>
     </div>
   )
 }
@@ -1495,6 +1532,36 @@ function NairaInput({
         className="flex h-11 w-full border border-hairline bg-paper pl-8 pr-3.5 py-2 text-[15px] text-ink placeholder:text-mute focus-visible:outline-none focus-visible:border-ink"
       />
     </div>
+  )
+}
+
+// Empty input means null, the variant inherits the product base price.
+function NullableNumberInput({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: number | null
+  onChange: (v: number | null) => void
+  placeholder?: string
+}) {
+  return (
+    <input
+      type="number"
+      inputMode="numeric"
+      min={0}
+      value={value ?? ''}
+      placeholder={placeholder}
+      onChange={(e) => {
+        if (e.target.value === '') {
+          onChange(null)
+          return
+        }
+        const n = Number(e.target.value)
+        onChange(Number.isFinite(n) ? n : null)
+      }}
+      className="flex h-11 w-full border border-hairline bg-paper px-3.5 py-2 text-[15px] text-ink placeholder:text-mute focus-visible:outline-none focus-visible:border-ink"
+    />
   )
 }
 
