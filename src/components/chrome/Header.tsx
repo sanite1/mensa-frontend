@@ -179,7 +179,8 @@ function DesktopNavLink({
   onShopLeave: () => void
 }) {
   const { pathname } = useLocation()
-  const isCurrent = pathname.startsWith(link.href)
+  // "/" would prefix-match every route, so Home needs an exact match.
+  const isCurrent = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href)
 
   if (link.hasMenu && link.label === 'Shop') {
     // Shop: click navigates to /shop, hover opens the mega menu.
