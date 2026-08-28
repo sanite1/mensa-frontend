@@ -27,6 +27,7 @@ import { PartnerOnboardingPage } from '@/modules/platform/pages/partner/PartnerO
 import { PartnerDashboardPage } from '@/modules/platform/pages/partner/PartnerDashboardPage'
 import { RoleGuard } from '@/components/auth/RoleGuard'
 import { ShopPage } from '@/modules/platform/pages/shop/ShopPage'
+import { StarterSetFinderPage } from '@/modules/platform/pages/StarterSetFinderPage'
 import { ProductDetailPage } from '@/modules/platform/pages/shop/ProductDetailPage'
 import { CheckoutPage } from '@/modules/platform/pages/checkout/CheckoutPage'
 import { ConfirmationPage } from '@/modules/platform/pages/checkout/ConfirmationPage'
@@ -63,6 +64,7 @@ export function PlatformRoutes() {
 
           {/* Phase 2 — Product layer */}
           <Route path="/shop" element={<ShopPage />} />
+          <Route path="/find-my-starter-set" element={<StarterSetFinderPage />} />
           <Route path="/shop/:slug" element={<ProductDetailPage />} />
 
           {/* Editorial / brand pages */}
