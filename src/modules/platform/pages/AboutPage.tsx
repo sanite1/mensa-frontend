@@ -59,12 +59,11 @@ function Hero() {
 
       {/* Centerpiece statement */}
       <div className="px-5 md:px-10 lg:px-16 py-10 lg:py-16">
-        <h1 className="m-0 font-display italic font-semibold text-[clamp(38px,7.5vw,132px)] leading-[0.96] tracking-[-0.03em] text-ink">
-          We started with
+        <h1 className="m-0 font-display italic font-semibold text-[clamp(34px,6.3vw,108px)] leading-[0.98] tracking-[-0.03em] text-ink">
+          We started with one belief:
           <br />
-          <span className="pl-[6%] lg:pl-[8%] block">one belief: periods</span>
-          <span className="pl-[14%] lg:pl-[20%] block">
-            should never be <span className="text-pink">a luxury.</span>
+          <span className="pl-[6%] lg:pl-[10%] block">
+            periods should never be <span className="text-pink whitespace-nowrap">a luxury.</span>
           </span>
         </h1>
 
@@ -85,7 +84,7 @@ function Hero() {
         </div>
       </div>
 
-      {/* Editorial photo */}
+      {/* Editorial photo with the two brand facts overlaid on the corners */}
       <div className="px-5 md:px-10 lg:px-16 pb-10 lg:pb-16">
         <div className="relative overflow-hidden">
           <Photo
@@ -94,27 +93,28 @@ function Hero() {
             src={aboutHero}
             alt="Mensa founders and the Kubwa workshop"
           />
-          {/* <div className="absolute left-4.5 top-4 flex items-center gap-2.5 px-3 py-2 rounded-sm bg-paper/90 backdrop-blur-xs text-ink font-mono text-[10.5px] tracking-widest uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-coral" />
-            Plate 01 · Pack of 3 · Onyx Black
-          </div> */}
-        </div>
-
-        {/* Facts ticker */}
-        <div className="mt-5 lg:mt-7 pt-4 grid grid-cols-2 gap-3 lg:gap-6 border-t border-hairline">
-          <Fact n="2025" label="Founded" />
-          <Fact n="Nationwide" label="Delivery, 2 to 5 days" />
+          {/* Bottom scrim keeps the paper text readable over any photo. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink/75 to-transparent"
+          />
+          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 px-5 md:px-8 pb-4 md:pb-6">
+            <PhotoFact n="2025" label="Founded" />
+            <PhotoFact n="Nationwide" label="Delivery, 2 to 5 days" align="right" />
+          </div>
         </div>
       </div>
     </section>
   )
 }
 
-function Fact({ n, label, className }: { n: string; label: string; className?: string }) {
+function PhotoFact({ n, label, align }: { n: string; label: string; align?: 'right' }) {
   return (
-    <div className={className}>
-      <div className="font-display italic font-semibold text-[28px] leading-none text-ink">{n}</div>
-      <div className="mt-1.5 font-mono text-[11px] tracking-[0.12em] text-mute uppercase">
+    <div className={align === 'right' ? 'text-right' : ''}>
+      <div className="font-display italic font-semibold text-[clamp(22px,3vw,32px)] leading-none text-paper">
+        {n}
+      </div>
+      <div className="mt-1.5 font-mono text-[10.5px] tracking-[0.12em] text-paper/80 uppercase">
         {label}
       </div>
     </div>
