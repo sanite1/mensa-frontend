@@ -21,6 +21,7 @@ interface MobileDrawerProps {
 }
 
 const navItems = [
+  { label: 'Home', href: '/' },
   { label: 'Shop', href: '/shop', sub: true },
   { label: 'Our Story', href: '/about' },
   { label: 'Partnerships', href: '/partnerships' },

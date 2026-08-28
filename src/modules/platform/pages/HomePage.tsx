@@ -20,7 +20,6 @@ import myCycooCover from '@/assets/my-cycoo.jpg'
 
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
 import { BigNumber } from '@/components/editorial/BigNumber'
-import { TrustStrip } from '@/components/editorial/TrustStrip'
 
 import { useProducts } from '@/lib/network/api/product.api'
 import { useFormatPrice } from '@/lib/currency'
@@ -51,37 +50,25 @@ function Hero() {
     <section className="grid grid-cols-1 lg:grid-cols-2 bg-paper lg:min-h-180">
       <div className="px-5 md:px-10 lg:px-16 py-12 md:py-16 lg:py-20 flex flex-col justify-between gap-12 order-2 lg:order-1">
         <div>
-          <SectionEyebrow color="var(--coral)">Nigeria's first reusable period pant</SectionEyebrow>
-          <h1 className="mt-6 font-display italic font-semibold text-[clamp(48px,8vw,96px)] leading-[0.96] tracking-tight text-ink">
-            Switch once.
-            <br />
-            Wear for <span className="text-pink">five years.</span>
+          <SectionEyebrow color="var(--coral)">Periods, but more convenient</SectionEyebrow>
+          <h1 className="mt-6 font-display italic font-semibold text-[clamp(44px,7vw,88px)] leading-[0.96] tracking-tight text-ink">
+            Your one-stop <span className="text-pink">menstrual health</span> shop.
           </h1>
-          <p className="mt-6 max-w-120 text-graphite text-[clamp(16px,2vw,19px)] leading-[1.55]">
-            Reusable period pants, designed in Abuja and tested for our days. One pack replaces
-            hundreds of disposables, and feels better than every one of them.
+          <p className="mt-6 max-w-130 text-graphite text-[clamp(16px,2vw,19px)] leading-[1.55]">
+            Better periods start here. Discover thoughtfully designed reusable products, fun
+            menstrual health education, and fashionable advocacy that puts women and girls first.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
             <Button asChild variant="primary" size="lg">
-              <Link to="/shop">Shop the starter set</Link>
+              <Link to="/find-my-starter-set">Find my starter set</Link>
             </Button>
+            {/* TODO: point at the "how reusables work" journal post once it is published. */}
             <Button asChild variant="ghost" size="lg">
-              <Link to="/about">
+              <Link to="/journal">
                 How they work <IconArrowRight size={16} />
               </Link>
             </Button>
           </div>
-        </div>
-
-        {/* Hidden on mobile, the MicroTrust marquee below already carries this trust language. */}
-        <div className="hidden lg:block">
-          <TrustStrip
-            items={[
-              { text: 'Designed & sewn in Abuja' },
-              { text: 'Nationwide delivery, 2 to 5 days' },
-              { text: 'Five-year wear · replaces 250+ disposables' },
-            ]}
-          />
         </div>
       </div>
 
@@ -145,26 +132,26 @@ function Pillars() {
   const items = [
     {
       n: '01',
-      title: 'Leak proof. Lab tested.',
-      body: 'Four layer construction holds the equivalent of four regular tampons. No shifting, no liner, no leak, through our heaviest day testing.',
+      title: 'More convenient.',
+      body: "Your day is already busy enough. You shouldn't have to worry about getting stained while you're at work, in school, travelling, sleeping, or simply living your life. Mensa gives you reliable protection, so your period becomes one less thing to think about.",
     },
     {
       n: '02',
-      title: 'Five year lifetime.',
-      body: 'Each pair replaces 250+ disposables. One pack of three is your period sorted for sixty months. The maths is the marketing.',
+      title: 'More cost-effective.',
+      body: "Buying disposable pads every month is beginning to look like an expensive subscription. Mensa's reusable period products are designed to last for years, helping you save money while reducing the amount of plastic waste you throw away.",
     },
     {
       n: '03',
-      title: 'Made in Abuja.',
-      body: 'Designed and sewn here. We answer DMs in hours, ship nationwide in days, and replace anything that does not feel right.',
+      title: 'More modern.',
+      body: 'Periods deserve more than outdated products and awkward conversations. Mensa combines chic reusable period care, fun and relatable menstrual health education, and bold, stylish advocacy that lets you wear the conversation with confidence.',
     },
   ]
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-paper">
       <div className="flex flex-col lg:flex-row lg:items-baseline lg:justify-between gap-8 lg:gap-12 mb-12 lg:mb-16">
-        <SectionEyebrow>The pillars</SectionEyebrow>
+        <SectionEyebrow>The whys</SectionEyebrow>
         <h2 className="m-0 max-w-180 font-display italic font-semibold text-[clamp(32px,5vw,56px)] leading-[1.02] tracking-[-0.02em] text-ink">
-          The three things every Mensa customer tells her sister about.
+          Three reasons to switch to Mensa for all things periods.
         </h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-14">
@@ -192,7 +179,7 @@ function ShopTeaser() {
         <div>
           <SectionEyebrow>Shop the range</SectionEyebrow>
           <h2 className="m-0 mt-5 text-ink font-display italic font-semibold text-[clamp(36px,5vw,64px)] leading-none tracking-[-0.02em]">
-            Eight products. One promise.
+            Shop Mensa products. Take one or take all.
           </h2>
         </div>
         <Link
@@ -231,23 +218,33 @@ function BrandStory() {
       <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-20 items-center">
         <div>
           <SectionEyebrow color="var(--berry)">Our story</SectionEyebrow>
-          <h2 className="m-0 mt-6 font-display italic font-semibold text-[clamp(40px,6vw,80px)] leading-none tracking-tight text-berry">
-            Built in Abuja,
-            <br />
-            for women like us.
+          <h2 className="m-0 mt-6 font-display italic font-semibold text-[clamp(32px,4.5vw,60px)] leading-[1.05] tracking-tight text-berry">
+            We believe managing your period with knowledge and dignity is a human right.
           </h2>
-          <p className="mt-8 max-w-135 text-[19px] leading-[1.55] text-berry opacity-85">
-            We started Mensa because our mums, our sisters and our friends deserved better than
-            scratchy pads and overpriced imports. Reusable period products that fit our climate, our
-            wallets and our days. The conversation comes free.
-          </p>
+          <div className="mt-8 max-w-135 flex flex-col gap-4 text-[17px] leading-[1.6] text-berry opacity-85">
+            <p className="m-0">
+              At 16, Kehinde realised that too many girls could not afford pads and knew very
+              little about their periods. She believed that something as natural as menstruation
+              should never determine a girl's confidence, education, or opportunities. So she
+              started supporting girls through her nonprofit, one conversation and one community
+              at a time.
+            </p>
+            <p className="m-0">
+              A decade later, she realised that charity alone could never solve period poverty.
+              Every girl deserves access to products that are comfortable, sustainable, and made
+              for everyday life, not only when she is rich or fortunate enough to meet an NGO or
+              receive a donation.
+            </p>
+            <p className="m-0">
+              That's why Mensa was created: to make better period care accessible, make
+              conversations around periods fun, and give women products they can genuinely love
+              using.
+            </p>
+          </div>
           <div className="mt-10 flex flex-wrap items-center gap-7">
             <Button asChild variant="ink" size="lg">
               <Link to="/about">Read our story</Link>
             </Button>
-            <div className="text-[13px] text-berry opacity-70">
-              Designed in Abuja · five years per pair
-            </div>
           </div>
         </div>
         <div className="grid grid-cols-[1.4fr_1fr] gap-3.5">

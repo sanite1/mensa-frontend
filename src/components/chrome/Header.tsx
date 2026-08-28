@@ -28,6 +28,7 @@ interface NavLinkSpec {
 }
 
 const navLinks: NavLinkSpec[] = [
+  { label: 'Home', href: '/' },
   { label: 'Shop', href: '/shop', hasMenu: true },
   { label: 'Our Story', href: '/about' },
   { label: 'Partnerships', href: '/partnerships' },

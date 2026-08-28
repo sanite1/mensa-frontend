@@ -289,7 +289,7 @@ function BrandColumn({ lockupHeight }: { lockupHeight: number }) {
     <div>
       <MensaLockup height={lockupHeight} tone="paper" />
       <p className="text-[14px] mt-5.5 max-w-70 leading-[1.6] text-white/70">
-        Reusable period products designed in Abuja for Nigerian women. Comfortable. Confident.
+        Sustainable period products designed for the modern woman. Comfortable. Confident.
         Sustainable.
       </p>
       <div className="flex flex-col gap-2 mt-5.5">
