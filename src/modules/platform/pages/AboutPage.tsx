@@ -34,7 +34,6 @@ export function AboutPage() {
       <Manufacturing />
       <Founders />
       <Impact />
-      <PressStrip />
       <Partnerships />
       <FinalCta />
     </div>
@@ -50,7 +49,7 @@ function Hero() {
         <div className="inline-flex items-center gap-3 text-coral">
           <span aria-hidden className="w-7 h-px bg-current opacity-60" />
           <span className="font-mono text-[11px] tracking-[0.14em] uppercase font-medium">
-            Our story · Kubwa, Abuja
+            Our story
           </span>
         </div>
         {/* <span className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-mute">
@@ -60,20 +59,21 @@ function Hero() {
 
       {/* Centerpiece statement */}
       <div className="px-5 md:px-10 lg:px-16 py-10 lg:py-16">
-        <h1 className="m-0 font-display italic font-semibold text-[clamp(40px,9.3vw,168px)] leading-[0.92] tracking-[-0.03em] text-ink">
+        <h1 className="m-0 font-display italic font-semibold text-[clamp(38px,7.5vw,132px)] leading-[0.96] tracking-[-0.03em] text-ink">
           We started with
           <br />
-          <span className="pl-[6%] lg:pl-[8%] block">one sewing</span>
-          <span className="pl-[14%] lg:pl-[20%] block">machine, and</span>a{' '}
-          <span className="text-pink">question.</span>
+          <span className="pl-[6%] lg:pl-[8%] block">one belief: periods</span>
+          <span className="pl-[14%] lg:pl-[20%] block">
+            should never be <span className="text-pink">a luxury.</span>
+          </span>
         </h1>
 
         {/* Byline */}
         <div className="mt-8 lg:mt-12 pt-5 flex flex-wrap items-baseline justify-between gap-5 border-t border-hairline">
           <p className="m-0 max-w-140 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-            A letter from <span className="text-ink font-semibold">Kehinde Abereoje</span>, founder,
-            about the girls in displaced communities she first met at fourteen, and the small
-            workshop she built to do something about it.
+            A letter from the founder, <span className="text-ink font-semibold">Kehinde Abereoje</span>,
+            about the girls she met at fourteen whose lives were affected by terrorism, and the
+            solution she has spent nearly a decade building.
           </p>
           <a
             href="#origin"
@@ -99,11 +99,9 @@ function Hero() {
           </div> */}
         </div>
 
-        {/* Facts ticker — mobile keeps just Founded + Nationwide */}
-        <div className="mt-5 lg:mt-7 pt-4 grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 border-t border-hairline">
+        {/* Facts ticker */}
+        <div className="mt-5 lg:mt-7 pt-4 grid grid-cols-2 gap-3 lg:gap-6 border-t border-hairline">
           <Fact n="2025" label="Founded" />
-          <Fact n="Kubwa" label="Designed & sewn in Abuja" className="hidden lg:block" />
-          <Fact n="5 yrs" label="Useful life per pair" className="hidden lg:block" />
           <Fact n="Nationwide" label="Delivery, 2 to 5 days" />
         </div>
       </div>
@@ -128,17 +126,17 @@ function Mission() {
     {
       n: '01',
       t: 'Dignified',
-      b: "Plain language. Comfortable fit. Products that fit our climate, not someone else's.",
+      b: 'Every woman deserves to manage her period with comfort, confidence and knowledge. We believe dignity begins with having the right products and the right information.',
     },
     {
       n: '02',
       t: 'Sustainable',
-      b: 'Each pair replaces 250+ disposables over its five-year life. Better for you, your wallet, the planet.',
+      b: 'A better period should not come at the expense of the planet. Our reusable products are designed to reduce waste while lasting for years (meaning more money in your pocket).',
     },
     {
       n: '03',
       t: 'Convenient',
-      b: 'Designed and shipped from Abuja. Two day delivery to most cities. Replacements without receipts.',
+      b: 'Life is busy enough already. Mensa gives you reliable protection that fits seamlessly into work, school, travel and every part of your day.',
     },
   ]
   return (
@@ -147,7 +145,7 @@ function Mission() {
         <SectionEyebrow color="var(--berry)">Our mission</SectionEyebrow>
         <p className="m-0 mt-6 font-display italic font-medium text-[clamp(32px,6vw,80px)] leading-none tracking-tight text-berry">
           To make periods <span className="text-ink">dignified, sustainable and convenient</span>{' '}
-          for every Nigerian woman, and to normalise the conversation while we are at it.
+          for every woman through the right products and knowledge.
         </p>
         <div className="mt-10 lg:mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {pillars.map((p) => (
@@ -200,16 +198,22 @@ function Origin() {
             How a visit at fourteen became Mensa.
           </h2>
           <p className="mt-6 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
-            Kehinde was fourteen when she first visited an internally displaced persons camp near
-            her home in Abuja. The thing that stayed with her was small and unsexy: girls were
-            missing school, every month, because they had no period products. The maths was grim.
-            One pack of disposable pads costs more than a day's food.
+            At 14, Kehinde visited a camp for people who had been affected by terrorism in
+            Northern Nigeria. It was the first time she truly understood that her world and theirs
+            were miles apart, even though they were in the same city. Girls spoke about missing
+            school because they had no period products, and she heard the unsafe alternatives they
+            were forced to use instead.
           </p>
           <p className="mt-3.5 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
-            At sixteen she co-founded Purple Pact with her twin brother. The Initiative has since
-            reached more than ten thousand women and girls across Nigeria. Mensa is the answer to a
-            question Purple Pact kept running into: how do you actually solve period poverty when
-            single-use pads cost what they cost? You make a product that lasts five years.
+            At 16, she started a nonprofit with one goal: to make menstrual health education and
+            period products more accessible to girls across Nigeria. For years, that work reached
+            thousands of women and girls, but it also revealed a bigger truth. Charity could help
+            in the moment, but it could not guarantee dignity for every girl.
+          </p>
+          <p className="mt-3.5 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
+            That is why Mensa was created. We believe good period products should be comfortable,
+            sustainable and accessible to all, so no woman has to rely on luck, donations or
+            circumstance to manage her period.
           </p>
           <blockquote className="mt-8 py-5 px-6 bg-cream-soft border-l-[3px] border-coral font-display italic font-medium text-[clamp(18px,2.5vw,24px)] leading-[1.3] text-ink">
             "We wanted to tackle some of the little things that have the biggest consequences."
@@ -229,24 +233,22 @@ function Manufacturing() {
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-paper">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-stretch">
         <div>
-          <SectionEyebrow>Manufacturing</SectionEyebrow>
+          <SectionEyebrow>Product design</SectionEyebrow>
           <h2 className="m-0 mt-5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-[1.02] tracking-[-0.02em] text-ink">
-            Sewn here.
-            <br />
-            Stitched by hand.
+            Every product is designed with you in mind.
           </h2>
           <p className="mt-6 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
-            Every Mensa pant is cut, sewn and packed in our Kubwa studio. Fabric, thread, elastic
-            and packaging all sourced here in Nigeria. Each pair moves through pattern, cut, sew,
-            gusset finish and final inspection in one place, in small runs, checked by the same
-            hands that built it. No overnight quotas, no rebadged imports, no lifting a design off
-            the shelf. Made in Nigeria, for the days we actually live.
+            At Mensa, we do not just design period products. We create thoughtful tools that make
+            periods easier to understand, easier to manage and easier to talk about. From reusable
+            period pants and pads to game cards, books and bold advocacy pieces, every product is
+            designed with purpose.
           </p>
+          {/* The four-layer construction of the reusable period products. */}
           <div className="mt-7 flex flex-col gap-3.5">
-            <MStat n="5k+" label="Pants sewn since launch" />
-            <MStat n="100%" label="Materials sourced in Nigeria" />
-            <MStat n="4 layers" label="Wicking, absorbent core, leakproof membrane, outer shell" />
-            <MStat n="5 yrs" label="Useful life of one pair" />
+            <MStat n="01" label="Soft inner layer: sits comfortably against your skin and keeps you feeling dry." />
+            <MStat n="02" label="Super absorbent core: locks in menstrual flow for hours without feeling bulky." />
+            <MStat n="03" label="Leakproof barrier: prevents leaks while remaining breathable and flexible." />
+            <MStat n="04" label="Durable outer fabric: washable, reusable and designed to last for years." />
           </div>
         </div>
         <Photo
@@ -275,17 +277,12 @@ function MStat({ n, label }: { n: string; label: string }) {
 // ─── FOUNDER ─────────────────────────────────────────────────────
 // Single founder layout, tuned for one person rather than a team grid.
 function Founders() {
-  const milestones: { n: string; label: string }[] = [
-    { n: '14', label: 'Years old at the IDP camp that started it all' },
-    { n: '10K+', label: 'Women and girls reached through Purple Pact' },
-    { n: '2024', label: 'Diana Award recipient · gender equality' },
-  ]
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-cream">
       <div className="mb-10 lg:mb-12">
         <SectionEyebrow>The founder</SectionEyebrow>
         <h2 className="m-0 mt-3.5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-[1.05] tracking-tight text-ink max-w-200">
-          One founder. One workshop in Abuja. One question that would not let her go.
+          Meet the mind behind Mensa.
         </h2>
       </div>
 
@@ -309,7 +306,7 @@ function Founders() {
         <div className="flex flex-col gap-7">
           <div>
             <div className="font-mono text-[11px] tracking-widest text-coral uppercase font-medium">
-              Founder · CEO · Public-health advocate
+              CEO, Mensa
             </div>
             <h3 className="m-0 mt-3 font-display italic font-semibold text-[clamp(32px,5vw,52px)] leading-[1.02] tracking-tight text-ink">
               Kehinde Abereoje.
@@ -318,43 +315,17 @@ function Founders() {
 
           <div className="flex flex-col gap-4 text-graphite text-[clamp(15px,1.8vw,17.5px)] leading-[1.65]">
             <p className="m-0">
-              Kehinde grew up in Abuja and started Purple Pact Initiative with her twin brother at
-              sixteen, after a visit to an internally displaced persons camp put a number on what
-              girls actually lose to period poverty: school days, dignity, options.
+              Kehinde Abereoje is an award-winning social entrepreneur and public health
+              professional who has spent almost a decade working to improve the lives of women and
+              girls through menstrual health and gender equality.
             </p>
             <p className="m-0">
-              Purple Pact has since reached more than ten thousand women and girls across Nigeria.
-              Mensa is the for-profit arm that funds the work, the answer to a question that kept
-              coming up in the field: cheaper pads do not exist. Better pads do.
-            </p>
-            <p className="m-0">
-              Kehinde holds a BSc in Public Health from Babcock University and an MPhil in
-              Population Health Sciences from the University of Cambridge, where she was a
-              Mastercard Foundation Scholar. She received the Diana Award in 2024 for her work on
-              gender equality.
+              She is building sustainable period care that is accessible, practical and proudly
+              African. Kehinde holds a BSc in Public Health from Babcock University, an MPhil in
+              Population Health Sciences from the University of Cambridge, and is an MBA candidate
+              at the University of Oxford.
             </p>
           </div>
-
-          {/* Stat tiles */}
-          <div className="grid grid-cols-3 gap-3 lg:gap-4 mt-2">
-            {milestones.map((m) => (
-              <div key={m.label} className="border-t border-hairline pt-4 flex flex-col gap-1.5">
-                <BigNumber color="var(--berry)" size={36}>
-                  {m.n}
-                </BigNumber>
-                <p className="m-0 text-[12px] leading-snug text-graphite">{m.label}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Pull quote */}
-          <blockquote className="m-0 mt-4 py-5 px-6 bg-paper border-l-[3px] border-coral font-display italic font-medium text-[clamp(17px,2.2vw,22px)] leading-[1.35] text-ink">
-            "People shouldn't have to fight for, and receive a pat on the back for, fighting for
-            gender equality. It's something that's just meant to happen."
-            <footer className="mt-3 text-[12px] font-sans not-italic font-medium text-mute uppercase tracking-widest">
-              Kehinde, on the Diana Award
-            </footer>
-          </blockquote>
         </div>
       </div>
     </section>
@@ -362,31 +333,25 @@ function Founders() {
 }
 
 // ─── IMPACT ──────────────────────────────────────────────────────
-// Product facts only, no customer counts. Swap in real shipping numbers once they exist.
 function Impact() {
   const stats: { n: string; label: string }[] = [
-    { n: '5 yrs', label: 'Useful life of one pair, washed every cycle' },
-    { n: '250+', label: 'Disposable pads one pair replaces over five years' },
+    { n: '200+', label: 'Disposable pads replaced by one reusable period pant each year' },
     { n: '4 layers', label: 'Wicking, absorbent core, leakproof membrane, outer shell' },
-    { n: '100%', label: 'Designed, cut and sewn in our Kubwa studio' },
+    { n: '₦40k+', label: 'Saved every year by switching to reusable period products' },
   ]
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-ink text-paper">
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12 lg:mb-14">
         <div>
-          <SectionEyebrow color="var(--pink)">The product, in plain numbers</SectionEyebrow>
-          <h2 className="m-0 mt-5 font-display italic font-semibold text-[clamp(32px,6vw,80px)] leading-none tracking-tight text-paper">
-            The marketing is
+          <SectionEyebrow color="var(--pink)">The impact</SectionEyebrow>
+          <h2 className="m-0 mt-5 font-display italic font-semibold text-[clamp(32px,5vw,72px)] leading-[1.02] tracking-tight text-paper max-w-230">
+            One reusable period pant.
             <br />
-            the maths.
+            One reusable period pad.
           </h2>
         </div>
-        <div className="max-w-80 text-paper/65 text-[14px] leading-[1.55]">
-          Facts about how each pair is built. When we have real shipping numbers worth publishing,
-          this is where we will publish them.
-        </div>
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
         {stats.map((s, i) => (
           <div key={s.label} className="pt-5 lg:pt-7 border-t border-paper/20">
             <span
@@ -405,93 +370,25 @@ function Impact() {
   )
 }
 
-// ─── PRESS STRIP ─────────────────────────────────────────────────
-function PressStrip() {
-  // Each outlet renders in its native masthead tone via a small map of class strings.
-  const press: { name: string; classes: string }[] = [
-    { name: 'TechCabal', classes: 'font-display italic font-bold' },
-    { name: 'Pulse Nigeria', classes: 'font-sans font-bold' },
-    { name: 'BellaNaija', classes: 'font-display font-semibold' },
-    { name: 'Stears', classes: 'font-sans font-semibold' },
-    { name: 'Big Cabal', classes: 'font-display italic font-semibold' },
-  ]
-  return (
-    <section className="px-5 md:px-10 lg:px-16 py-12 lg:py-16 bg-cream-soft border-y border-hairline">
-      <div className="flex flex-wrap items-center justify-between gap-8">
-        <div className="font-mono text-[11px] tracking-[0.12em] text-mute uppercase font-medium">
-          As seen in
-        </div>
-        <div className="flex items-center flex-wrap gap-7 lg:gap-12 opacity-85">
-          {press.map((p) => (
-            <span
-              key={p.name}
-              className={cn('text-[clamp(16px,2vw,22px)] text-ink tracking-[-0.015em]', p.classes)}
-            >
-              {p.name}
-            </span>
-          ))}
-        </div>
-      </div>
-      <blockquote className="m-0 mt-7 lg:mt-10 max-w-230 font-display italic font-medium text-[clamp(20px,3vw,32px)] leading-[1.3] text-ink tracking-[-0.012em]">
-        "The Abuja D2C brand quietly building Nigeria's most considered period care product."
-        <footer className="mt-2.5 text-[12px] font-sans font-medium text-mute not-italic tracking-[0.08em] uppercase">
-          TechCabal · February 2025
-        </footer>
-      </blockquote>
-    </section>
-  )
-}
-
 // ─── PARTNERSHIPS ────────────────────────────────────────────────
-// No real partner roster yet, swap in named partners only once they consent to credit.
 function Partnerships() {
-  const blocks: { kind: string; offer: string; copy: string }[] = [
-    {
-      kind: 'Schools',
-      offer: 'Educator kits, in-class sessions',
-      copy: 'Bulk per student. Educator kits and a forty-minute classroom session included, with a payment plan that fits a term.',
-    },
-    {
-      kind: 'NGOs',
-      offer: 'Programme pricing',
-      copy: 'Distribution drives at cost-friendly rates. Volume rebates against measurable reach.',
-    },
-    {
-      kind: 'Councils',
-      offer: 'Net 30 on verified POs',
-      copy: 'Net 30 terms for verified council orders. Multi-tranche fulfilment across LGAs.',
-    },
-  ]
   return (
     <section className="px-5 md:px-10 lg:px-16 py-20 lg:py-32 bg-paper">
       <div className="mb-10 lg:mb-12 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
         <div>
           <SectionEyebrow>Partnerships</SectionEyebrow>
           <h2 className="m-0 mt-3.5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-[1.02] tracking-tight text-ink">
-            Schools, NGOs, councils.
+            Schools, NGOs, Governments.
           </h2>
           <p className="mt-4 max-w-135 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-            We sell direct to women, and we partner with organisations who want every girl in their
-            care to have reusable period products from her first cycle. Programmes are opening up
-            now — applications are reviewed within five working days.
+            We are open to partnering with organisations, institutions and individuals who want to
+            provide sustainable and dignified period care for girls in their communities. Eligible
+            organisations receive discounted pricing on Mensa products.
           </p>
         </div>
         <Button asChild variant="ink" size="lg">
           <Link to="/partnerships">Partner with Mensa</Link>
         </Button>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {blocks.map((p) => (
-          <div key={p.kind} className="bg-cream-soft p-6 flex flex-col gap-3 h-full">
-            <div className="font-mono text-[10.5px] tracking-widest uppercase text-mute font-medium">
-              {p.kind}
-            </div>
-            <div className="font-display italic font-semibold text-[22px] leading-tight tracking-tight text-ink">
-              {p.offer}
-            </div>
-            <p className="m-0 t-body-s text-graphite leading-relaxed">{p.copy}</p>
-          </div>
-        ))}
       </div>
     </section>
   )
@@ -522,16 +419,16 @@ function FinalCta() {
         <div className="relative flex flex-col justify-center gap-5 lg:gap-6 max-w-160 py-12 md:py-16 lg:py-20 px-6 md:px-10 lg:px-14 text-paper">
           <SectionEyebrow color="var(--paper)">The invitation</SectionEyebrow>
           <h2 className="m-0 font-display italic font-semibold text-[clamp(30px,5vw,52px)] leading-[1] tracking-tight text-paper">
-            Switch once. Wear for <span className="text-pink">five years.</span>
+            Switch once. Wear for <span className="text-pink">many years.</span>
           </h2>
           <p className="max-w-115 text-[clamp(14.5px,1.6vw,17px)] leading-[1.55] text-paper opacity-90">
-            One pack of three pants replaces 250 disposables. Start with the Starter Set and let us
-            know what you think.
+            One reusable period pant can replace over 300 disposable pads during its lifetime. One
+            pack of five reusable pads can replace more than 1,500 disposable pads over five years.
           </p>
           <div className="flex flex-wrap gap-3 mt-1">
             <Button asChild variant="primary" size="lg">
-              <Link to="/shop">
-                Shop the starter set <IconArrowRight size={16} />
+              <Link to="/find-my-starter-set">
+                Find my starter set <IconArrowRight size={16} />
               </Link>
             </Button>
             <Button
