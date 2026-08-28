@@ -98,7 +98,7 @@ export function ShopPage() {
   return (
     <div className="bg-(--paper)">
       {/* ── Page title / breadcrumb / trust strip ───────────────────── */}
-      <PageHeader productCount={products.length} />
+      <PageHeader />
 
       {/* ── Filter bar ──────────────────────────────────────────────── */}
       <div className="border-y border-(--hairline) bg-(--paper)">
@@ -137,7 +137,7 @@ export function ShopPage() {
 }
 
 // ─────────────────────────────────────────────────────────────────
-function PageHeader({ productCount }: { productCount: number }) {
+function PageHeader() {
   return (
     <section className="px-5 md:px-10 lg:px-16 pt-10 md:pt-16 lg:pt-22 pb-7 md:pb-10 lg:pb-14">
       {/* Breadcrumb */}
@@ -154,23 +154,11 @@ function PageHeader({ productCount }: { productCount: number }) {
         Shop <span className="text-pink">everything</span> Mensa.
       </h1>
 
-      {/* Trust strip */}
-      <div className="flex items-baseline justify-between gap-6 flex-wrap mt-6">
+      {/* Subtitle */}
+      <div className="mt-6">
         <p className="m-0 text-graphite max-w-155 text-[clamp(15px,2vw,18px)] leading-[1.55]">
-          {productCount > 0
-            ? `${productCount} products. One promise. Built to last five years.`
-            : 'One promise. Built to last five years.'}
+          Find the right products here to change your period experience.
         </p>
-        <div className="flex items-center gap-3.5 text-[13px] text-(--graphite) flex-wrap">
-          <span className="inline-flex items-center gap-1.5">
-            <span className="rounded-full w-2 h-2 bg-ok" />
-            {productCount} in stock
-          </span>
-          <span className="opacity-40">·</span>
-          <span>Ships in 2 to 5 days</span>
-          <span className="opacity-40">·</span>
-          <span>30 day comfort guarantee</span>
-        </div>
       </div>
     </section>
   )

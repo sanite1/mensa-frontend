@@ -34,7 +34,7 @@ export function PartnershipsPage() {
   useSeo({
     title: 'Partnerships',
     description:
-      'Schools, NGOs, councils, and individuals can partner with Mensa. Put reusable period products into every girl’s first kit, or share our link and earn a commission.',
+      'Schools, NGOs, governments and individuals can partner with Mensa to provide sustainable and dignified period care for girls in their communities.',
   })
   const [params, setParams] = useSearchParams()
   const mode: Mode = params.get('as') === 'individual' ? 'individual' : 'org'
@@ -78,19 +78,19 @@ function Hero() {
 
       <div className="px-5 md:px-10 lg:px-16 py-10 lg:py-16">
         <h1 className="m-0 font-display italic font-semibold text-[clamp(40px,8vw,128px)] leading-[0.95] tracking-tighter text-ink">
-          Help us put reusable
+          Help us make
           <br />
-          <span className="pl-[6%] lg:pl-[8%] block">period products in every</span>
+          <span className="pl-[6%] lg:pl-[8%] block">period products more</span>
           <span className="pl-[14%] lg:pl-[18%] block">
-            girl's <span className="text-pink">first kit.</span>
+            accessible <span className="text-pink">to women.</span>
           </span>
         </h1>
 
         <div className="mt-8 lg:mt-12 pt-5 flex flex-wrap items-baseline justify-between gap-5 border-t border-hairline">
           <p className="m-0 max-w-140 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-            Whether you run a school, an NGO, a council, or just have an audience that trusts you,
-            we have a partnership for you. Apply below and our team will get back within five
-            working days.
+            Whether you run a school, an NGO, a government programme, or simply want to support
+            girls in your community, we have a partnership for you. Apply below and our team will
+            get back to you within five working days.
           </p>
           <a
             href="#apply"
@@ -109,24 +109,24 @@ function Hero() {
 function Tiers() {
   const blocks: { kind: string; offer: string; copy: string }[] = [
     {
-      kind: 'Schools',
-      offer: 'Bulk per student',
-      copy: 'Educator kits, a forty-minute classroom session, and a payment plan that fits a term.',
+      kind: 'Pricing',
+      offer: 'Discounts on Mensa products',
+      copy: 'Eligible organisations receive discounted pricing on reusable period products, books and educational materials.',
     },
     {
-      kind: 'NGOs',
-      offer: 'Programme pricing',
-      copy: 'Distribution drives at cost-friendly rates. Volume rebates against measurable reach.',
+      kind: 'Programmes',
+      offer: 'School & community programmes',
+      copy: 'We deliver engaging menstrual health workshops, educator sessions and community outreach programmes tailored to your audience.',
     },
     {
-      kind: 'Councils',
-      offer: 'Net 30 on verified POs',
-      copy: 'Net 30 terms for verified council orders. Multi-tranche fulfilment across LGAs.',
+      kind: 'Resources',
+      offer: 'Free educational resources',
+      copy: "Depending on the size of your order, you'll receive complimentary guides, activity materials and classroom resources to support lasting impact.",
     },
     {
-      kind: 'Individuals',
-      offer: 'Earn on every order',
-      copy: 'Share your link. Earn a commission on every paid order. Cash out anytime.',
+      kind: 'Bespoke',
+      offer: 'Custom partnership support',
+      copy: 'Need something different? We work with partners to create bespoke programmes for schools, NGOs, governments and community initiatives.',
     },
   ]
   return (
@@ -134,7 +134,7 @@ function Tiers() {
       <div className="mb-10 lg:mb-12">
         <SectionEyebrow>What we offer</SectionEyebrow>
         <h2 className="m-0 mt-3.5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-tight tracking-tight text-ink">
-          Four ways to work together.
+          Partnering to end period poverty.
         </h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

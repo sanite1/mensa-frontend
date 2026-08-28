@@ -74,33 +74,20 @@ export function JournalIndexPage() {
     <div className="bg-paper">
       {/* Hero strip */}
       <section className="bg-paper">
-        <div className="px-5 md:px-10 lg:px-16 pt-10 lg:pt-16 pb-3 flex flex-wrap items-center justify-between gap-4">
-          <div className="inline-flex items-center gap-3 text-coral">
-            <span aria-hidden className="w-7 h-px bg-current opacity-60" />
-            <span className="font-mono text-[11px] tracking-widest uppercase font-medium">
-              The journal · Published from Abuja
-            </span>
-          </div>
-          <span className="font-mono text-[10.5px] tracking-widest uppercase text-mute">
-            {posts.length > 0 ? `${posts.length} article${posts.length === 1 ? '' : 's'}` : ''}
-          </span>
-        </div>
-
         <div className="px-5 md:px-10 lg:px-16 py-10 lg:py-16">
           <SectionEyebrow color="var(--berry)">From the journal</SectionEyebrow>
           <h1 className="mt-6 font-display italic font-semibold text-[clamp(40px,7vw,112px)] leading-[0.95] tracking-tighter text-ink">
-            Plain spoken writing
+            Honest conversations.
             <br />
-            <span className="pl-[6%] lg:pl-[8%] block">
-              about periods, products,
-            </span>
+            <span className="pl-[6%] lg:pl-[8%] block">Practical tips. Better periods.</span>
             <span className="pl-[14%] lg:pl-[18%] block">
-              and the people we serve.
+              For the girlies. <span className="text-pink">By the girlies.</span>
             </span>
           </h1>
-          <p className="mt-8 max-w-150 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-            Behind the scenes from our studio, field notes from partner schools and clinics, and
-            education that does not condescend.
+          <p className="mt-8 max-w-165 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
+            The Journal is where we share menstrual health tips, reusable product guides, stories
+            from our community, advocacy tips, partnership lessons, and the latest news from
+            Mensa. Everything is written to be helpful, relatable and easy to understand.
           </p>
         </div>
       </section>
