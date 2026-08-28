@@ -33,5 +33,4 @@ export const useAuthStore = create<AuthState>()(
 )
 
 /** Selector hook — true when both user and access token are set. */
-export const useIsAuthenticated = () =>
-  useAuthStore((s) => !!s.user && !!s.accessToken)
+export const useIsAuthenticated = () => useAuthStore((s) => !!s.user && !!s.accessToken)

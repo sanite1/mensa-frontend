@@ -19,8 +19,8 @@ const SECTIONS: LegalSection[] = [
           <li>If you become a partner, your social handle and bank account details.</li>
         </ul>
         <p className="m-0">
-          We never see or store your full card number. Payments are processed by Paystack on
-          their own infrastructure and they hand us back only a payment reference.
+          We never see or store your full card number. Payments are processed by Paystack on their
+          own infrastructure and they hand us back only a payment reference.
         </p>
       </>
     ),
@@ -31,7 +31,9 @@ const SECTIONS: LegalSection[] = [
       <>
         <ul className="m-0 pl-5 flex flex-col gap-1.5">
           <li>To fulfil and ship the orders you place.</li>
-          <li>To send order, shipping, and account emails (these are transactional, not marketing).</li>
+          <li>
+            To send order, shipping, and account emails (these are transactional, not marketing).
+          </li>
           <li>To send our newsletter only if you opt in. You can unsubscribe at any time.</li>
           <li>To answer the messages you send us.</li>
           <li>To pay partners the commission they earn through the referral programme.</li>
@@ -59,13 +61,13 @@ const SECTIONS: LegalSection[] = [
             subscribed. We share only your email and your subscribe source.
           </li>
           <li>
-            <span className="text-ink">Cloudinary</span> — image hosting (product photography
-            and any cover images you upload).
+            <span className="text-ink">Cloudinary</span> — image hosting (product photography and
+            any cover images you upload).
           </li>
         </ul>
         <p className="m-0">
-          We do not sell your data to anyone, for any reason. We do not run third-party
-          advertising trackers on this site.
+          We do not sell your data to anyone, for any reason. We do not run third-party advertising
+          trackers on this site.
         </p>
       </>
     ),
@@ -75,9 +77,9 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p className="m-0">
-          We use a small number of first-party cookies and browser storage entries to keep your
-          cart working, remember your selected display currency, and track partner referral
-          attribution. We use{' '}
+          We use a small number of first-party cookies and browser storage entries to keep your cart
+          working, remember your selected display currency, and track partner referral attribution.
+          We use{' '}
           <a
             href="https://plausible.io"
             target="_blank"
@@ -97,9 +99,8 @@ const SECTIONS: LegalSection[] = [
       <>
         <p className="m-0">
           Orders and the data attached to them are kept indefinitely for accounting and
-          customer-service reasons. Newsletter subscribers can unsubscribe and ask to be removed
-          at any time. Contact-form submissions live in our support inbox and are deleted on
-          request.
+          customer-service reasons. Newsletter subscribers can unsubscribe and ask to be removed at
+          any time. Contact-form submissions live in our support inbox and are deleted on request.
         </p>
       </>
     ),
@@ -108,9 +109,7 @@ const SECTIONS: LegalSection[] = [
     heading: 'Your rights under NDPR',
     body: (
       <>
-        <p className="m-0">
-          The Nigeria Data Protection Regulation gives you the right to:
-        </p>
+        <p className="m-0">The Nigeria Data Protection Regulation gives you the right to:</p>
         <ul className="m-0 pl-5 flex flex-col gap-1.5">
           <li>Ask what we hold about you.</li>
           <li>Correct anything that is wrong.</li>
@@ -119,10 +118,7 @@ const SECTIONS: LegalSection[] = [
         </ul>
         <p className="m-0">
           Email{' '}
-          <a
-            href="mailto:hi@mensaproducts.com"
-            className="text-ink underline underline-offset-2"
-          >
+          <a href="mailto:hi@mensaproducts.com" className="text-ink underline underline-offset-2">
             hi@mensaproducts.com
           </a>{' '}
           to make any of these requests. We will reply within 30 days.
@@ -134,9 +130,9 @@ const SECTIONS: LegalSection[] = [
     heading: 'Children',
     body: (
       <p className="m-0">
-        Our products are for menstruators of any age. If you are under 18, please ask a parent
-        or guardian to place orders on your behalf. We do not knowingly create accounts for
-        users under 13.
+        Our products are for menstruators of any age. If you are under 18, please ask a parent or
+        guardian to place orders on your behalf. We do not knowingly create accounts for users under
+        13.
       </p>
     ),
   },
@@ -145,8 +141,8 @@ const SECTIONS: LegalSection[] = [
     body: (
       <p className="m-0">
         We will update this page when our practices change. The "last updated" date at the top
-        always reflects the current version. Material changes that affect existing customers
-        will also be sent to subscribed email addresses.
+        always reflects the current version. Material changes that affect existing customers will
+        also be sent to subscribed email addresses.
       </p>
     ),
   },
@@ -155,10 +151,7 @@ const SECTIONS: LegalSection[] = [
     body: (
       <p className="m-0">
         Questions about how we handle your data? Reach us at{' '}
-        <a
-          href="mailto:hi@mensaproducts.com"
-          className="text-ink underline underline-offset-2"
-        >
+        <a href="mailto:hi@mensaproducts.com" className="text-ink underline underline-offset-2">
           hi@mensaproducts.com
         </a>{' '}
         or +234 707 534 5496. Our office is in Kubwa, Abuja.
@@ -180,9 +173,9 @@ export function PrivacyPage() {
       lastUpdated="Draft"
       intro={
         <>
-          We collect only what we need to run Mensa, we never sell anything to anyone, and you
-          can ask us to delete your data at any time. This page is the full version of that
-          short summary.
+          We collect only what we need to run Mensa, we never sell anything to anyone, and you can
+          ask us to delete your data at any time. This page is the full version of that short
+          summary.
         </>
       }
       sections={SECTIONS}

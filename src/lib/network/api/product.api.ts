@@ -71,9 +71,7 @@ export const useAdminProducts = (params?: ProductListParams) =>
 
 // ─── 4. GET /api/v1/admin/products/:slug  (admin) ────
 
-const adminGetProductFn = async (
-  slug: string,
-): Promise<ApiResponse<ProductResponseData>> => {
+const adminGetProductFn = async (slug: string): Promise<ApiResponse<ProductResponseData>> => {
   return api.get<ProductResponseData>(`/admin/products/${slug}`)
 }
 

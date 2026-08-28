@@ -76,12 +76,11 @@ export function ShopPage() {
   }, [products])
 
   const visible = useMemo(() => {
-    let next = activeCategory
-      ? products.filter((p) => p.category === activeCategory)
-      : products
+    let next = activeCategory ? products.filter((p) => p.category === activeCategory) : products
     if (searchQuery) {
       next = next.filter((p) => {
-        const haystack = `${p.name} ${p.shortDescription ?? ''} ${p.description ?? ''}`.toLowerCase()
+        const haystack =
+          `${p.name} ${p.shortDescription ?? ''} ${p.description ?? ''}`.toLowerCase()
         return haystack.includes(searchQuery)
       })
     }

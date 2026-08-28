@@ -29,9 +29,7 @@ export function CurrencyPicker({ tone = 'dark' }: CurrencyPickerProps) {
       <DropdownMenuTrigger
         className={cn(
           'inline-flex items-center gap-1.5 outline-none cursor-pointer',
-          tone === 'dark'
-            ? 'text-paper hover:opacity-100'
-            : 'text-ink hover:text-pink-deep',
+          tone === 'dark' ? 'text-paper hover:opacity-100' : 'text-ink hover:text-pink-deep',
         )}
         title={`Display currency: ${current.name}`}
       >

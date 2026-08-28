@@ -91,8 +91,8 @@ export function NewsletterPage() {
             Newsletter
           </h1>
           <p className="t-body-s mt-2 text-graphite max-w-180">
-            Everyone who has signed up to hear from us. Export to CSV for now while the
-            Mailerlite sync is pending.
+            Everyone who has signed up to hear from us. Export to CSV for now while the Mailerlite
+            sync is pending.
           </p>
         </div>
         <Button
@@ -134,7 +134,13 @@ export function NewsletterPage() {
             setPage(1)
           }}
         />
-        <SourceSelect value={source} onChange={(v) => { setSource(v); setPage(1) }} />
+        <SourceSelect
+          value={source}
+          onChange={(v) => {
+            setSource(v)
+            setPage(1)
+          }}
+        />
       </div>
 
       {/* Table */}
@@ -302,13 +308,7 @@ function StatusBadge({ status }: { status: NewsletterStatus }) {
   )
 }
 
-function Th({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Th({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <th
       className={cn(
@@ -321,13 +321,7 @@ function Th({
   )
 }
 
-function Td({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Td({ children, className }: { children: React.ReactNode; className?: string }) {
   return <td className={cn('px-4 py-3', className)}>{children}</td>
 }
 

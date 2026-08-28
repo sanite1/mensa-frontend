@@ -15,15 +15,9 @@ interface TrustStripProps {
 export function TrustStrip({ items, color = 'var(--graphite)' }: TrustStripProps) {
   const cssVar = { '--ts-color': color } as CSSProperties
   return (
-    <div
-      className="flex flex-wrap items-center gap-7 pt-5 border-t border-hairline"
-      style={cssVar}
-    >
+    <div className="flex flex-wrap items-center gap-7 pt-5 border-t border-hairline" style={cssVar}>
       {items.map((item, i) => (
-        <div
-          key={i}
-          className="inline-flex items-center gap-2 text-[13px] text-(--ts-color)"
-        >
+        <div key={i} className="inline-flex items-center gap-2 text-[13px] text-(--ts-color)">
           {item.icon ? <span className="text-pink">{item.icon}</span> : null}
           <span>{item.text}</span>
         </div>

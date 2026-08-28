@@ -1,21 +1,12 @@
 // content.api.ts — public + admin endpoints for ContentPost.
 
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { api } from '../api'
 import { axios } from '../axios'
 import type { ApiResponse, Paginated } from '../api'
 import { toastApiError } from '../helpers/handleApiError'
-import type {
-  ContentCategory,
-  ContentKind,
-  ContentPost,
-} from '../types/content.types'
+import type { ContentCategory, ContentKind, ContentPost } from '../types/content.types'
 
 export interface ContentListParams {
   kind?: ContentKind
@@ -47,12 +38,9 @@ export const contentKeys = {
   all: ['content'] as const,
   publicList: (params: ContentListParams) =>
     [...contentKeys.all, 'public', 'list', params] as const,
-  publicDetail: (slug: string) =>
-    [...contentKeys.all, 'public', 'detail', slug] as const,
-  adminList: (params: ContentListParams) =>
-    [...contentKeys.all, 'admin', 'list', params] as const,
-  adminDetail: (id: string) =>
-    [...contentKeys.all, 'admin', 'detail', id] as const,
+  publicDetail: (slug: string) => [...contentKeys.all, 'public', 'detail', slug] as const,
+  adminList: (params: ContentListParams) => [...contentKeys.all, 'admin', 'list', params] as const,
+  adminDetail: (id: string) => [...contentKeys.all, 'admin', 'detail', id] as const,
 }
 
 // ── Public ───────────────────────────────────────────────────────
@@ -70,9 +58,7 @@ export const useContentList = (params: ContentListParams = {}) =>
     staleTime: 60_000,
   })
 
-const getPublicContentFn = async (
-  slug: string,
-): Promise<ApiResponse<{ post: ContentPost }>> => {
+const getPublicContentFn = async (slug: string): Promise<ApiResponse<{ post: ContentPost }>> => {
   return api.get<{ post: ContentPost }>(`/content/${slug}`)
 }
 
@@ -100,9 +86,7 @@ export const useAdminContent = (params: ContentListParams = {}) =>
     staleTime: 30_000,
   })
 
-const adminGetContentFn = async (
-  id: string,
-): Promise<ApiResponse<{ post: ContentPost }>> => {
+const adminGetContentFn = async (id: string): Promise<ApiResponse<{ post: ContentPost }>> => {
   return api.get<{ post: ContentPost }>(`/admin/content/${id}`)
 }
 
@@ -155,9 +139,7 @@ export const useUpdateContentPost = () => {
   })
 }
 
-const adminDeleteContentFn = async (
-  id: string,
-): Promise<ApiResponse<{ id: string }>> => {
+const adminDeleteContentFn = async (id: string): Promise<ApiResponse<{ id: string }>> => {
   return api.delete<{ id: string }>(`/admin/content/${id}`)
 }
 

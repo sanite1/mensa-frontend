@@ -49,9 +49,7 @@ export function JournalPostPage() {
   })
 
   if (query.isLoading) {
-    return (
-      <div className="px-5 md:px-10 lg:px-16 py-12 t-body-s text-mute">Loading…</div>
-    )
+    return <div className="px-5 md:px-10 lg:px-16 py-12 t-body-s text-mute">Loading…</div>
   }
 
   if (query.isError || !post) {
@@ -67,8 +65,7 @@ export function JournalPostPage() {
           We could not find that article.
         </h1>
         <p className="mt-3 max-w-130 t-body text-graphite">
-          It might have moved, or never been published. Try our journal index for the latest
-          pieces.
+          It might have moved, or never been published. Try our journal index for the latest pieces.
         </p>
         <div className="mt-6">
           <Button asChild variant="primary" size="md">

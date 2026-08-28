@@ -3,9 +3,7 @@ import { renderHook } from '@testing-library/react'
 import { useSeo } from './seo'
 
 function metaContent(attr: 'name' | 'property', key: string): string | null {
-  return document.head
-    .querySelector(`meta[${attr}="${key}"]`)
-    ?.getAttribute('content') ?? null
+  return document.head.querySelector(`meta[${attr}="${key}"]`)?.getAttribute('content') ?? null
 }
 
 beforeEach(() => {
@@ -20,29 +18,20 @@ describe('useSeo', () => {
   })
 
   it('honours titleAsIs to skip the suffix', () => {
-    renderHook(() =>
-      useSeo({ title: 'Not found · /missing', titleAsIs: true }),
-    )
+    renderHook(() => useSeo({ title: 'Not found · /missing', titleAsIs: true }))
     expect(document.title).toBe('Not found · /missing')
   })
 
   it('writes description into both meta description and OG description', () => {
-    renderHook(() =>
-      useSeo({ title: 'Shop', description: 'Reusable period products.' }),
-    )
+    renderHook(() => useSeo({ title: 'Shop', description: 'Reusable period products.' }))
     expect(metaContent('name', 'description')).toBe('Reusable period products.')
-    expect(metaContent('property', 'og:description')).toBe(
-      'Reusable period products.',
-    )
-    expect(metaContent('name', 'twitter:description')).toBe(
-      'Reusable period products.',
-    )
+    expect(metaContent('property', 'og:description')).toBe('Reusable period products.')
+    expect(metaContent('name', 'twitter:description')).toBe('Reusable period products.')
   })
 
   it('writes og:type — defaults to website, switches to article when asked', () => {
     const { rerender } = renderHook(
-      ({ type }: { type?: 'website' | 'article' | 'product' }) =>
-        useSeo({ title: 'A', type }),
+      ({ type }: { type?: 'website' | 'article' | 'product' }) => useSeo({ title: 'A', type }),
       { initialProps: {} },
     )
     expect(metaContent('property', 'og:type')).toBe('website')
@@ -53,8 +42,7 @@ describe('useSeo', () => {
 
   it('sets robots=noindex when requested, defaults to index, follow', () => {
     const { rerender } = renderHook(
-      ({ noindex }: { noindex?: boolean }) =>
-        useSeo({ title: 'X', noindex }),
+      ({ noindex }: { noindex?: boolean }) => useSeo({ title: 'X', noindex }),
       { initialProps: { noindex: true } },
     )
     expect(metaContent('name', 'robots')).toBe('noindex, nofollow')
@@ -71,9 +59,7 @@ describe('useSeo', () => {
   })
 
   it('uses a provided image when given', () => {
-    renderHook(() =>
-      useSeo({ title: 'X', image: 'https://cdn.example.com/x.jpg' }),
-    )
+    renderHook(() => useSeo({ title: 'X', image: 'https://cdn.example.com/x.jpg' }))
     expect(metaContent('property', 'og:image')).toBe('https://cdn.example.com/x.jpg')
   })
 })

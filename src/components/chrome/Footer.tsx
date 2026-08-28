@@ -4,14 +4,7 @@ import { useState, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { useSubscribeToNewsletter } from '@/lib/network/api/newsletter.api'
 import { MensaLockup } from './MensaWordmark'
-import {
-  IconPin,
-  IconMail,
-  IconPhone,
-  IconChevronDown,
-  IconInstagram,
-  IconTikTok,
-} from './icons'
+import { IconPin, IconMail, IconPhone, IconChevronDown, IconInstagram, IconTikTok } from './icons'
 
 const SOCIALS = [
   {

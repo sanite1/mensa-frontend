@@ -12,9 +12,8 @@ export function NotFoundPage() {
         That admin page does not exist.
       </h1>
       <p className="t-body mt-4 text-graphite max-w-130">
-        We could not find{' '}
-        <span className="font-mono text-ink">{location.pathname}</span>. Check the sidebar for
-        what is available, or head back to the dashboard.
+        We could not find <span className="font-mono text-ink">{location.pathname}</span>. Check the
+        sidebar for what is available, or head back to the dashboard.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Button asChild variant="primary" size="md">

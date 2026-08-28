@@ -32,9 +32,7 @@ export function EducationPostPage() {
   })
 
   if (query.isLoading) {
-    return (
-      <div className="px-5 md:px-10 lg:px-16 py-12 t-body-s text-mute">Loading…</div>
-    )
+    return <div className="px-5 md:px-10 lg:px-16 py-12 t-body-s text-mute">Loading…</div>
   }
 
   if (query.isError || !post) {

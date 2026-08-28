@@ -91,10 +91,7 @@ export function PlatformRoutes() {
 
           {/* Phase 3 — Checkout (guest-friendly, no auth guard) */}
           <Route path="/checkout" element={<CheckoutPage />} />
-          <Route
-            path="/checkout/confirmation/:orderNumber"
-            element={<ConfirmationPage />}
-          />
+          <Route path="/checkout/confirmation/:orderNumber" element={<ConfirmationPage />} />
           <Route path="/orders/track" element={<TrackOrderPage />} />
 
           {/* 404 catch-all — must be last so it only matches unrouted paths. */}

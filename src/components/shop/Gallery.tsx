@@ -149,9 +149,7 @@ function MainSlide({
   badge?: GalleryProps['badge']
   counter?: string | null
 }) {
-  const badgeToneClass = badge
-    ? BADGE_TONE_CLASS[badge.tone ?? 'pink'] ?? 'bg-pink'
-    : ''
+  const badgeToneClass = badge ? (BADGE_TONE_CLASS[badge.tone ?? 'pink'] ?? 'bg-pink') : ''
   return (
     <div className="relative">
       <Photo
@@ -202,9 +200,7 @@ function Thumbs({
   return (
     <div
       className={cn(
-        layout === 'vertical'
-          ? 'flex flex-col gap-2'
-          : 'grid gap-2 grid-cols-(--thumb-cols)',
+        layout === 'vertical' ? 'flex flex-col gap-2' : 'grid gap-2 grid-cols-(--thumb-cols)',
       )}
       style={horizontalVars}
     >

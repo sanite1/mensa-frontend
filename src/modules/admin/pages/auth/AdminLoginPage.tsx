@@ -18,10 +18,7 @@ import { useLogin } from '@/lib/network/api/auth.api'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
 
 const schema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email is required.')
-    .email('Please enter a valid email address.'),
+  email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
   password: z.string().min(1, 'Password is required.'),
 })
 type Values = z.infer<typeof schema>

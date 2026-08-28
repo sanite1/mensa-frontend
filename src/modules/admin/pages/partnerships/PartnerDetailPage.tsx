@@ -27,9 +27,7 @@ export function PartnerDetailPage() {
   const partner = query.data?.data?.partner
 
   if (query.isLoading) {
-    return (
-      <section className="px-4 md:px-6 lg:px-8 py-10 t-body-s text-mute">Loading…</section>
-    )
+    return <section className="px-4 md:px-6 lg:px-8 py-10 t-body-s text-mute">Loading…</section>
   }
   if (query.isError || !partner) {
     return (
@@ -128,10 +126,7 @@ export function PartnerDetailPage() {
                     : '—'
                 }
               />
-              <Field
-                label="Referral code"
-                value={partner.referralCode || 'Not set yet'}
-              />
+              <Field label="Referral code" value={partner.referralCode || 'Not set yet'} />
             </dl>
 
             {partner.notes ? (
@@ -183,8 +178,8 @@ export function PartnerDetailPage() {
             {isPending ? (
               <>
                 <p className="t-body-s text-graphite mb-4">
-                  Approving creates a partner account, emails them an onboarding link, and lets
-                  them set their password, bank, and referral code.
+                  Approving creates a partner account, emails them an onboarding link, and lets them
+                  set their password, bank, and referral code.
                 </p>
                 <label className="block mb-4">
                   <span className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono">
@@ -238,7 +233,7 @@ export function PartnerDetailPage() {
               </p>
             ) : null}
 
-            {(isActive || isSuspended) ? (
+            {isActive || isSuspended ? (
               <>
                 <label className="block mb-4">
                   <span className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono">

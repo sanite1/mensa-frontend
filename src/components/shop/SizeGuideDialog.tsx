@@ -2,12 +2,7 @@
 
 import type { ReactNode } from 'react'
 
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 interface SizeRow {
   size: string
@@ -36,8 +31,8 @@ export function SizeGuideDialog({ children }: { children: ReactNode }) {
             Size chart
           </DialogTitle>
           <p className="mt-2 t-body-s text-berry max-w-110 mx-auto">
-            Waist measurements in inches. Wrap a soft tape around the narrowest part of your
-            waist and match the range below.
+            Waist measurements in inches. Wrap a soft tape around the narrowest part of your waist
+            and match the range below.
           </p>
         </div>
 
@@ -53,8 +48,7 @@ export function SizeGuideDialog({ children }: { children: ReactNode }) {
               <div
                 key={row.size}
                 className={
-                  'grid grid-cols-3 text-[15px] ' +
-                  (i % 2 === 0 ? 'bg-paper' : 'bg-blush/40')
+                  'grid grid-cols-3 text-[15px] ' + (i % 2 === 0 ? 'bg-paper' : 'bg-blush/40')
                 }
               >
                 <div className="px-4 py-3.5 text-center font-medium text-ink border-t border-blush-2">

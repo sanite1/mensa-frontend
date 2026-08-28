@@ -81,8 +81,8 @@ export function FulfilmentTimeline({ order }: { order: Order }) {
           This order was cancelled.
         </h2>
         <p className="m-0 t-body text-berry max-w-130">
-          If you were charged, the refund will land on the same card within 5 to 10 business
-          days. Reach us at hi@mensaproducts.com with any questions.
+          If you were charged, the refund will land on the same card within 5 to 10 business days.
+          Reach us at hi@mensaproducts.com with any questions.
         </p>
       </div>
     )
@@ -155,10 +155,7 @@ export function FulfilmentTimeline({ order }: { order: Order }) {
                 {i > 0 ? (
                   <span
                     aria-hidden
-                    className={cn(
-                      'flex-1 h-px',
-                      i <= currentIdx ? 'bg-ink' : 'bg-hairline',
-                    )}
+                    className={cn('flex-1 h-px', i <= currentIdx ? 'bg-ink' : 'bg-hairline')}
                   />
                 ) : (
                   <span aria-hidden className="flex-1" />
@@ -182,10 +179,7 @@ export function FulfilmentTimeline({ order }: { order: Order }) {
                 {i < STAGES.length - 1 ? (
                   <span
                     aria-hidden
-                    className={cn(
-                      'flex-1 h-px',
-                      i < currentIdx ? 'bg-ink' : 'bg-hairline',
-                    )}
+                    className={cn('flex-1 h-px', i < currentIdx ? 'bg-ink' : 'bg-hairline')}
                   />
                 ) : (
                   <span aria-hidden className="flex-1" />

@@ -93,27 +93,23 @@ describe('estimatedDelivery', () => {
 
 describe('shortStatus', () => {
   it('reports awaiting payment for pending payment', () => {
-    expect(
-      shortStatus(makeOrder({ payment: { status: 'pending', reference: 'x' } })),
-    ).toBe('Awaiting payment')
+    expect(shortStatus(makeOrder({ payment: { status: 'pending', reference: 'x' } }))).toBe(
+      'Awaiting payment',
+    )
   })
 
   it('reports payment failed', () => {
-    expect(
-      shortStatus(makeOrder({ payment: { status: 'failed', reference: 'x' } })),
-    ).toBe('Payment failed')
+    expect(shortStatus(makeOrder({ payment: { status: 'failed', reference: 'x' } }))).toBe(
+      'Payment failed',
+    )
   })
 
   it('reports the fulfilment stage when paid', () => {
     expect(
-      shortStatus(
-        makeOrder({ fulfilment: { status: 'shipped', shippingMethod: 'sendbox' } }),
-      ),
+      shortStatus(makeOrder({ fulfilment: { status: 'shipped', shippingMethod: 'sendbox' } })),
     ).toBe('Shipped')
     expect(
-      shortStatus(
-        makeOrder({ fulfilment: { status: 'delivered', shippingMethod: 'sendbox' } }),
-      ),
+      shortStatus(makeOrder({ fulfilment: { status: 'delivered', shippingMethod: 'sendbox' } })),
     ).toBe('Delivered')
   })
 })

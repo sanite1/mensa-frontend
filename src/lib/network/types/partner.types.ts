@@ -1,18 +1,9 @@
 // Shared shapes for the partner (individual / referral) programme.
 // Mirrors backend interfaces/partner.interface.ts.
 
-export type PartnerStatus =
-  | 'pending'
-  | 'approved'
-  | 'active'
-  | 'rejected'
-  | 'suspended'
+export type PartnerStatus = 'pending' | 'approved' | 'active' | 'rejected' | 'suspended'
 
-export type PartnerCommissionStatus =
-  | 'pending'
-  | 'available'
-  | 'paid'
-  | 'reversed'
+export type PartnerCommissionStatus = 'pending' | 'available' | 'paid' | 'reversed'
 
 export type PartnerPayoutStatus = 'pending' | 'paid' | 'rejected'
 

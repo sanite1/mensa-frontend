@@ -28,8 +28,7 @@ const TONE_CLASS: Record<Tone, string> = {
   pink: 'bg-pink',
   ink: 'bg-ink',
   paper: 'bg-paper',
-  stripe:
-    'bg-blush-stripe',
+  stripe: 'bg-blush-stripe',
 }
 
 export function Photo({
@@ -44,8 +43,7 @@ export function Photo({
   priority = 'lazy',
 }: PhotoProps) {
   // Dark tones need light text; everything else uses graphite.
-  const textColorClass =
-    tone === 'ink' || tone === 'pink' ? 'text-paper' : 'text-graphite'
+  const textColorClass = tone === 'ink' || tone === 'pink' ? 'text-paper' : 'text-graphite'
 
   // Runtime aspect ratio and object position surface as CSS custom properties for the classes.
   const cssVars: CSSProperties = {
@@ -74,24 +72,10 @@ export function Photo({
       ) : (
         <div className="absolute inset-0 flex flex-col items-end justify-end p-4">
           {label ? (
-            <span
-              className={cn(
-                't-micro text-right opacity-85',
-                textColorClass,
-              )}
-            >
-              {label}
-            </span>
+            <span className={cn('t-micro text-right opacity-85', textColorClass)}>{label}</span>
           ) : null}
           {sublabel ? (
-            <span
-              className={cn(
-                't-micro text-right opacity-60',
-                textColorClass,
-              )}
-            >
-              {sublabel}
-            </span>
+            <span className={cn('t-micro text-right opacity-60', textColorClass)}>{sublabel}</span>
           ) : null}
         </div>
       )}

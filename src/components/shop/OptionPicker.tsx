@@ -38,9 +38,7 @@ export function OptionPicker({
               <div className="flex items-baseline gap-2.5">
                 <span className="t-body-s text-ink font-semibold">{type}</span>
                 {selectedOptions[type] ? (
-                  <span className="t-body-s text-graphite">
-                    {selectedOptions[type]}
-                  </span>
+                  <span className="t-body-s text-graphite">{selectedOptions[type]}</span>
                 ) : null}
               </div>
             </div>
@@ -53,9 +51,7 @@ export function OptionPicker({
                   (v) =>
                     v.isActive &&
                     v.stockCount > 0 &&
-                    optionTypes.every(
-                      (t) => (v.options?.[t] ?? '') === (candidate[t] ?? ''),
-                    ),
+                    optionTypes.every((t) => (v.options?.[t] ?? '') === (candidate[t] ?? '')),
                 )
                 const isOutOfStock = !matching
 
@@ -72,9 +68,7 @@ export function OptionPicker({
                           ? 'bg-paper text-mute border-hairline'
                           : 'bg-paper text-ink border-hairline',
                     )}
-                    aria-label={
-                      isOutOfStock ? `${value} (out of stock)` : String(value)
-                    }
+                    aria-label={isOutOfStock ? `${value} (out of stock)` : String(value)}
                   >
                     {value}
                     {isOutOfStock && !isSelected ? (

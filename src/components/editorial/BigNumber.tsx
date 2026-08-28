@@ -8,11 +8,7 @@ interface BigNumberProps {
   size?: number
 }
 
-export function BigNumber({
-  children,
-  color = 'var(--coral)',
-  size = 56,
-}: BigNumberProps) {
+export function BigNumber({ children, color = 'var(--coral)', size = 56 }: BigNumberProps) {
   const cssVars = {
     '--bn-color': color,
     '--bn-size': `${size}px`,

@@ -1,11 +1,6 @@
 // b2b.api.ts — partnerships (B2BOrg) endpoints.
 
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { api } from '../api'
 import type { ApiResponse, Paginated } from '../api'
@@ -38,15 +33,12 @@ export const partnershipKeys = {
   all: ['partnerships'] as const,
   adminList: (params: AdminPartnershipsListParams) =>
     [...partnershipKeys.all, 'admin', 'list', params] as const,
-  adminDetail: (id: string) =>
-    [...partnershipKeys.all, 'admin', 'detail', id] as const,
+  adminDetail: (id: string) => [...partnershipKeys.all, 'admin', 'detail', id] as const,
 }
 
 // ── Public ───────────────────────────────────────────────────────
 
-const submitB2BOrgFn = async (
-  body: SubmitB2BOrgInput,
-): Promise<ApiResponse<{ org: B2BOrg }>> => {
+const submitB2BOrgFn = async (body: SubmitB2BOrgInput): Promise<ApiResponse<{ org: B2BOrg }>> => {
   return api.post<{ org: B2BOrg }>('/b2b/apply', body)
 }
 
@@ -75,17 +67,13 @@ export const useAdminPartnerships = (params: AdminPartnershipsListParams) =>
     staleTime: 30_000,
   })
 
-const adminGetPartnershipFn = async (
-  id: string,
-): Promise<ApiResponse<{ org: B2BOrg }>> => {
+const adminGetPartnershipFn = async (id: string): Promise<ApiResponse<{ org: B2BOrg }>> => {
   return api.get<{ org: B2BOrg }>(`/admin/partnerships/${id}`)
 }
 
 export const useAdminPartnership = (id: string | undefined) =>
   useQuery({
-    queryKey: id
-      ? partnershipKeys.adminDetail(id)
-      : ['partnerships', 'admin', 'detail', 'noop'],
+    queryKey: id ? partnershipKeys.adminDetail(id) : ['partnerships', 'admin', 'detail', 'noop'],
     queryFn: () => adminGetPartnershipFn(id as string),
     enabled: !!id,
     staleTime: 30_000,

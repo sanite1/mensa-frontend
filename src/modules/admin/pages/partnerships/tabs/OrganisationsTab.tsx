@@ -4,15 +4,8 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
 
-import {
-  useAdminPartnerships,
-  type AdminPartnershipsListParams,
-} from '@/lib/network/api/b2b.api'
-import type {
-  B2BOrg,
-  B2BOrgType,
-  B2BVerificationStatus,
-} from '@/lib/network/types/b2b.types'
+import { useAdminPartnerships, type AdminPartnershipsListParams } from '@/lib/network/api/b2b.api'
+import type { B2BOrg, B2BOrgType, B2BVerificationStatus } from '@/lib/network/types/b2b.types'
 import { cn } from '@/lib/utils'
 
 const STATUS_FILTERS: { id: 'all' | B2BVerificationStatus; label: string }[] = [
@@ -113,9 +106,7 @@ export function OrganisationsTab() {
             ) : items.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-4 py-8 text-center text-mute t-body-s">
-                  {status === 'pending'
-                    ? 'No pending applications.'
-                    : 'No matching partnerships.'}
+                  {status === 'pending' ? 'No pending applications.' : 'No matching partnerships.'}
                 </td>
               </tr>
             ) : (
@@ -202,13 +193,7 @@ function Th({ children }: { children: React.ReactNode }) {
   )
 }
 
-function Td({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Td({ children, className }: { children: React.ReactNode; className?: string }) {
   return <td className={cn('px-4 py-3', className)}>{children}</td>
 }
 

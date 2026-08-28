@@ -7,10 +7,7 @@ import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { confirm } from '@/components/ui/confirm'
-import {
-  useAdminPartnership,
-  useVerifyPartnership,
-} from '@/lib/network/api/b2b.api'
+import { useAdminPartnership, useVerifyPartnership } from '@/lib/network/api/b2b.api'
 import type { B2BVerificationStatus } from '@/lib/network/types/b2b.types'
 import { cn } from '@/lib/utils'
 
@@ -30,9 +27,7 @@ export function PartnershipDetailPage() {
   const org = query.data?.data?.org
 
   if (query.isLoading) {
-    return (
-      <section className="px-4 md:px-6 lg:px-8 py-10 t-body-s text-mute">Loading…</section>
-    )
+    return <section className="px-4 md:px-6 lg:px-8 py-10 t-body-s text-mute">Loading…</section>
   }
   if (query.isError || !org) {
     return (
@@ -98,10 +93,7 @@ export function PartnershipDetailPage() {
               <Field label="Contact name" value={org.contactName} />
               <Field label="Contact email" value={org.contactEmail} />
               <Field label="Contact phone" value={org.contactPhone} />
-              <Field
-                label="Registration"
-                value={org.registrationNumber || 'Not provided'}
-              />
+              <Field label="Registration" value={org.registrationNumber || 'Not provided'} />
               <Field
                 label="Applied"
                 value={new Date(org.createdAt).toLocaleDateString('en-NG', {
@@ -151,8 +143,8 @@ export function PartnershipDetailPage() {
           <div className="border border-hairline-soft bg-paper p-5">
             <div className="t-eyebrow text-mute mb-3">Decision</div>
             <p className="t-body-s text-graphite mb-4">
-              Verifying gives the org access to B2B pricing and the partnerships portal.
-              Rejecting leaves them as a record but no portal access.
+              Verifying gives the org access to B2B pricing and the partnerships portal. Rejecting
+              leaves them as a record but no portal access.
             </p>
             <label className="block">
               <span className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono">

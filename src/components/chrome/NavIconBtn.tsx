@@ -12,14 +12,7 @@ interface NavIconBtnProps {
   className?: string
 }
 
-export function NavIconBtn({
-  children,
-  label,
-  badge,
-  href,
-  onClick,
-  className,
-}: NavIconBtnProps) {
+export function NavIconBtn({ children, label, badge, href, onClick, className }: NavIconBtnProps) {
   const base = cn(
     'relative inline-flex h-10 w-10 items-center justify-center rounded-sm bg-transparent text-ink hover:bg-cream transition-colors',
     className,

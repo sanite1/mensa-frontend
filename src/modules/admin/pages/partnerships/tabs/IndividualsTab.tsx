@@ -4,14 +4,8 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
 
-import {
-  useAdminPartners,
-  type AdminListPartnersParams,
-} from '@/lib/network/api/partner.api'
-import type {
-  PartnerStatus,
-  PartnerSummary,
-} from '@/lib/network/types/partner.types'
+import { useAdminPartners, type AdminListPartnersParams } from '@/lib/network/api/partner.api'
+import type { PartnerStatus, PartnerSummary } from '@/lib/network/types/partner.types'
 import { formatNaira, cn } from '@/lib/utils'
 
 const STATUS_FILTERS: { id: 'all' | PartnerStatus; label: string }[] = [
@@ -109,9 +103,7 @@ export function IndividualsTab() {
             ) : items.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-4 py-8 text-center text-mute t-body-s">
-                  {status === 'pending'
-                    ? 'No pending applications.'
-                    : 'No matching partners.'}
+                  {status === 'pending' ? 'No pending applications.' : 'No matching partners.'}
                 </td>
               </tr>
             ) : (
@@ -146,9 +138,7 @@ export function IndividualsTab() {
                     )}
                   </Td>
                   <Td className="text-right">{p.commissionRate}%</Td>
-                  <Td className="text-right font-medium">
-                    {formatNaira(p.lifetimeEarnedKobo)}
-                  </Td>
+                  <Td className="text-right font-medium">{formatNaira(p.lifetimeEarnedKobo)}</Td>
                   <Td className="text-mute text-[12px]">
                     {new Date(p.createdAt).toLocaleDateString('en-NG', {
                       day: '2-digit',
@@ -213,13 +203,7 @@ function StatusBadge({ status }: { status: PartnerStatus }) {
   )
 }
 
-function Th({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Th({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <th
       className={cn(
@@ -232,12 +216,6 @@ function Th({
   )
 }
 
-function Td({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Td({ children, className }: { children: React.ReactNode; className?: string }) {
   return <td className={cn('px-4 py-3', className)}>{children}</td>
 }

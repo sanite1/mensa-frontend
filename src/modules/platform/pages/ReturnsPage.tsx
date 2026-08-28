@@ -102,9 +102,8 @@ function Exception() {
         </h2>
         <p className="mt-5 max-w-150 t-body-l text-graphite leading-relaxed">
           If you receive the wrong item, the wrong size, or your product arrives damaged, please
-          contact us within{' '}
-          <span className="text-ink font-medium">three days of delivery</span>. We will review
-          your case and offer a replacement where appropriate.
+          contact us within <span className="text-ink font-medium">three days of delivery</span>. We
+          will review your case and offer a replacement where appropriate.
         </p>
 
         {/* Inline emphasis card */}
@@ -121,9 +120,9 @@ function Exception() {
         </div>
 
         <p className="mt-8 t-body-s text-mute leading-relaxed max-w-150">
-          Three-day window starts on the day your courier marks the order as delivered, or the
-          day our in-house rider hands it to you. We treat it generously, so reach out even if
-          you are a day late.
+          Three-day window starts on the day your courier marks the order as delivered, or the day
+          our in-house rider hands it to you. We treat it generously, so reach out even if you are a
+          day late.
         </p>
       </div>
     </section>

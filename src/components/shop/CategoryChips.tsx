@@ -25,16 +25,9 @@ interface CategoryChipsProps {
   density?: 'sm' | 'md' | 'lg'
 }
 
-export function CategoryChips({
-  active,
-  onChange,
-  counts,
-  density = 'lg',
-}: CategoryChipsProps) {
+export function CategoryChips({ active, onChange, counts, density = 'lg' }: CategoryChipsProps) {
   const densityClass =
-    density === 'sm'
-      ? 'py-1.75 px-3 text-[12.5px]'
-      : 'py-2.25 px-4 text-[13.5px]'
+    density === 'sm' ? 'py-1.75 px-3 text-[12.5px]' : 'py-2.25 px-4 text-[13.5px]'
 
   return (
     <div className="flex gap-1.5 flex-wrap">
@@ -59,12 +52,7 @@ export function CategoryChips({
           >
             {opt.label}
             {count != null ? (
-              <span
-                className={cn(
-                  'font-mono text-[11px]',
-                  isActive ? 'opacity-70' : 'opacity-50',
-                )}
-              >
+              <span className={cn('font-mono text-[11px]', isActive ? 'opacity-70' : 'opacity-50')}>
                 {count}
               </span>
             ) : null}

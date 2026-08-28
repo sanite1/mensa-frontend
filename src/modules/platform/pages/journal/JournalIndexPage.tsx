@@ -7,10 +7,7 @@ import { Search, X } from 'lucide-react'
 import { Photo } from '@/components/shop/Photo'
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
 import { useContentList } from '@/lib/network/api/content.api'
-import type {
-  ContentCategory,
-  ContentPost,
-} from '@/lib/network/types/content.types'
+import type { ContentCategory, ContentPost } from '@/lib/network/types/content.types'
 import { cn } from '@/lib/utils'
 import { useSeo } from '@/lib/seo'
 
@@ -86,8 +83,8 @@ export function JournalIndexPage() {
           </h1>
           <p className="mt-8 max-w-165 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
             The Journal is where we share menstrual health tips, reusable product guides, stories
-            from our community, advocacy tips, partnership lessons, and the latest news from
-            Mensa. Everything is written to be helpful, relatable and easy to understand.
+            from our community, advocacy tips, partnership lessons, and the latest news from Mensa.
+            Everything is written to be helpful, relatable and easy to understand.
           </p>
         </div>
       </section>
@@ -125,18 +122,11 @@ export function JournalIndexPage() {
           {/* Category chips (only when there's more than one category live) */}
           {visibleCategories.length > 1 ? (
             <div className="flex items-center gap-2 flex-wrap">
-              <FilterChip
-                active={category === 'all'}
-                onClick={() => setCategory('all')}
-              >
+              <FilterChip active={category === 'all'} onClick={() => setCategory('all')}>
                 All
               </FilterChip>
               {visibleCategories.map((c) => (
-                <FilterChip
-                  key={c}
-                  active={category === c}
-                  onClick={() => setCategory(c)}
-                >
+                <FilterChip key={c} active={category === c} onClick={() => setCategory(c)}>
                   {CATEGORY_LABEL[c]}
                 </FilterChip>
               ))}
@@ -160,9 +150,7 @@ export function JournalIndexPage() {
           <p className="t-body-s text-mute">Loading…</p>
         ) : posts.length === 0 ? (
           <EmptyState
-            mode={
-              isSearching ? 'searched' : category !== 'all' ? 'filtered' : 'empty'
-            }
+            mode={isSearching ? 'searched' : category !== 'all' ? 'filtered' : 'empty'}
             query={debouncedQ}
             onReset={() => {
               setQ('')

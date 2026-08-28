@@ -1,11 +1,6 @@
 // discount.api.ts — discount endpoints. Public surface is one apply preview mutation, everything else is admin only.
 
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { api } from '../api'
 import { handleApiError } from '../helpers/handleApiError'
@@ -24,8 +19,7 @@ export const discountKeys = {
   all: ['discounts'] as const,
   adminList: (params?: ListDiscountsParams) =>
     [...discountKeys.all, 'admin', 'list', params ?? {}] as const,
-  adminDetail: (id: string) =>
-    [...discountKeys.all, 'admin', 'detail', id] as const,
+  adminDetail: (id: string) => [...discountKeys.all, 'admin', 'detail', id] as const,
 }
 
 // ─── 1. POST /api/v1/checkout/apply-discount (public preview) ────
@@ -37,8 +31,7 @@ const applyDiscountFn = async (
 }
 
 // No error toast here, checkout renders the message inline next to the code input.
-export const useApplyDiscount = () =>
-  useMutation({ mutationFn: applyDiscountFn })
+export const useApplyDiscount = () => useMutation({ mutationFn: applyDiscountFn })
 
 // ─── 2. GET /api/v1/admin/discounts ──────────────
 
@@ -57,9 +50,7 @@ export const useAdminDiscounts = (params?: ListDiscountsParams) =>
 
 // ─── 3. GET /api/v1/admin/discounts/:id ──────────
 
-const adminGetDiscountFn = async (
-  id: string,
-): Promise<ApiResponse<DiscountResponseData>> => {
+const adminGetDiscountFn = async (id: string): Promise<ApiResponse<DiscountResponseData>> => {
   return api.get<DiscountResponseData>(`/admin/discounts/${id}`)
 }
 
@@ -120,9 +111,7 @@ export const useUpdateDiscount = () => {
 
 // ─── 6. DELETE /api/v1/admin/discounts/:id ───────
 
-const adminDeleteDiscountFn = async (
-  id: string,
-): Promise<ApiResponse<null>> => {
+const adminDeleteDiscountFn = async (id: string): Promise<ApiResponse<null>> => {
   return api.delete<null>(`/admin/discounts/${id}`)
 }
 

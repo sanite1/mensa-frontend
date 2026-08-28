@@ -7,10 +7,7 @@ import { Search, X } from 'lucide-react'
 import { Photo } from '@/components/shop/Photo'
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
 import { useContentList } from '@/lib/network/api/content.api'
-import type {
-  ContentCategory,
-  ContentPost,
-} from '@/lib/network/types/content.types'
+import type { ContentCategory, ContentPost } from '@/lib/network/types/content.types'
 import { cn } from '@/lib/utils'
 import { useSeo } from '@/lib/seo'
 
@@ -128,18 +125,11 @@ export function EducationIndexPage() {
 
           {visibleCategories.length > 1 ? (
             <div className="flex items-center gap-2 flex-wrap">
-              <FilterChip
-                active={category === 'all'}
-                onClick={() => setCategory('all')}
-              >
+              <FilterChip active={category === 'all'} onClick={() => setCategory('all')}>
                 All
               </FilterChip>
               {visibleCategories.map((c) => (
-                <FilterChip
-                  key={c}
-                  active={category === c}
-                  onClick={() => setCategory(c)}
-                >
+                <FilterChip key={c} active={category === c} onClick={() => setCategory(c)}>
                   {CATEGORY_LABEL[c]}
                 </FilterChip>
               ))}
@@ -162,9 +152,7 @@ export function EducationIndexPage() {
           <p className="t-body-s text-mute">Loading…</p>
         ) : posts.length === 0 ? (
           <EmptyState
-            mode={
-              isSearching ? 'searched' : category !== 'all' ? 'filtered' : 'empty'
-            }
+            mode={isSearching ? 'searched' : category !== 'all' ? 'filtered' : 'empty'}
             query={debouncedQ}
             onReset={() => {
               setQ('')

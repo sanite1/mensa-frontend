@@ -58,19 +58,14 @@ export function NotFoundPage() {
 
           <div className="mt-8 lg:mt-12 pt-5 flex flex-wrap items-baseline justify-between gap-5 border-t border-hairline">
             <p className="m-0 max-w-140 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-              The page you were looking for has moved, never existed, or has a typo in the URL.
-              Try one of the routes below, or head back home.
+              The page you were looking for has moved, never existed, or has a typo in the URL. Try
+              one of the routes below, or head back home.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <Button asChild variant="primary" size="lg">
                 <Link to="/">Back home</Link>
               </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                size="lg"
-                onClick={() => navigate(-1)}
-              >
+              <Button type="button" variant="secondary" size="lg" onClick={() => navigate(-1)}>
                 <ArrowLeft size={14} />
                 Go back
               </Button>

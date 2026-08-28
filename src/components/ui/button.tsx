@@ -15,8 +15,7 @@ const buttonVariants = cva(
         coral: 'bg-coral text-paper hover:opacity-90',
         // The trailing `!` on hover:text-paper! must stay, otherwise base text-ink
         // wins on :hover and the label goes invisible on the ink hover fill.
-        secondary:
-          'border border-ink bg-transparent text-ink hover:bg-ink hover:text-paper!',
+        secondary: 'border border-ink bg-transparent text-ink hover:bg-ink hover:text-paper!',
         soft: 'bg-blush text-berry hover:bg-blush-2',
         ghost: 'bg-transparent text-ink hover:bg-cream',
         danger: 'bg-err text-paper hover:opacity-90',

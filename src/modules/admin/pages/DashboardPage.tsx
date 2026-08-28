@@ -30,10 +30,7 @@ export function DashboardPage() {
       </p>
 
       <div className="mt-8 md:mt-10 grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
-        <KpiCard
-          label="Today's orders"
-          value={loading ? '…' : String(stats?.todaysOrders ?? 0)}
-        />
+        <KpiCard label="Today's orders" value={loading ? '…' : String(stats?.todaysOrders ?? 0)} />
         <KpiCard
           label="Revenue (last 7 days)"
           value={loading ? '…' : formatNaira(stats?.weekRevenueKobo ?? 0)}
@@ -124,13 +121,7 @@ function KpiCard({
 }
 
 // ── Recent orders strip ───────────────────────────────────────────
-function RecentOrdersCard({
-  orders,
-  loading,
-}: {
-  orders: AdminRecentOrder[]
-  loading: boolean
-}) {
+function RecentOrdersCard({ orders, loading }: { orders: AdminRecentOrder[]; loading: boolean }) {
   return (
     <div className="border border-hairline-soft bg-paper">
       <div className="flex items-center justify-between px-4 md:px-5 py-3 md:py-4 border-b border-hairline-soft">
@@ -159,9 +150,7 @@ function RecentOrdersCard({
                   <div className="t-body-s text-mute truncate">{o.customerEmail}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[14px] text-ink font-medium">
-                    {formatNaira(o.totalKobo)}
-                  </div>
+                  <div className="text-[14px] text-ink font-medium">{formatNaira(o.totalKobo)}</div>
                   <div className="text-[11px] uppercase tracking-widest font-medium text-mute">
                     <PaymentBadge status={o.paymentStatus} />
                   </div>
@@ -188,13 +177,7 @@ function PaymentBadge({ status }: { status: AdminRecentOrder['paymentStatus'] })
 }
 
 // ── Low stock card ────────────────────────────────────────────────
-function LowStockCard({
-  items,
-  loading,
-}: {
-  items: AdminLowStockEntry[]
-  loading: boolean
-}) {
+function LowStockCard({ items, loading }: { items: AdminLowStockEntry[]; loading: boolean }) {
   return (
     <div className="border border-hairline-soft bg-paper">
       <div className="flex items-center justify-between px-4 md:px-5 py-3 md:py-4 border-b border-hairline-soft">

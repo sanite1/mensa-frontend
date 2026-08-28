@@ -1,11 +1,6 @@
 // partner.api.ts — Partner programme (individual referrals).
 
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { api } from '../api'
@@ -77,12 +72,10 @@ export interface AdminRejectPayoutInput {
 export const partnerKeys = {
   all: ['partners'] as const,
   self: () => [...partnerKeys.all, 'self'] as const,
-  onboardingVerify: (token: string) =>
-    [...partnerKeys.all, 'onboarding', token] as const,
+  onboardingVerify: (token: string) => [...partnerKeys.all, 'onboarding', token] as const,
   adminList: (params: AdminListPartnersParams) =>
     [...partnerKeys.all, 'admin', 'list', params] as const,
-  adminDetail: (id: string) =>
-    [...partnerKeys.all, 'admin', 'detail', id] as const,
+  adminDetail: (id: string) => [...partnerKeys.all, 'admin', 'detail', id] as const,
   adminPayouts: (params: AdminListPayoutsParams) =>
     [...partnerKeys.all, 'admin', 'payouts', params] as const,
 }
@@ -129,10 +122,7 @@ export const useVerifyOnboardingToken = (token: string | undefined) =>
 const completeOnboardingFn = async (
   body: CompletePartnerOnboardingInput,
 ): Promise<ApiResponse<{ email: string; referralCode: string }>> => {
-  return api.post<{ email: string; referralCode: string }>(
-    '/partners/onboarding/complete',
-    body,
-  )
+  return api.post<{ email: string; referralCode: string }>('/partners/onboarding/complete', body)
 }
 
 export const useCompletePartnerOnboarding = () =>
@@ -161,10 +151,7 @@ export const usePartnerDashboard = (enabled = true) =>
 const updateBankAccountFn = async (
   body: PartnerBankAccount,
 ): Promise<ApiResponse<{ bankAccount: PartnerBankAccount }>> => {
-  return api.patch<{ bankAccount: PartnerBankAccount }>(
-    '/partners/me/bank-account',
-    body,
-  )
+  return api.patch<{ bankAccount: PartnerBankAccount }>('/partners/me/bank-account', body)
 }
 
 export const useUpdateBankAccount = () => {
@@ -213,9 +200,7 @@ export const useAdminPartners = (params: AdminListPartnersParams) =>
     staleTime: 30_000,
   })
 
-const adminGetPartnerFn = async (
-  id: string,
-): Promise<ApiResponse<{ partner: PartnerSummary }>> => {
+const adminGetPartnerFn = async (id: string): Promise<ApiResponse<{ partner: PartnerSummary }>> => {
   return api.get<{ partner: PartnerSummary }>(`/admin/partnerships/individuals/${id}`)
 }
 
@@ -286,10 +271,7 @@ const updatePartnerFn = async ({
   id: string
   body: AdminUpdatePartnerInput
 }): Promise<ApiResponse<{ partner: PartnerSummary }>> => {
-  return api.patch<{ partner: PartnerSummary }>(
-    `/admin/partnerships/individuals/${id}`,
-    body,
-  )
+  return api.patch<{ partner: PartnerSummary }>(`/admin/partnerships/individuals/${id}`, body)
 }
 
 export const useUpdatePartner = () => {
@@ -310,10 +292,7 @@ export const useUpdatePartner = () => {
 const adminListPayoutsFn = async (
   params: AdminListPayoutsParams,
 ): Promise<ApiResponse<Paginated<AdminPayoutListItem>>> => {
-  return api.get<Paginated<AdminPayoutListItem>>(
-    '/admin/partnerships/payouts',
-    { params },
-  )
+  return api.get<Paginated<AdminPayoutListItem>>('/admin/partnerships/payouts', { params })
 }
 
 export const useAdminPayouts = (params: AdminListPayoutsParams) =>
@@ -331,10 +310,7 @@ const markPayoutPaidFn = async ({
   id: string
   body: AdminMarkPayoutPaidInput
 }): Promise<ApiResponse<{ payoutRequest: unknown }>> => {
-  return api.patch<{ payoutRequest: unknown }>(
-    `/admin/partnerships/payouts/${id}/pay`,
-    body,
-  )
+  return api.patch<{ payoutRequest: unknown }>(`/admin/partnerships/payouts/${id}/pay`, body)
 }
 
 export const useMarkPayoutPaid = () => {
@@ -356,10 +332,7 @@ const rejectPayoutFn = async ({
   id: string
   body: AdminRejectPayoutInput
 }): Promise<ApiResponse<{ payoutRequest: unknown }>> => {
-  return api.patch<{ payoutRequest: unknown }>(
-    `/admin/partnerships/payouts/${id}/reject`,
-    body,
-  )
+  return api.patch<{ payoutRequest: unknown }>(`/admin/partnerships/payouts/${id}/reject`, body)
 }
 
 export const useRejectPayout = () => {

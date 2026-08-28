@@ -15,13 +15,7 @@ const SUGGESTIONS = ['Period pants', 'Reusable pads', 'Starter set', 'Education'
 const DEBOUNCE_MS = 250
 const MAX_RESULTS_PER_GROUP = 4
 
-export function SearchOverlay({
-  open,
-  onClose,
-}: {
-  open: boolean
-  onClose: () => void
-}) {
+export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [q, setQ] = useState('')
   const debouncedQ = useDebounced(q, DEBOUNCE_MS)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -64,15 +58,10 @@ export function SearchOverlay({
     isSearching ? { q: trimmed, pageSize: MAX_RESULTS_PER_GROUP } : { pageSize: 1 },
   )
 
-  const products: Product[] = isSearching
-    ? (productsQuery.data?.data?.items ?? [])
-    : []
-  const posts: ContentPost[] = isSearching
-    ? (contentQuery.data?.data?.items ?? [])
-    : []
+  const products: Product[] = isSearching ? (productsQuery.data?.data?.items ?? []) : []
+  const posts: ContentPost[] = isSearching ? (contentQuery.data?.data?.items ?? []) : []
 
-  const loading =
-    isSearching && (productsQuery.isFetching || contentQuery.isFetching)
+  const loading = isSearching && (productsQuery.isFetching || contentQuery.isFetching)
   const totalResults = products.length + posts.length
 
   if (!open) return null
@@ -162,8 +151,8 @@ function NoMatches({ q }: { q: string }) {
     <div className="py-6">
       <div className="t-eyebrow text-mute mb-2">No matches</div>
       <p className="t-body text-graphite">
-        Nothing matched <span className="text-ink font-medium">{q}</span>. Try a single word
-        like &ldquo;pants&rdquo; or &ldquo;starter&rdquo;.
+        Nothing matched <span className="text-ink font-medium">{q}</span>. Try a single word like
+        &ldquo;pants&rdquo; or &ldquo;starter&rdquo;.
       </p>
     </div>
   )
@@ -251,17 +240,15 @@ function ResultsBody({
               <li key={post._id}>
                 <Link
                   to={
-                    post.kind === 'education'
-                      ? `/education/${post.slug}`
-                      : `/journal/${post.slug}`
+                    post.kind === 'education' ? `/education/${post.slug}` : `/journal/${post.slug}`
                   }
                   onClick={onSelect}
                   className="flex items-start gap-4 py-3 no-underline group"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="text-[11px] uppercase tracking-widest font-medium text-mute font-mono">
-                      {post.kind === 'education' ? 'Education' : 'Journal'} ·{' '}
-                      {post.readMinutes} min read
+                      {post.kind === 'education' ? 'Education' : 'Journal'} · {post.readMinutes} min
+                      read
                     </div>
                     <div
                       className={cn(

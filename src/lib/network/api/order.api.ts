@@ -1,11 +1,6 @@
 // order.api.ts — raw async functions + React Query hooks.
 
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { api } from '../api'
 import { handleApiError } from '../helpers/handleApiError'
@@ -24,17 +19,14 @@ import type {
 // ── Query keys ───────────────────────────────────────────────────
 export const orderKeys = {
   all: ['orders'] as const,
-  myList: (params?: ListOrdersParams) =>
-    [...orderKeys.all, 'mine', 'list', params ?? {}] as const,
+  myList: (params?: ListOrdersParams) => [...orderKeys.all, 'mine', 'list', params ?? {}] as const,
   myDetail: (id: string) => [...orderKeys.all, 'mine', 'detail', id] as const,
   track: (orderNumber: string, email: string) =>
     [...orderKeys.all, 'track', orderNumber, email] as const,
   adminList: (params?: ListOrdersParams) =>
     [...orderKeys.all, 'admin', 'list', params ?? {}] as const,
-  adminDetail: (id: string) =>
-    [...orderKeys.all, 'admin', 'detail', id] as const,
-  shippingRates: (input: ShippingRatesInput) =>
-    [...orderKeys.all, 'shippingRates', input] as const,
+  adminDetail: (id: string) => [...orderKeys.all, 'admin', 'detail', id] as const,
+  shippingRates: (input: ShippingRatesInput) => [...orderKeys.all, 'shippingRates', input] as const,
 }
 
 // ─── 1. POST /api/v1/checkout/shipping-rates ─────
@@ -46,14 +38,9 @@ const getShippingRatesFn = async (
 }
 
 /** Fetch live shipping options, enabled only once the destination is complete and the cart has lines. */
-export const useShippingRates = (
-  input: ShippingRatesInput | undefined,
-  enabled = true,
-) =>
+export const useShippingRates = (input: ShippingRatesInput | undefined, enabled = true) =>
   useQuery({
-    queryKey: input
-      ? orderKeys.shippingRates(input)
-      : [...orderKeys.all, 'shippingRates', 'idle'],
+    queryKey: input ? orderKeys.shippingRates(input) : [...orderKeys.all, 'shippingRates', 'idle'],
     queryFn: () => getShippingRatesFn(input as ShippingRatesInput),
     enabled:
       enabled &&
@@ -84,14 +71,11 @@ export const useInitializeCheckout = () =>
 // Backend verifies with Paystack directly so the confirmation page gets an answer
 // without waiting on the async webhook. Idempotent server side.
 
-const verifyCheckoutFn = async (
-  reference: string,
-): Promise<ApiResponse<OrderResponseData>> => {
+const verifyCheckoutFn = async (reference: string): Promise<ApiResponse<OrderResponseData>> => {
   return api.post<OrderResponseData>(`/checkout/verify/${reference}`)
 }
 
-export const useVerifyCheckout = () =>
-  useMutation({ mutationFn: verifyCheckoutFn })
+export const useVerifyCheckout = () => useMutation({ mutationFn: verifyCheckoutFn })
 
 // ─── 3. GET /api/v1/orders  (auth, current user) ────
 
@@ -111,9 +95,7 @@ export const useMyOrders = (params?: ListOrdersParams, enabled = true) =>
 
 // ─── 4. GET /api/v1/orders/:id  (auth, current user) ────
 
-const getMyOrderFn = async (
-  id: string,
-): Promise<ApiResponse<OrderResponseData>> => {
+const getMyOrderFn = async (id: string): Promise<ApiResponse<OrderResponseData>> => {
   return api.get<OrderResponseData>(`/orders/${id}`)
 }
 
@@ -165,9 +147,7 @@ export const useAdminOrders = (params?: ListOrdersParams) =>
 
 // ─── 7. GET /api/v1/admin/orders/:id  (admin) ────
 
-const adminGetOrderFn = async (
-  id: string,
-): Promise<ApiResponse<OrderResponseData>> => {
+const adminGetOrderFn = async (id: string): Promise<ApiResponse<OrderResponseData>> => {
   return api.get<OrderResponseData>(`/admin/orders/${id}`)
 }
 

@@ -18,8 +18,7 @@ const TABS: { id: Tab; label: string }[] = [
 export function PartnershipsListPage() {
   const [params, setParams] = useSearchParams()
   const raw = params.get('tab')
-  const tab: Tab =
-    raw === 'individuals' || raw === 'payouts' ? raw : 'organisations'
+  const tab: Tab = raw === 'individuals' || raw === 'payouts' ? raw : 'organisations'
 
   const setTab = (next: Tab) => {
     setParams(

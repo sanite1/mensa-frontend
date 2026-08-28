@@ -317,7 +317,9 @@ export function ContentEditorPage() {
                   <FormControl>
                     <Input placeholder="Issue 04 · 2026" {...field} />
                   </FormControl>
-                  <FormDescription>Small uppercase line above the title on the page.</FormDescription>
+                  <FormDescription>
+                    Small uppercase line above the title on the page.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -590,7 +592,9 @@ function CoverImageField({ form }: { form: ReturnType<typeof useForm<FormValues>
         </div>
       ) : (
         <div className="border border-dashed border-hairline bg-cream-soft py-10 px-6 text-center">
-          <p className="t-body-s text-mute m-0">No cover yet. Upload a wide image, 21:9 crops best.</p>
+          <p className="t-body-s text-mute m-0">
+            No cover yet. Upload a wide image, 21:9 crops best.
+          </p>
         </div>
       )}
 

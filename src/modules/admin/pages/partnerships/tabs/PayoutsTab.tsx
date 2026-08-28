@@ -13,10 +13,7 @@ import {
   useRejectPayout,
   type AdminListPayoutsParams,
 } from '@/lib/network/api/partner.api'
-import type {
-  AdminPayoutListItem,
-  PartnerPayoutStatus,
-} from '@/lib/network/types/partner.types'
+import type { AdminPayoutListItem, PartnerPayoutStatus } from '@/lib/network/types/partner.types'
 import { formatNaira, cn } from '@/lib/utils'
 
 const STATUS_FILTERS: { id: 'all' | PartnerPayoutStatus; label: string }[] = [
@@ -108,9 +105,7 @@ export function PayoutsTab() {
                     <div className="text-[12px] text-graphite">{p.partnerEmail}</div>
                   </Td>
                   <Td>
-                    <div className="text-[13px] text-ink">
-                      {p.bankAccountSnapshot.accountName}
-                    </div>
+                    <div className="text-[13px] text-ink">{p.bankAccountSnapshot.accountName}</div>
                     <div className="text-[12px] text-graphite">
                       {p.bankAccountSnapshot.bankName}
                     </div>
@@ -131,9 +126,7 @@ export function PayoutsTab() {
                       minute: '2-digit',
                     })}
                   </Td>
-                  <Td className="text-[12px] text-graphite">
-                    {p.paymentReference ?? '—'}
-                  </Td>
+                  <Td className="text-[12px] text-graphite">{p.paymentReference ?? '—'}</Td>
                   <Td>
                     {p.status === 'pending' ? (
                       <div className="flex justify-end gap-2">
@@ -182,9 +175,7 @@ export function PayoutsTab() {
         </div>
       ) : null}
 
-      {openId ? (
-        <MarkPaidModal payoutId={openId} onClose={() => setOpenId(null)} />
-      ) : null}
+      {openId ? <MarkPaidModal payoutId={openId} onClose={() => setOpenId(null)} /> : null}
     </div>
   )
 }
@@ -235,13 +226,7 @@ function RejectButton({ payoutId }: { payoutId: string }) {
   )
 }
 
-function MarkPaidModal({
-  payoutId,
-  onClose,
-}: {
-  payoutId: string
-  onClose: () => void
-}) {
+function MarkPaidModal({ payoutId, onClose }: { payoutId: string; onClose: () => void }) {
   const mutation = useMarkPayoutPaid()
   const [reference, setReference] = useState('')
   const [note, setNote] = useState('')
@@ -278,8 +263,8 @@ function MarkPaidModal({
           Record the bank reference
         </h2>
         <p className="mt-3 t-body-s text-graphite">
-          Pay the partner outside the system first, then paste the transaction reference here.
-          This locks the commissions in as paid.
+          Pay the partner outside the system first, then paste the transaction reference here. This
+          locks the commissions in as paid.
         </p>
         <div className="mt-5 flex flex-col gap-4">
           <label className="block">
@@ -326,13 +311,7 @@ function MarkPaidModal({
   )
 }
 
-function Th({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Th({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <th
       className={cn(
@@ -345,12 +324,6 @@ function Th({
   )
 }
 
-function Td({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Td({ children, className }: { children: React.ReactNode; className?: string }) {
   return <td className={cn('px-4 py-3', className)}>{children}</td>
 }

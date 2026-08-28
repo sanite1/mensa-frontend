@@ -67,10 +67,7 @@ export function AdminRoutes() {
               {/* Sprint 6 (MVP) — partnerships */}
               <Route path="/partnerships" element={<PartnershipsListPage />} />
               {/* Specific subpath BEFORE the catch-all org route. */}
-              <Route
-                path="/partnerships/individuals/:id"
-                element={<PartnerDetailPage />}
-              />
+              <Route path="/partnerships/individuals/:id" element={<PartnerDetailPage />} />
               <Route path="/partnerships/:id" element={<PartnershipDetailPage />} />
 
               {/* 404 catch-all (admins only — unauthed traffic redirected to /login by AuthGuard). */}

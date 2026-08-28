@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import {
-  RATES,
-  convertKoboTo,
-  formatPriceFromKobo,
-  CURRENCIES,
-} from './currency'
+import { RATES, convertKoboTo, formatPriceFromKobo, CURRENCIES } from './currency'
 
 describe('currency conversion', () => {
   describe('convertKoboTo', () => {

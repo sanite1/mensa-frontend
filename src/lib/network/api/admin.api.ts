@@ -22,12 +22,7 @@ export interface AdminRecentOrder {
   customerEmail: string
   totalKobo: number
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded' | 'partial_refund'
-  fulfilmentStatus:
-    | 'pending'
-    | 'processing'
-    | 'shipped'
-    | 'delivered'
-    | 'cancelled'
+  fulfilmentStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
   createdAt: string
 }
 
@@ -111,8 +106,7 @@ export interface AdminCustomerDetail {
 
 export const customerKeys = {
   all: ['admin', 'customers'] as const,
-  list: (params: AdminCustomersListParams) =>
-    [...customerKeys.all, 'list', params] as const,
+  list: (params: AdminCustomersListParams) => [...customerKeys.all, 'list', params] as const,
   detail: (id: string) => [...customerKeys.all, 'detail', id] as const,
 }
 

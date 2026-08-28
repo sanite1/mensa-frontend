@@ -1,9 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import {
-  captureReferralFromUrl,
-  clearReferralCode,
-  getReferralCode,
-} from './referral'
+import { captureReferralFromUrl, clearReferralCode, getReferralCode } from './referral'
 
 /** Replace the current URL without a real navigation. jsdom honours this. */
 function setUrl(href: string): void {

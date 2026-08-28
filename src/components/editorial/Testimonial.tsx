@@ -50,15 +50,8 @@ export function Testimonial({
         {`"${quote}"`}
       </blockquote>
       <figcaption className="flex flex-col gap-0.5">
-        <span className={cn('font-sans text-[13px] font-medium', t.text)}>
-          {name}
-        </span>
-        <span
-          className={cn(
-            'font-mono text-[11px] tracking-[0.12em] uppercase',
-            t.mutedText,
-          )}
-        >
+        <span className={cn('font-sans text-[13px] font-medium', t.text)}>{name}</span>
+        <span className={cn('font-mono text-[11px] tracking-[0.12em] uppercase', t.mutedText)}>
           {location}
         </span>
       </figcaption>

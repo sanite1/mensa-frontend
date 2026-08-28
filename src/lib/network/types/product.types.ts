@@ -1,11 +1,6 @@
 // product.types.ts — mirrors backend src/interfaces/product.interface.ts.
 
-export type ProductCategory =
-  | 'pants'
-  | 'pads'
-  | 'bundles'
-  | 'education'
-  | 'advocacy'
+export type ProductCategory = 'pants' | 'pads' | 'bundles' | 'education' | 'advocacy'
 export type BadgeTone = 'pink' | 'coral' | 'ink'
 
 // ── Embedded subdocuments ──

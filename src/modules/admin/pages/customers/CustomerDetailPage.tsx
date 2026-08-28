@@ -3,10 +3,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, CheckCircle2, XCircle } from 'lucide-react'
 
-import {
-  useAdminCustomer,
-  type AdminCustomerDetailOrder,
-} from '@/lib/network/api/admin.api'
+import { useAdminCustomer, type AdminCustomerDetailOrder } from '@/lib/network/api/admin.api'
 import type { UserAddress } from '@/lib/network/types/user.types'
 import { formatNaira } from '@/lib/utils'
 
@@ -23,9 +20,7 @@ export function CustomerDetailPage() {
   const customer = query.data?.data?.customer
 
   if (query.isLoading) {
-    return (
-      <section className="px-4 md:px-6 lg:px-8 py-10 t-body-s text-mute">Loading…</section>
-    )
+    return <section className="px-4 md:px-6 lg:px-8 py-10 t-body-s text-mute">Loading…</section>
   }
 
   if (query.isError || !customer) {

@@ -148,9 +148,7 @@ export function CustomersListPage() {
                     </span>
                   </Td>
                   <Td className="text-right">{c.orderCount}</Td>
-                  <Td className="text-right font-medium">
-                    {formatNaira(c.lifetimeValueKobo)}
-                  </Td>
+                  <Td className="text-right font-medium">{formatNaira(c.lifetimeValueKobo)}</Td>
                   <Td className="text-mute">
                     {new Date(c.createdAt).toLocaleDateString('en-NG', {
                       day: '2-digit',
@@ -195,13 +193,7 @@ export function CustomersListPage() {
   )
 }
 
-function Th({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Th({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <th
       className={cn(
@@ -214,12 +206,6 @@ function Th({
   )
 }
 
-function Td({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Td({ children, className }: { children: React.ReactNode; className?: string }) {
   return <td className={cn('px-4 py-3', className)}>{children}</td>
 }

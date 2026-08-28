@@ -3,19 +3,9 @@
 import type { Pagination } from './common.types'
 
 // ── Status enums ─────────────────────────────────────────────────
-export type PaymentStatus =
-  | 'pending'
-  | 'paid'
-  | 'failed'
-  | 'refunded'
-  | 'partial_refund'
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded' | 'partial_refund'
 
-export type FulfilmentStatus =
-  | 'pending'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled'
+export type FulfilmentStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
 
 export type ShippingMethod = 'inhouse' | 'sendbox'
 export type OrderSource = 'web' | 'manual' | 'imported'

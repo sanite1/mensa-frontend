@@ -83,8 +83,7 @@ export function MegaMenu({ onLinkClick }: MegaMenuProps = {}) {
   // Feature card — prefer the specific "starter-set" slug, fall back to
   // the first bundle in the catalogue.
   const featured =
-    products.find((p) => p.slug === 'starter-set') ??
-    products.find((p) => p.category === 'bundles')
+    products.find((p) => p.slug === 'starter-set') ?? products.find((p) => p.category === 'bundles')
 
   return (
     <div className="grid bg-paper border-t border-hairline-soft pt-10 px-12 pb-11 grid-cols-[1.2fr_1.2fr_1.2fr_1.6fr] gap-12">

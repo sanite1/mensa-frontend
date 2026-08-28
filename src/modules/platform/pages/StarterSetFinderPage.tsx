@@ -194,53 +194,51 @@ const PANT1_SLUG = 'period-pants-singles'
 const PANT3_SLUG = 'mensa-period-pants-pack-of-3'
 const PANT5_SLUG = 'mensa-period-pants-pack-of-5'
 
-const RESULTS: Record<
-  ResultCode,
-  { name: string; sub: string; reason: string; slugs: string[] }
-> = {
-  PADS: {
-    name: 'Pack of Pads',
-    sub: 'Reusable pads with a wet bag and a handkerchief',
-    reason:
-      'Your flow is not too heavy and you can change when you need to, so pads are enough for you. The pack gives you enough to wear one, wash and still have extra for your heavier days.',
-    slugs: [PADS_SLUG],
-  },
-  PANT1: {
-    name: 'Single Pant',
-    sub: 'One period pant',
-    reason:
-      'Your period is short, so one pant covers your heaviest day and night. It is also the cheapest way to find out how a pant fits you before you buy more.',
-    slugs: [PANT1_SLUG],
-  },
-  PANT3: {
-    name: 'Pack of 3 Pants',
-    sub: 'Three period pants',
-    reason:
-      'Three pants can carry you through your period. One is on you, one is washed and one is dry and waiting, so you do not run out in the middle.',
-    slugs: [PANT3_SLUG],
-  },
-  PANT5: {
-    name: 'Pack of 5 Pants',
-    sub: 'Five period pants',
-    reason:
-      'Your period runs long and heavy, so five pants cover you from the first day to the last. You do not need pads on top of this.',
-    slugs: [PANT5_SLUG],
-  },
-  PANT1_PADS: {
-    name: 'Single Pant and a Pack of Pads',
-    sub: 'One pant for your heaviest day, pads for the rest',
-    reason:
-      'One pant covers your heaviest day and night, and the pads take care of your lighter days. Together they cover a full period.',
-    slugs: [PANT1_SLUG, PADS_SLUG],
-  },
-  PANT3_PADS: {
-    name: 'Pack of 3 Pants and a Pack of Pads',
-    sub: 'Pants for the heavy days, pads for the light ones',
-    reason:
-      'Three pants carry your heavy days, one on you, one washed and one dry and waiting. The pads are for the light days at the start and the end.',
-    slugs: [PANT3_SLUG, PADS_SLUG],
-  },
-}
+const RESULTS: Record<ResultCode, { name: string; sub: string; reason: string; slugs: string[] }> =
+  {
+    PADS: {
+      name: 'Pack of Pads',
+      sub: 'Reusable pads with a wet bag and a handkerchief',
+      reason:
+        'Your flow is not too heavy and you can change when you need to, so pads are enough for you. The pack gives you enough to wear one, wash and still have extra for your heavier days.',
+      slugs: [PADS_SLUG],
+    },
+    PANT1: {
+      name: 'Single Pant',
+      sub: 'One period pant',
+      reason:
+        'Your period is short, so one pant covers your heaviest day and night. It is also the cheapest way to find out how a pant fits you before you buy more.',
+      slugs: [PANT1_SLUG],
+    },
+    PANT3: {
+      name: 'Pack of 3 Pants',
+      sub: 'Three period pants',
+      reason:
+        'Three pants can carry you through your period. One is on you, one is washed and one is dry and waiting, so you do not run out in the middle.',
+      slugs: [PANT3_SLUG],
+    },
+    PANT5: {
+      name: 'Pack of 5 Pants',
+      sub: 'Five period pants',
+      reason:
+        'Your period runs long and heavy, so five pants cover you from the first day to the last. You do not need pads on top of this.',
+      slugs: [PANT5_SLUG],
+    },
+    PANT1_PADS: {
+      name: 'Single Pant and a Pack of Pads',
+      sub: 'One pant for your heaviest day, pads for the rest',
+      reason:
+        'One pant covers your heaviest day and night, and the pads take care of your lighter days. Together they cover a full period.',
+      slugs: [PANT1_SLUG, PADS_SLUG],
+    },
+    PANT3_PADS: {
+      name: 'Pack of 3 Pants and a Pack of Pads',
+      sub: 'Pants for the heavy days, pads for the light ones',
+      reason:
+        'Three pants carry your heavy days, one on you, one washed and one dry and waiting. The pads are for the light days at the start and the end.',
+      slugs: [PANT3_SLUG, PADS_SLUG],
+    },
+  }
 
 const X1 =
   'You said price matters most, and the pack of pads is the cheapest way to start. It covers a full period, so you do not need to buy anything else for now.'
@@ -272,8 +270,7 @@ function buildReason(answers: Answers, result: QuizResult): string[] {
   if (result.code === 'PANT5' && answers.q7 === 'allin') paragraphs.push(X5)
 
   // Price sensitive flag: Q8 money, or under 25. Prices show on the result cards.
-  const priceSensitive =
-    answers.q8 === 'money' || answers.q5 === 'u18' || answers.q5 === '18to24'
+  const priceSensitive = answers.q8 === 'money' || answers.q5 === 'u18' || answers.q5 === '18to24'
   if (priceSensitive) paragraphs.push(X6)
 
   return paragraphs
@@ -387,9 +384,7 @@ function QuestionStage({
             className="text-left border border-hairline bg-paper px-5 py-4 hover:border-ink hover:bg-cream-soft transition-colors"
           >
             <span className="block text-[15.5px] font-medium text-ink">{opt.label}</span>
-            {opt.note ? (
-              <span className="block mt-1 text-[13px] text-mute">{opt.note}</span>
-            ) : null}
+            {opt.note ? <span className="block mt-1 text-[13px] text-mute">{opt.note}</span> : null}
           </button>
         ))}
       </div>
@@ -412,9 +407,7 @@ function ResultStage({
   // Match result slugs to live catalogue entries for image + price.
   const catalogue = useProducts({ pageSize: 60 })
   const products: Product[] = catalogue.data?.data?.items ?? []
-  const matched = spec.slugs.map(
-    (slug) => products.find((p) => p.slug === slug) ?? null,
-  )
+  const matched = spec.slugs.map((slug) => products.find((p) => p.slug === slug) ?? null)
   const formatPrice = useFormatPrice()
 
   return (

@@ -60,13 +60,10 @@ const contactSchema = z
     message: z.string().trim().min(10, 'Tell us a bit more — at least 10 characters.').max(4000),
   })
   // Order number is only required when the topic is 'order'.
-  .refine(
-    (v) => v.topic !== 'order' || (v.orderNumber && v.orderNumber.length > 0),
-    {
-      message: 'Order number helps us look it up faster.',
-      path: ['orderNumber'],
-    },
-  )
+  .refine((v) => v.topic !== 'order' || (v.orderNumber && v.orderNumber.length > 0), {
+    message: 'Order number helps us look it up faster.',
+    path: ['orderNumber'],
+  })
 type ContactValues = z.infer<typeof contactSchema>
 
 export function ContactPage() {
@@ -162,8 +159,8 @@ function Hero() {
 
         <div className="mt-8 lg:mt-12 pt-5 flex flex-wrap items-baseline justify-between gap-5 border-t border-hairline">
           <p className="m-0 max-w-140 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-            Questions about your order, our products, or a partnership? Drop us a message and a
-            real person on the Mensa team will reply, usually within one working day.
+            Questions about your order, our products, or a partnership? Drop us a message and a real
+            person on the Mensa team will reply, usually within one working day.
           </p>
           <a
             href="#message"
@@ -289,8 +286,8 @@ function FormSection({
           Send a message.
         </h2>
         <p className="mt-4 max-w-150 text-graphite text-[16px] leading-relaxed">
-          The more context the better — order number if relevant, what happened, what you want
-          us to do. We reply from a real Mensa team inbox.
+          The more context the better — order number if relevant, what happened, what you want us to
+          do. We reply from a real Mensa team inbox.
         </p>
 
         <div className="mt-10">

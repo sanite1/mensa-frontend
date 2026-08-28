@@ -9,7 +9,7 @@ export interface ContentPost {
   eyebrow: string
   category: ContentCategory
   excerpt: string
-  body: string   // markdown
+  body: string // markdown
   coverImage?: { url: string; publicId?: string; alt: string }
   authorName: string
   authorBio?: string

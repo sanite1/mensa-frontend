@@ -50,9 +50,7 @@ export function PartnerDashboardPage() {
   const [copied, setCopied] = useState(false)
 
   if (query.isLoading) {
-    return (
-      <section className="px-4 md:px-6 lg:px-8 py-10 t-body-s text-mute">Loading…</section>
-    )
+    return <section className="px-4 md:px-6 lg:px-8 py-10 t-body-s text-mute">Loading…</section>
   }
   if (query.isError || !query.data?.data) {
     return (
@@ -62,20 +60,11 @@ export function PartnerDashboardPage() {
     )
   }
 
-  const {
-    partner,
-    referralUrl,
-    minPayoutKobo,
-    recentCommissions,
-    payoutRequests,
-  } = query.data.data
+  const { partner, referralUrl, minPayoutKobo, recentCommissions, payoutRequests } = query.data.data
 
   const isActive = partner.status === 'active'
   const hasPendingPayout = payoutRequests.some((p) => p.status === 'pending')
-  const canRequest =
-    isActive &&
-    !hasPendingPayout &&
-    partner.availableBalanceKobo >= minPayoutKobo
+  const canRequest = isActive && !hasPendingPayout && partner.availableBalanceKobo >= minPayoutKobo
 
   const onCopy = async () => {
     if (!referralUrl) return
@@ -100,8 +89,8 @@ export function PartnerDashboardPage() {
         Hi, {partner.name.split(' ')[0]}.
       </h1>
       <p className="t-body-l mt-3 text-graphite max-w-150">
-        Share your referral link, earn {partner.commissionRate}% on every paid order, cash out
-        when you are ready.
+        Share your referral link, earn {partner.commissionRate}% on every paid order, cash out when
+        you are ready.
       </p>
 
       {partner.status === 'suspended' ? (
@@ -113,8 +102,8 @@ export function PartnerDashboardPage() {
 
       {partner.availableBalanceKobo < 0 ? (
         <div className="mt-6 border border-coral/50 bg-blush p-4 text-berry t-body-s">
-          One or more orders you earned commission on were later cancelled or refunded after we
-          had already paid you. Your available balance is currently in deficit by{' '}
+          One or more orders you earned commission on were later cancelled or refunded after we had
+          already paid you. Your available balance is currently in deficit by{' '}
           <strong>{formatNaira(Math.abs(partner.availableBalanceKobo))}</strong>. New commissions
           will offset this automatically before you can cash out again.
         </div>
@@ -185,10 +174,7 @@ export function PartnerDashboardPage() {
                   cls: 'bg-cream text-mute',
                 }
                 return (
-                  <li
-                    key={c._id}
-                    className="px-5 py-3 flex items-center justify-between gap-3"
-                  >
+                  <li key={c._id} className="px-5 py-3 flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <div className="text-[13px] font-mono text-ink">{c.orderNumber}</div>
                       <div className="text-[11px] uppercase tracking-widest font-medium text-mute">
@@ -295,15 +281,7 @@ export function PartnerDashboardPage() {
   )
 }
 
-function Kpi({
-  label,
-  value,
-  tone,
-}: {
-  label: string
-  value: string
-  tone?: 'hero' | 'deficit'
-}) {
+function Kpi({ label, value, tone }: { label: string; value: string; tone?: 'hero' | 'deficit' }) {
   return (
     <div
       className={cn(
@@ -347,11 +325,7 @@ const bankSchema = z.object({
 })
 type BankValues = z.infer<typeof bankSchema>
 
-function BankAccountPanel({
-  bankAccount,
-}: {
-  bankAccount?: PartnerBankAccount
-}) {
+function BankAccountPanel({ bankAccount }: { bankAccount?: PartnerBankAccount }) {
   const [editing, setEditing] = useState(false)
   const update = useUpdateBankAccount()
 

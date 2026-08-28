@@ -3,7 +3,10 @@
 import type { Order } from '@/lib/network/types/order.types'
 
 /** Days from ship time to delivery — inclusive low/high. */
-const SHIPPING_LEAD_DAYS: Record<Order['fulfilment']['shippingMethod'], { min: number; max: number }> = {
+const SHIPPING_LEAD_DAYS: Record<
+  Order['fulfilment']['shippingMethod'],
+  { min: number; max: number }
+> = {
   inhouse: { min: 1, max: 2 },
   sendbox: { min: 2, max: 5 },
 }
@@ -33,8 +36,7 @@ export function estimatedDelivery(order: Order): DeliveryEta | null {
   if (order.fulfilment.status === 'cancelled') return null
 
   const lead = SHIPPING_LEAD_DAYS[order.fulfilment.shippingMethod]
-  const anchorIso =
-    order.fulfilment.shippedAt ?? order.payment.paidAt ?? order.createdAt
+  const anchorIso = order.fulfilment.shippedAt ?? order.payment.paidAt ?? order.createdAt
   if (!anchorIso) return null
 
   const anchor = new Date(anchorIso)

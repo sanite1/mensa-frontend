@@ -223,17 +223,16 @@ function BrandStory() {
           </h2>
           <div className="mt-8 max-w-135 flex flex-col gap-4 text-[17px] leading-[1.6] text-berry opacity-85">
             <p className="m-0">
-              At 16, Kehinde realised that too many girls could not afford pads and knew very
-              little about their periods. She believed that something as natural as menstruation
-              should never determine a girl's confidence, education, or opportunities. So she
-              started supporting girls through her nonprofit, one conversation and one community
-              at a time.
+              At 16, Kehinde realised that too many girls could not afford pads and knew very little
+              about their periods. She believed that something as natural as menstruation should
+              never determine a girl's confidence, education, or opportunities. So she started
+              supporting girls through her nonprofit, one conversation and one community at a time.
             </p>
             <p className="m-0">
               A decade later, she realised that charity alone could never solve period poverty.
-              Every girl deserves access to products that are comfortable, sustainable, and made
-              for everyday life, not only when she is rich or fortunate enough to meet an NGO or
-              receive a donation.
+              Every girl deserves access to products that are comfortable, sustainable, and made for
+              everyday life, not only when she is rich or fortunate enough to meet an NGO or receive
+              a donation.
             </p>
             <p className="m-0">
               That's why Mensa was created: to make better period care accessible, make
@@ -294,7 +293,11 @@ function Education() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {products.map((product, i) => (
-          <EduCard key={product.slug ?? product.id} tone={tones[i % tones.length]} product={product} />
+          <EduCard
+            key={product.slug ?? product.id}
+            tone={tones[i % tones.length]}
+            product={product}
+          />
         ))}
       </div>
     </section>
@@ -348,4 +351,3 @@ function EduCard({ tone, product }: { tone: 'blush' | 'cream'; product: Product 
     </div>
   )
 }
-

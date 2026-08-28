@@ -94,16 +94,19 @@ function ProductView({ product }: { product: Product }) {
           // Schema.org price is in the main currency unit, catalogue stores kobo.
           price: ((product.salePrice ?? product.basePriceB2C) / 100).toFixed(2),
           priceCurrency: 'NGN',
-          availability: anyInStock
-            ? 'https://schema.org/InStock'
-            : 'https://schema.org/OutOfStock',
+          availability: anyInStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
         },
       },
       {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Shop', item: 'https://mensaproducts.com/shop' },
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Shop',
+            item: 'https://mensaproducts.com/shop',
+          },
           { '@type': 'ListItem', position: 2, name: product.name },
         ],
       },

@@ -87,9 +87,7 @@ export const useUpdateMyAddress = () => {
 
 // ─── 4. PUT /api/v1/users/me/addresses/:id/default ────
 
-const setDefaultAddressFn = async (
-  id: string,
-): Promise<ApiResponse<AddressesResponseData>> => {
+const setDefaultAddressFn = async (id: string): Promise<ApiResponse<AddressesResponseData>> => {
   return api.put<AddressesResponseData>(`/users/me/addresses/${id}/default`)
 }
 
@@ -109,9 +107,7 @@ export const useSetDefaultAddress = () => {
 
 // ─── 5. DELETE /api/v1/users/me/addresses/:id ────
 
-const deleteMyAddressFn = async (
-  id: string,
-): Promise<ApiResponse<AddressesResponseData>> => {
+const deleteMyAddressFn = async (id: string): Promise<ApiResponse<AddressesResponseData>> => {
   return api.delete<AddressesResponseData>(`/users/me/addresses/${id}`)
 }
 

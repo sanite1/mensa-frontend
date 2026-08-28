@@ -19,16 +19,10 @@ export function SectionEyebrow({
   const cssVar = { '--eyebrow': color } as CSSProperties
   return (
     <div
-      className={cn(
-        'inline-flex items-center gap-3 text-(--eyebrow)',
-        className,
-      )}
+      className={cn('inline-flex items-center gap-3 text-(--eyebrow)', className)}
       style={cssVar}
     >
-      <span
-        aria-hidden="true"
-        className="w-7 h-px bg-current opacity-60"
-      />
+      <span aria-hidden="true" className="w-7 h-px bg-current opacity-60" />
       <span className="font-mono text-[11px] tracking-[0.14em] uppercase font-medium">
         {children}
       </span>

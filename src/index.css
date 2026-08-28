@@ -1,36 +1,36 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 /* ─── Mensa Design Tokens ────────────────────────────────────────────────── */
 @theme {
   /* Surfaces */
-  --color-cream:        #F6EFE4;
-  --color-cream-soft:   #FAF4EA;
-  --color-paper:        #FFFCF6;
-  --color-blush:        #FEE5EA;
+  --color-cream: #f6efe4;
+  --color-cream-soft: #faf4ea;
+  --color-paper: #fffcf6;
+  --color-blush: #fee5ea;
 
   /* Text & neutrals */
-  --color-ink:            #1A1410;
-  --color-graphite:       #4F433B;
-  --color-mute:           #8A7C70;
-  --color-hairline:       #E7DCCC;
-  --color-hairline-soft:  #EDE3D5;
+  --color-ink: #1a1410;
+  --color-graphite: #4f433b;
+  --color-mute: #8a7c70;
+  --color-hairline: #e7dccc;
+  --color-hairline-soft: #ede3d5;
 
   /* Brand pinks & reds */
-  --color-pink:       #FE718E;
-  --color-pink-deep:  #ED5876;
-  --color-blush-2:    #FCC9D2;
-  --color-coral:      #FF3A4D;
-  --color-berry:      #8B1F35;
+  --color-pink: #fe718e;
+  --color-pink-deep: #ed5876;
+  --color-blush-2: #fcc9d2;
+  --color-coral: #ff3a4d;
+  --color-berry: #8b1f35;
 
   /* Semantic */
-  --color-ok:   #3D6B47;
-  --color-err:  #B23A3A;
+  --color-ok: #3d6b47;
+  --color-err: #b23a3a;
 
   /* Typography */
   --font-display: 'Newsreader', Georgia, serif;
-  --font-sans:    'DM Sans', system-ui, sans-serif;
-  --font-mono:    'DM Mono', 'Courier New', monospace;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
 
   /* Spacing scale (8-root) */
   --spacing-01: 4px;
@@ -46,36 +46,36 @@
 
   /* Radii */
   --radius-none: 0px;
-  --radius-sm:   4px;
-  --radius-md:   6px;
-  --radius-lg:   10px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
   --radius-pill: 9999px;
 
   /* Elevation */
-  --shadow-lift: 0 1px 0 rgba(26,20,16,.06), 0 8px 24px -16px rgba(26,20,16,.18);
-  --shadow-over: 0 24px 60px -20px rgba(26,20,16,.30);
+  --shadow-lift: 0 1px 0 rgba(26, 20, 16, 0.06), 0 8px 24px -16px rgba(26, 20, 16, 0.18);
+  --shadow-over: 0 24px 60px -20px rgba(26, 20, 16, 0.3);
 
   /* ── shadcn semantic tokens mapped to Mensa palette ────────────────── */
-  --color-background:          #FFFCF6;
-  --color-foreground:           #1A1410;
-  --color-card:                 #FFFCF6;
-  --color-card-foreground:      #1A1410;
-  --color-popover:              #FFFCF6;
-  --color-popover-foreground:   #1A1410;
-  --color-primary:              #FE718E;
-  --color-primary-foreground:   #FFFCF6;
-  --color-secondary:            #F6EFE4;
-  --color-secondary-foreground: #1A1410;
-  --color-muted:                #F6EFE4;
-  --color-muted-foreground:     #8A7C70;
-  --color-accent:               #FEE5EA;
-  --color-accent-foreground:    #8B1F35;
-  --color-destructive:          #B23A3A;
-  --color-destructive-foreground: #FFFCF6;
-  --color-border:               #E7DCCC;
-  --color-input:                #E7DCCC;
-  --color-ring:                 #FE718E;
-  --radius:                     6px;
+  --color-background: #fffcf6;
+  --color-foreground: #1a1410;
+  --color-card: #fffcf6;
+  --color-card-foreground: #1a1410;
+  --color-popover: #fffcf6;
+  --color-popover-foreground: #1a1410;
+  --color-primary: #fe718e;
+  --color-primary-foreground: #fffcf6;
+  --color-secondary: #f6efe4;
+  --color-secondary-foreground: #1a1410;
+  --color-muted: #f6efe4;
+  --color-muted-foreground: #8a7c70;
+  --color-accent: #fee5ea;
+  --color-accent-foreground: #8b1f35;
+  --color-destructive: #b23a3a;
+  --color-destructive-foreground: #fffcf6;
+  --color-border: #e7dccc;
+  --color-input: #e7dccc;
+  --color-ring: #fe718e;
+  --radius: 6px;
 
   /* Infinite horizontal marquee. The track shifts left by 50% of its own
      width, which is exactly one copy of the item list (we render the list
@@ -84,8 +84,12 @@
 }
 
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -96,30 +100,32 @@
 
 /* ─── CSS custom properties (runtime, not Tailwind-only) ─────────────────── */
 :root {
-  --cream:         #F6EFE4;
-  --cream-soft:    #FAF4EA;
-  --paper:         #FFFCF6;
-  --blush:         #FEE5EA;
-  --blush-2:       #FCC9D2;
-  --ink:           #1A1410;
-  --graphite:      #4F433B;
-  --mute:          #8A7C70;
-  --hairline:      #E7DCCC;
-  --hairline-soft: #EDE3D5;
-  --pink:          #FE718E;
-  --pink-deep:     #ED5876;
-  --coral:         #FF3A4D;
-  --berry:         #8B1F35;
-  --ok:            #3D6B47;
-  --err:           #B23A3A;
+  --cream: #f6efe4;
+  --cream-soft: #faf4ea;
+  --paper: #fffcf6;
+  --blush: #fee5ea;
+  --blush-2: #fcc9d2;
+  --ink: #1a1410;
+  --graphite: #4f433b;
+  --mute: #8a7c70;
+  --hairline: #e7dccc;
+  --hairline-soft: #ede3d5;
+  --pink: #fe718e;
+  --pink-deep: #ed5876;
+  --coral: #ff3a4d;
+  --berry: #8b1f35;
+  --ok: #3d6b47;
+  --err: #b23a3a;
 
   --font-display: 'Newsreader', Georgia, serif;
-  --font-sans:    'DM Sans', system-ui, sans-serif;
-  --font-mono:    'DM Mono', 'Courier New', monospace;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
 }
 
 /* ─── Global reset ───────────────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -137,7 +143,8 @@ body {
   line-height: 1.55;
 }
 
-img, svg {
+img,
+svg {
   display: block;
   max-width: 100%;
 }
@@ -203,7 +210,7 @@ img, svg {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 36px;
-  line-height: 1.10;
+  line-height: 1.1;
   letter-spacing: -0.015em;
 }
 

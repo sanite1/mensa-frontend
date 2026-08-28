@@ -29,9 +29,7 @@ export const authKeys = {
 
 // ─── 1. POST /api/v1/auth/register ───────────────
 
-const registerFn = async (
-  payload: RegisterPayload,
-): Promise<ApiResponse<RegisterResponseData>> => {
+const registerFn = async (payload: RegisterPayload): Promise<ApiResponse<RegisterResponseData>> => {
   return api.post<RegisterResponseData>('/auth/register', payload)
 }
 

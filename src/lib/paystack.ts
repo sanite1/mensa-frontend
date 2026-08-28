@@ -35,14 +35,10 @@ function loadPaystackScript(): Promise<void> {
   if (scriptPromise) return scriptPromise
 
   scriptPromise = new Promise<void>((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>(
-      `script[src="${SCRIPT_SRC}"]`,
-    )
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SRC}"]`)
     if (existing) {
       existing.addEventListener('load', () => resolve())
-      existing.addEventListener('error', () =>
-        reject(new Error('Paystack script failed to load.')),
-      )
+      existing.addEventListener('error', () => reject(new Error('Paystack script failed to load.')))
       return
     }
     const script = document.createElement('script')

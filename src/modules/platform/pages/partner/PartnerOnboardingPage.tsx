@@ -159,8 +159,8 @@ export function PartnerOnboardingPage() {
         Welcome, {partner.name.split(' ')[0]}.
       </h1>
       <p className="mt-3 max-w-130 t-body text-graphite">
-        Your application is approved. You will earn <strong>{partner.commissionRate}%</strong>{' '}
-        on every paid order from your referral link. Finish setting up your account below.
+        Your application is approved. You will earn <strong>{partner.commissionRate}%</strong> on
+        every paid order from your referral link. Finish setting up your account below.
       </p>
 
       <Form {...form}>
@@ -198,11 +198,7 @@ export function PartnerOnboardingPage() {
                 <FormItem>
                   <FormLabel>Confirm password</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      autoComplete="new-password"
-                      {...field}
-                    />
+                    <Input type="password" autoComplete="new-password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -230,8 +226,8 @@ export function PartnerOnboardingPage() {
                     />
                   </FormControl>
                   <FormDescription>
-                    3 to 16 letters or numbers, no spaces. Leave blank and we will generate one
-                    for you.
+                    3 to 16 letters or numbers, no spaces. Leave blank and we will generate one for
+                    you.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

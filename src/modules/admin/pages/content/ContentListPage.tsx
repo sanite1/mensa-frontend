@@ -6,11 +6,7 @@ import { Plus, Search } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { useAdminContent, type ContentListParams } from '@/lib/network/api/content.api'
-import type {
-  ContentKind,
-  ContentPost,
-  ContentCategory,
-} from '@/lib/network/types/content.types'
+import type { ContentKind, ContentPost, ContentCategory } from '@/lib/network/types/content.types'
 import { cn } from '@/lib/utils'
 
 const KIND_FILTERS: { id: ContentKind | 'all'; label: string }[] = [
@@ -262,12 +258,6 @@ function Th({ children }: { children: React.ReactNode }) {
   )
 }
 
-function Td({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Td({ children, className }: { children: React.ReactNode; className?: string }) {
   return <td className={cn('px-4 py-3', className)}>{children}</td>
 }

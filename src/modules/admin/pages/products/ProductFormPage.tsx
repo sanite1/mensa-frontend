@@ -579,8 +579,8 @@ export function ProductFormPage() {
                       />
                     </FormControl>
                     <FormDescription>
-                      Adds a small Size guide link above the size picker that opens the pants
-                      size chart. Turn on for pants and bundles; leave off for pads, books, etc.
+                      Adds a small Size guide link above the size picker that opens the pants size
+                      chart. Turn on for pants and bundles; leave off for pads, books, etc.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -932,12 +932,7 @@ function VariantsSection({
 
         {hasVariants ? (
           fields.map((field, index) => (
-            <VariantRow
-              key={field.id}
-              index={index}
-              onRemove={() => remove(index)}
-              form={form}
-            />
+            <VariantRow key={field.id} index={index} onRemove={() => remove(index)} form={form} />
           ))
         ) : (
           <div className="border border-dashed border-hairline bg-cream-soft py-8 px-6 text-center">

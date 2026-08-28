@@ -71,9 +71,10 @@ function Hero() {
         {/* Byline */}
         <div className="mt-8 lg:mt-12 pt-5 flex flex-wrap items-baseline justify-between gap-5 border-t border-hairline">
           <p className="m-0 max-w-140 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
-            A letter from the founder, <span className="text-ink font-semibold">Kehinde Abereoje</span>,
-            about the girls she met at fourteen whose lives were affected by terrorism, and the
-            solution she has spent nearly a decade building.
+            A letter from the founder,{' '}
+            <span className="text-ink font-semibold">Kehinde Abereoje</span>, about the girls she
+            met at fourteen whose lives were affected by terrorism, and the solution she has spent
+            nearly a decade building.
           </p>
           <a
             href="#origin"
@@ -198,17 +199,17 @@ function Origin() {
             How a visit at fourteen became Mensa.
           </h2>
           <p className="mt-6 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
-            At 14, Kehinde visited a camp for people who had been affected by terrorism in
-            Northern Nigeria. It was the first time she truly understood that her world and theirs
-            were miles apart, even though they were in the same city. Girls spoke about missing
-            school because they had no period products, and she heard the unsafe alternatives they
-            were forced to use instead.
+            At 14, Kehinde visited a camp for people who had been affected by terrorism in Northern
+            Nigeria. It was the first time she truly understood that her world and theirs were miles
+            apart, even though they were in the same city. Girls spoke about missing school because
+            they had no period products, and she heard the unsafe alternatives they were forced to
+            use instead.
           </p>
           <p className="mt-3.5 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
             At 16, she started a nonprofit with one goal: to make menstrual health education and
             period products more accessible to girls across Nigeria. For years, that work reached
-            thousands of women and girls, but it also revealed a bigger truth. Charity could help
-            in the moment, but it could not guarantee dignity for every girl.
+            thousands of women and girls, but it also revealed a bigger truth. Charity could help in
+            the moment, but it could not guarantee dignity for every girl.
           </p>
           <p className="mt-3.5 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.6]">
             That is why Mensa was created. We believe good period products should be comfortable,
@@ -245,10 +246,22 @@ function Manufacturing() {
           </p>
           {/* The four-layer construction of the reusable period products. */}
           <div className="mt-7 flex flex-col gap-3.5">
-            <MStat n="01" label="Soft inner layer: sits comfortably against your skin and keeps you feeling dry." />
-            <MStat n="02" label="Super absorbent core: locks in menstrual flow for hours without feeling bulky." />
-            <MStat n="03" label="Leakproof barrier: prevents leaks while remaining breathable and flexible." />
-            <MStat n="04" label="Durable outer fabric: washable, reusable and designed to last for years." />
+            <MStat
+              n="01"
+              label="Soft inner layer: sits comfortably against your skin and keeps you feeling dry."
+            />
+            <MStat
+              n="02"
+              label="Super absorbent core: locks in menstrual flow for hours without feeling bulky."
+            />
+            <MStat
+              n="03"
+              label="Leakproof barrier: prevents leaks while remaining breathable and flexible."
+            />
+            <MStat
+              n="04"
+              label="Durable outer fabric: washable, reusable and designed to last for years."
+            />
           </div>
         </div>
         <Photo
