@@ -12,7 +12,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "check-format": "prettier --check \"src/**/*.{ts,tsx,css}\"",
     "type-check": "tsc --noEmit",
+    "check-types": "tsc -b",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "prepare": "husky"
