@@ -80,10 +80,12 @@ export function MegaMenu({ onLinkClick }: MegaMenuProps = {}) {
   const reusablePads = useCategoryLinks(products, 'pads', 'See all pads')
   const education = useCategoryLinks(products, 'education', 'See all education')
 
-  // Feature card — prefer the specific "starter-set" slug, fall back to
-  // the first bundle in the catalogue.
+  // Feature card — prefer the starter set, then any bundle, then the first
+  // product in the catalogue so the fourth column is never empty.
   const featured =
-    products.find((p) => p.slug === 'starter-set') ?? products.find((p) => p.category === 'bundles')
+    products.find((p) => p.slug === 'starter-set') ??
+    products.find((p) => p.category === 'bundles') ??
+    products[0]
 
   return (
     <div className="grid bg-paper border-t border-hairline-soft pt-10 px-12 pb-11 grid-cols-[1.2fr_1.2fr_1.2fr_1.6fr] gap-12">
@@ -104,16 +106,15 @@ export function MegaMenu({ onLinkClick }: MegaMenuProps = {}) {
           <div className="mt-4.5 relative z-10">
             <Button asChild variant="primary" size="sm">
               <Link to={`/shop/${featured.slug}`} onClick={onLinkClick}>
-                Shop the set · {formatPrice(featured.basePriceB2C)}
+                Shop now · {formatPrice(featured.salePrice ?? featured.basePriceB2C)}
                 <IconArrowRight size={14} />
               </Link>
             </Button>
           </div>
-          {/* Product preview — reusable pad photo in the corner frame the
-              old stripe placeholder used to occupy. */}
+          {/* Corner preview — the featured product's own photo, pad shot as fallback. */}
           <div className="absolute -right-7.5 -top-2.5 w-35 h-45 rounded-md overflow-hidden bg-blush-stripe">
             <img
-              src={reusablePadPreview}
+              src={featured.images?.[0]?.url ?? reusablePadPreview}
               alt=""
               aria-hidden="true"
               loading="lazy"
