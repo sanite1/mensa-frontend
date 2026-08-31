@@ -40,6 +40,7 @@ export interface AdminStats {
 export const adminKeys = {
   all: ['admin'] as const,
   stats: () => [...adminKeys.all, 'stats'] as const,
+  reports: (days: number) => [...adminKeys.all, 'reports', days] as const,
 }
 
 const getAdminStatsFn = async (): Promise<ApiResponse<AdminStats>> => {
@@ -50,6 +51,41 @@ export const useAdminStats = () =>
   useQuery({
     queryKey: adminKeys.stats(),
     queryFn: getAdminStatsFn,
+    staleTime: 60_000,
+  })
+
+// ── Reports (charts + summaries) ─────────────────────────────────
+
+export interface AdminReportDay {
+  date: string
+  revenueKobo: number
+  orders: number
+}
+
+export interface AdminReports {
+  days: number
+  summary: {
+    totalRevenueKobo: number
+    totalPaidOrders: number
+    avgOrderValueKobo: number
+    windowRevenueKobo: number
+    windowOrders: number
+    totalCustomers: number
+  }
+  revenueByDay: AdminReportDay[]
+  ordersByStatus: { status: string; count: number }[]
+  topProducts: { productName: string; units: number; revenueKobo: number }[]
+  categoryRevenue: { category: string; revenueKobo: number }[]
+}
+
+const getAdminReportsFn = async (days: number): Promise<ApiResponse<AdminReports>> => {
+  return api.get<AdminReports>('/admin/reports', { params: { days } })
+}
+
+export const useAdminReports = (days: number) =>
+  useQuery({
+    queryKey: adminKeys.reports(days),
+    queryFn: () => getAdminReportsFn(days),
     staleTime: 60_000,
   })
 

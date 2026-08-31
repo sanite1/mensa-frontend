@@ -9,6 +9,7 @@ import {
   type AdminRecentOrder,
 } from '@/lib/network/api/admin.api'
 import { formatNaira } from '@/lib/utils'
+import { ReportsSection } from '@/modules/admin/components/ReportsSection'
 
 export function DashboardPage() {
   const user = useAuthStore((s) => s.user)
@@ -62,6 +63,8 @@ export function DashboardPage() {
           Could not load dashboard stats. Refresh to try again.
         </div>
       ) : null}
+
+      <ReportsSection />
 
       <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <div className="lg:col-span-2">
