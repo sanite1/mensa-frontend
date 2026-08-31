@@ -150,6 +150,26 @@ export const useDeleteProduct = () => {
   })
 }
 
+// ─── DELETE /api/v1/admin/products/:slug/permanent ───────────────
+
+const permanentlyDeleteProductFn = async (slug: string): Promise<ApiResponse<null>> => {
+  return api.delete<null>(`/admin/products/${slug}/permanent`)
+}
+
+export const usePermanentlyDeleteProduct = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: permanentlyDeleteProductFn,
+    onSuccess: (res) => {
+      toast.success(res.message)
+      queryClient.invalidateQueries({ queryKey: productKeys.all })
+    },
+    onError: (error) => {
+      toast.error(handleApiError(error).message)
+    },
+  })
+}
+
 // ─── 8. POST /api/v1/admin/products/:slug/images  (multipart) ────
 
 const uploadProductImageFn = async ({

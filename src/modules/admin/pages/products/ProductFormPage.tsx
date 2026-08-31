@@ -25,6 +25,7 @@ import {
   useAdminProduct,
   useCreateProduct,
   useDeleteProduct,
+  usePermanentlyDeleteProduct,
   useRemoveProductImage,
   useUpdateProduct,
   useUploadProductImage,
@@ -196,6 +197,7 @@ export function ProductFormPage() {
   const createMutation = useCreateProduct()
   const updateMutation = useUpdateProduct()
   const deleteMutation = useDeleteProduct()
+  const permanentDeleteMutation = usePermanentlyDeleteProduct()
   const uploadMutation = useUploadProductImage()
 
   // Pending image files for create mode. Held in local state with object URL
@@ -410,6 +412,21 @@ export function ProductFormPage() {
     })
     if (!ok) return
     deleteMutation.mutate(slugParam, {
+      onSuccess: () => navigate('/products'),
+    })
+  }
+
+  const onPermanentDelete = async () => {
+    if (!slugParam) return
+    const ok = await confirm({
+      title: `Delete "${product?.name ?? slugParam}" forever?`,
+      description:
+        'This permanently removes the product and its images. It cannot be undone. Past orders keep their own copies and are not affected. If you just want it off the shop, use Archive instead.',
+      confirmLabel: 'Delete forever',
+      tone: 'destructive',
+    })
+    if (!ok) return
+    permanentDeleteMutation.mutate(slugParam, {
       onSuccess: () => navigate('/products'),
     })
   }
@@ -826,17 +843,28 @@ export function ProductFormPage() {
           {/* ── Footer actions ──────────────────────────────────────── */}
           <div className="flex items-center justify-between gap-4 flex-wrap pt-4 border-t border-hairline-soft">
             {isEditMode ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="default"
-                onClick={onDelete}
-                disabled={deleteMutation.isPending}
-                className="text-err hover:bg-blush"
-              >
-                <Trash2 size={14} strokeWidth={1.6} />
-                {deleteMutation.isPending ? 'Archiving…' : 'Archive product'}
-              </Button>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="default"
+                  onClick={onDelete}
+                  disabled={deleteMutation.isPending || permanentDeleteMutation.isPending}
+                  className="text-err hover:bg-blush"
+                >
+                  <Trash2 size={14} strokeWidth={1.6} />
+                  {deleteMutation.isPending ? 'Archiving…' : 'Archive product'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="danger"
+                  size="default"
+                  onClick={onPermanentDelete}
+                  disabled={deleteMutation.isPending || permanentDeleteMutation.isPending}
+                >
+                  {permanentDeleteMutation.isPending ? 'Deleting…' : 'Delete forever'}
+                </Button>
+              </div>
             ) : (
               <span />
             )}
