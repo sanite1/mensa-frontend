@@ -449,7 +449,7 @@ export function ProductFormPage() {
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-240">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
       {/* Header */}
       <div className="flex items-start justify-between gap-6 flex-wrap mb-8">
         <div>

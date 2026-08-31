@@ -33,7 +33,7 @@ export function PartnershipsListPage() {
   }
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-7xl">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
       <div className="mb-6 md:mb-8">
         <div className="t-eyebrow text-mute mb-3">B2B</div>
         <h1 className="m-0 font-display italic font-semibold text-[clamp(32px,5vw,48px)] leading-[1.02] tracking-tight text-ink">

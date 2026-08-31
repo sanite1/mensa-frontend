@@ -19,7 +19,7 @@ export function ProfilePage() {
     .toUpperCase()
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-3xl">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
       <div className="t-eyebrow text-mute mb-3">Account</div>
       <h1 className="m-0 font-display italic font-semibold text-[clamp(32px,5vw,48px)] leading-[1.02] tracking-tight text-ink">
         Profile

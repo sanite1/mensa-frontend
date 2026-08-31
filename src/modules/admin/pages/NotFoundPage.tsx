@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 export function NotFoundPage() {
   const location = useLocation()
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-12 lg:py-16 max-w-180">
+    <section className="px-4 md:px-6 lg:px-8 py-12 lg:py-16">
       <div className="t-eyebrow text-mute mb-3">404</div>
       <h1 className="m-0 font-display italic font-semibold text-[clamp(32px,5vw,48px)] leading-[1.02] tracking-tight text-ink">
         That admin page does not exist.

@@ -43,7 +43,7 @@ export function OrderDetailPage() {
   const order = query.data?.data?.order
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-7xl">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
       <div className="mb-6">
         <Link
           to="/orders"

@@ -21,7 +21,7 @@ export function DashboardPage() {
   const errored = query.isError
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-300">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
       <div className="t-eyebrow text-mute mb-3">Dashboard</div>
       <h1 className="m-0 font-display italic font-semibold text-[clamp(36px,6vw,56px)] leading-[1.02] tracking-tight text-ink">
         Hi, {user.name.split(' ')[0]}.

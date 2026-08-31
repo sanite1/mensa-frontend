@@ -40,7 +40,7 @@ export function CustomerDetailPage() {
   const verified = customer.emailVerified
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-7xl">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
       <Link
         to="/customers"
         className="inline-flex items-center gap-2 text-[12px] uppercase tracking-widest font-medium text-ink no-underline hover:text-pink-deep mb-6"

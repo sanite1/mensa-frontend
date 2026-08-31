@@ -16,7 +16,6 @@ const ROLE_FILTERS: { id: CustomerRole | 'all'; label: string }[] = [
   { id: 'customer', label: 'Customers' },
   { id: 'b2b_admin', label: 'B2B admins' },
   { id: 'b2b_member', label: 'B2B members' },
-  { id: 'admin', label: 'Mensa admins' },
 ]
 
 const ROLE_LABEL: Record<CustomerRole, string> = {
@@ -48,7 +47,7 @@ export function CustomersListPage() {
   const pagination = query.data?.data?.pagination
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-7xl">
+    <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
       <div className="mb-6 md:mb-8">
         <div className="t-eyebrow text-mute mb-3">Audience</div>
         <h1 className="m-0 font-display italic font-semibold text-[clamp(32px,5vw,48px)] leading-[1.02] tracking-tight text-ink">
