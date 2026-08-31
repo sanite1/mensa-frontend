@@ -7,6 +7,7 @@ import { AdminLayout } from '@/modules/admin/layouts/AdminLayout'
 import { AdminAuthLayout } from '@/modules/admin/layouts/AdminAuthLayout'
 import { AdminLoginPage } from '@/modules/admin/pages/auth/AdminLoginPage'
 import { DashboardPage } from '@/modules/admin/pages/DashboardPage'
+import { ProfilePage } from '@/modules/admin/pages/ProfilePage'
 import { ProductsListPage } from '@/modules/admin/pages/products/ProductsListPage'
 import { ProductFormPage } from '@/modules/admin/pages/products/ProductFormPage'
 import { OrdersListPage } from '@/modules/admin/pages/orders/OrdersListPage'
@@ -39,6 +40,7 @@ export function AdminRoutes() {
           <Route element={<RoleGuard allowed={['admin']} fallback="/login" />}>
             <Route element={<AdminLayout />}>
               <Route path="/" element={<DashboardPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
 
               {/* Sprint 2 — products CRUD */}
               <Route path="/products" element={<ProductsListPage />} />

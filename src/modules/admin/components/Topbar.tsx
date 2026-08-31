@@ -1,4 +1,5 @@
 // Admin topbar — paper strip across the top of the main content area.
+import { useNavigate } from 'react-router-dom'
 import { ChevronDown, LogOut, Menu, User } from 'lucide-react'
 import {
   DropdownMenu,
@@ -18,6 +19,7 @@ interface TopbarProps {
 export function Topbar({ onMenuClick }: TopbarProps) {
   const user = useAuthStore((s) => s.user)
   const logout = useLogout()
+  const navigate = useNavigate()
   if (!user) return null
 
   const initials = user.name
@@ -68,7 +70,10 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           </DropdownMenuLabel>
           <div className="px-2 pb-2 text-[13px] text-ink truncate">{user.email}</div>
           <DropdownMenuSeparator className="bg-hairline-soft" />
-          <DropdownMenuItem className="text-[14px] text-ink cursor-pointer">
+          <DropdownMenuItem
+            onClick={() => navigate('/profile')}
+            className="text-[14px] text-ink cursor-pointer"
+          >
             <User size={14} strokeWidth={1.6} className="mr-2" />
             Profile
           </DropdownMenuItem>

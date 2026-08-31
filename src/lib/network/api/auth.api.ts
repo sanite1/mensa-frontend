@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { api } from '../api'
 import { getModule } from '../helpers/getModule'
+import { buildAppUrl } from '../helpers/buildAppUrl'
 import { handleApiError } from '../helpers/handleApiError'
 import { useAuthStore, useIsAuthenticated } from '../stores/auth.store'
 import type { ApiResponse } from '../api'
@@ -89,8 +90,9 @@ export const useLogin = () => {
       toast.success('Welcome back.')
 
       if (user.role === 'admin') {
-        const adminUrl = import.meta.env.VITE_ADMIN_URL ?? 'http://localhost:3002'
-        window.location.href = adminUrl
+        // buildAppUrl knows the right admin origin per environment, the old
+        // VITE_ADMIN_URL fallback pointed at a stale port.
+        window.location.href = buildAppUrl('admin')
         return
       }
 
