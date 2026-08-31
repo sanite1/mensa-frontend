@@ -28,9 +28,9 @@ import { useSeo } from '@/lib/seo'
 
 export function HomePage() {
   useSeo({
-    title: 'Reusable period products, made in Abuja',
+    title: 'Your one-stop menstrual health shop',
     description:
-      'Switch once. Wear for five years. Mensa makes reusable period pants and pads designed for Nigerian women. One pack replaces hundreds of disposables.',
+      'Better periods start here. Reusable period pants and pads, fun menstrual health education, and fashionable advocacy that puts women and girls first.',
   })
   return (
     <div className="bg-paper">
