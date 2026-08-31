@@ -94,7 +94,7 @@ function MicroTrust() {
     { icon: <IconTruck size={18} />, text: 'Nationwide delivery · 2 to 5 days' },
     { icon: <IconShield size={18} />, text: '30 day comfort guarantee' },
     { icon: <IconLeaf size={18} />, text: '5 year lifetime, zero monthly cost' },
-    { icon: <IconUser size={18} />, text: 'Designed & sewn in Abuja' },
+    { icon: <IconUser size={18} />, text: 'Puts women and girls first' },
   ]
   // Mobile marquee needs two copies of the list, translateX(-50%) loops them seamlessly. Desktop is a static grid.
   const doubled = [...items, ...items]

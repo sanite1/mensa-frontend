@@ -40,19 +40,6 @@ export function LegalLayout({ eyebrow, title, lastUpdated, intro, sections }: Le
           <div className="mt-8 lg:mt-12 pt-5 border-t border-hairline max-w-160 t-body-l text-graphite leading-relaxed">
             {intro}
           </div>
-
-          {/* Draft notice — final copy needs legal review. Remove once
-              counsel has signed off. */}
-          <div className="mt-8 inline-flex items-start gap-3 max-w-160 px-4 py-3 border border-coral/40 bg-blush text-berry text-[13px] leading-relaxed">
-            <span aria-hidden className="text-[14px]">
-              ⚠
-            </span>
-            <p className="m-0">
-              <span className="font-medium">Working draft.</span> This copy describes how Mensa
-              actually operates today. Please have your legal advisor review before relying on it as
-              a formal agreement.
-            </p>
-          </div>
         </div>
       </section>
 
