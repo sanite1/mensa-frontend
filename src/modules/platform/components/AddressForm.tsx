@@ -142,7 +142,7 @@ export function AddressForm<TFieldValues extends FieldValues>({
             <FormItem className="space-y-2">
               <FormLabel>City</FormLabel>
               <FormControl>
-                <Input autoComplete="address-level2" placeholder="Kubwa" {...field} />
+                <Input autoComplete="address-level2" placeholder="Abuja" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

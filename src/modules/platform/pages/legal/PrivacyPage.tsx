@@ -154,7 +154,7 @@ const SECTIONS: LegalSection[] = [
         <a href="mailto:hi@mensaproducts.com" className="text-ink underline underline-offset-2">
           hi@mensaproducts.com
         </a>{' '}
-        or +234 707 534 5496. Our office is in Kubwa, Abuja.
+        and we will get back to you.
       </p>
     ),
   },

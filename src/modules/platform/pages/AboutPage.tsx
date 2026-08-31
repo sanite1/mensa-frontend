@@ -91,7 +91,7 @@ function Hero() {
             tone="blush"
             ratio="21/9"
             src={aboutHero}
-            alt="Mensa founders and the Kubwa workshop"
+            alt="The Mensa team at a community event"
           />
           {/* Bottom scrim keeps the paper text readable over any photo. */}
           <div
@@ -268,7 +268,7 @@ function Manufacturing() {
           tone="stripe"
           ratio="auto"
           src={workshopSewingLine}
-          alt="The Mensa workshop sewing line in Kubwa"
+          alt="Mensa reusable period products being prepared"
           className="h-full!"
         />
       </div>

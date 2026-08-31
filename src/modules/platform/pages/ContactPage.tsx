@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { CheckCircle2, Mail, Phone, MapPin } from 'lucide-react'
+import { CheckCircle2, Mail } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -70,7 +70,7 @@ export function ContactPage() {
   useSeo({
     title: 'Contact us',
     description:
-      'Questions about your order, our products, or a partnership? A real human on the Mensa team replies within one working day.',
+      'Questions about your order, our products, or a partnership? A real human on the Mensa team replies within 3 working days.',
   })
   // Deep-link prefill: /contact?topic=order&orderNumber=MS-2026-00001
   // Used from the confirmation page "need help" affordance, etc.
@@ -140,11 +140,11 @@ function Hero() {
         <div className="inline-flex items-center gap-3 text-coral">
           <span aria-hidden className="w-7 h-px bg-current opacity-60" />
           <span className="font-mono text-[11px] tracking-widest uppercase font-medium">
-            Contact · Real humans, Abuja
+            Contact · Real humans
           </span>
         </div>
         <span className="font-mono text-[10.5px] tracking-widest uppercase text-mute">
-          Replies within one working day
+          Replies within 3 working days
         </span>
       </div>
 
@@ -160,7 +160,7 @@ function Hero() {
         <div className="mt-8 lg:mt-12 pt-5 flex flex-wrap items-baseline justify-between gap-5 border-t border-hairline">
           <p className="m-0 max-w-140 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
             Questions about your order, our products, or a partnership? Drop us a message and a real
-            person on the Mensa team will reply, usually within one working day.
+            person on the Mensa team will reply, usually within 3 working days.
           </p>
           <a
             href="#message"
@@ -184,26 +184,13 @@ function Channels() {
           Or reach us directly.
         </h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ChannelCard
           icon={<Mail size={20} strokeWidth={1.6} />}
           label="Email"
           primary="hi@mensaproducts.com"
           href="mailto:hi@mensaproducts.com"
           note="Best for order issues and detailed questions."
-        />
-        <ChannelCard
-          icon={<Phone size={20} strokeWidth={1.6} />}
-          label="Phone"
-          primary="+234 707 534 5496"
-          href="tel:+2347075345496"
-          note="Mon to Fri, 9am to 5pm WAT."
-        />
-        <ChannelCard
-          icon={<MapPin size={20} strokeWidth={1.6} />}
-          label="Studio"
-          primary="Kubwa, Abuja"
-          note="By appointment only — book via email."
         />
       </div>
 
@@ -446,8 +433,8 @@ function SuccessPanel({ onReset }: { onReset: () => void }) {
         Message received.
       </h3>
       <p className="mt-3 max-w-130 mx-auto t-body text-graphite">
-        Thank you. A real person on the Mensa team will reply within one working day, usually
-        sooner. Check your inbox for a note from hi@mensaproducts.com.
+        Thank you. A real person on the Mensa team will reply within 3 working days, usually sooner.
+        Check your inbox for a note from hi@mensaproducts.com.
       </p>
       <div className="mt-6">
         <Button type="button" variant="secondary" size="md" onClick={onReset}>

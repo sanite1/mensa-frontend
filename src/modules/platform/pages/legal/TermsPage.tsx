@@ -162,7 +162,7 @@ const SECTIONS: LegalSection[] = [
         <a href="mailto:hi@mensaproducts.com" className="text-ink underline underline-offset-2">
           hi@mensaproducts.com
         </a>
-        . Our office is in Kubwa, Abuja.
+        .
       </p>
     ),
   },

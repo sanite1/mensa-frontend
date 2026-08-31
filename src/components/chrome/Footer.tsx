@@ -4,7 +4,7 @@ import { useState, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { useSubscribeToNewsletter } from '@/lib/network/api/newsletter.api'
 import { MensaLockup } from './MensaWordmark'
-import { IconPin, IconMail, IconPhone, IconChevronDown, IconInstagram, IconTikTok } from './icons'
+import { IconMail, IconChevronDown, IconInstagram, IconTikTok } from './icons'
 
 const SOCIALS = [
   {
@@ -175,9 +175,7 @@ function MobileFooter() {
 
       {/* Contact */}
       <div className="flex flex-col gap-2.5 py-6 border-b border-white/12">
-        <FootContact icon={<IconPin size={14} />}>Abuja, FCT, Nigeria</FootContact>
         <FootContact icon={<IconMail size={14} />}>hi@mensaproducts.com</FootContact>
-        <FootContact icon={<IconPhone size={14} />}>+234 707 534 5496</FootContact>
       </div>
 
       <div className="flex gap-2.5 py-5.5">
@@ -286,9 +284,7 @@ function BrandColumn({ lockupHeight }: { lockupHeight: number }) {
         Sustainable.
       </p>
       <div className="flex flex-col gap-2 mt-5.5">
-        <FootContact icon={<IconPin size={14} />}>Abuja, FCT, Nigeria</FootContact>
         <FootContact icon={<IconMail size={14} />}>hi@mensaproducts.com</FootContact>
-        <FootContact icon={<IconPhone size={14} />}>+234 707 534 5496</FootContact>
       </div>
     </div>
   )
