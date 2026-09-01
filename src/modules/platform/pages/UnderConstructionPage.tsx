@@ -8,6 +8,7 @@ import { MensaWordmark } from '@/components/chrome/MensaWordmark'
 import { IconInstagram, IconTikTok } from '@/components/chrome/icons'
 import { useSubscribeToNewsletter } from '@/lib/network/api/newsletter.api'
 import { useSeo } from '@/lib/seo'
+import { Spinner } from '@/components/ui/spinner'
 
 export function UnderConstructionPage() {
   useSeo({
@@ -74,7 +75,13 @@ export function UnderConstructionPage() {
                 className="h-12 flex-1 min-w-0 border border-hairline border-r-0 bg-paper px-4 text-base md:text-[15px] text-ink placeholder:text-mute focus-visible:outline-none focus-visible:border-ink"
               />
               <Button type="submit" variant="primary" size="lg" disabled={subscribe.isPending}>
-                {subscribe.isPending ? 'Joining…' : 'Notify me'}
+                {subscribe.isPending ? (
+                  <>
+                    <Spinner size={14} /> Joining…
+                  </>
+                ) : (
+                  'Notify me'
+                )}
               </Button>
             </form>
           )}

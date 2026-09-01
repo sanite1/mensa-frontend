@@ -27,6 +27,7 @@ import { useAuthStore } from '@/lib/network/stores/auth.store'
 import type { B2BOrgType } from '@/lib/network/types/b2b.types'
 import { cn } from '@/lib/utils'
 import { useSeo } from '@/lib/seo'
+import { Spinner } from '@/components/ui/spinner'
 
 type Mode = 'org' | 'individual'
 
@@ -441,7 +442,13 @@ function OrgApplicationForm() {
         />
 
         <Button type="submit" variant="primary" size="lg" disabled={submit.isPending}>
-          {submit.isPending ? 'Sending…' : 'Submit application'}
+          {submit.isPending ? (
+            <>
+              <Spinner size={14} /> Sending…
+            </>
+          ) : (
+            'Submit application'
+          )}
         </Button>
       </form>
     </Form>
@@ -616,7 +623,13 @@ function IndividualApplicationForm() {
           />
 
           <Button type="submit" variant="primary" size="lg" disabled={submit.isPending}>
-            {submit.isPending ? 'Sending…' : 'Apply as a partner'}
+            {submit.isPending ? (
+              <>
+                <Spinner size={14} /> Sending…
+              </>
+            ) : (
+              'Apply as a partner'
+            )}
           </Button>
         </form>
       </Form>

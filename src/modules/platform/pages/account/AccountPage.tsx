@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/lib/network/stores/auth.store'
 import { useGetMe, useLogout } from '@/lib/network/api/auth.api'
 import { useSeo } from '@/lib/seo'
+import { Spinner } from '@/components/ui/spinner'
 
 export function AccountPage() {
   useSeo({ title: 'Your account', noindex: true })
@@ -53,7 +54,13 @@ export function AccountPage() {
           onClick={() => logout.mutate()}
           disabled={logout.isPending}
         >
-          {logout.isPending ? 'Signing out…' : 'Sign out'}
+          {logout.isPending ? (
+            <>
+              <Spinner size={14} /> Signing out…
+            </>
+          ) : (
+            'Sign out'
+          )}
         </Button>
       </div>
     </section>

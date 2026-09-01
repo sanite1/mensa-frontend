@@ -30,6 +30,7 @@ import {
   useUpdateProduct,
   useUploadProductImage,
 } from '@/lib/network/api/product.api'
+import { Spinner } from '@/components/ui/spinner'
 import type {
   CreateProductInput,
   ProductAccordion,
@@ -853,7 +854,13 @@ export function ProductFormPage() {
                   className="text-err hover:bg-blush"
                 >
                   <Trash2 size={14} strokeWidth={1.6} />
-                  {deleteMutation.isPending ? 'Archiving…' : 'Archive product'}
+                  {deleteMutation.isPending ? (
+                    <>
+                      <Spinner size={14} /> Archiving…
+                    </>
+                  ) : (
+                    'Archive product'
+                  )}
                 </Button>
                 <Button
                   type="button"
@@ -862,7 +869,13 @@ export function ProductFormPage() {
                   onClick={onPermanentDelete}
                   disabled={deleteMutation.isPending || permanentDeleteMutation.isPending}
                 >
-                  {permanentDeleteMutation.isPending ? 'Deleting…' : 'Delete forever'}
+                  {permanentDeleteMutation.isPending ? (
+                    <>
+                      <Spinner size={14} /> Deleting…
+                    </>
+                  ) : (
+                    'Delete forever'
+                  )}
                 </Button>
               </div>
             ) : (
@@ -873,6 +886,7 @@ export function ProductFormPage() {
                 <Link to="/products">Cancel</Link>
               </Button>
               <Button type="submit" variant="primary" size="default" disabled={isSubmitting}>
+                {isSubmitting ? <Spinner size={14} /> : null}
                 {isSubmitting
                   ? isEditMode
                     ? 'Saving…'
@@ -1300,7 +1314,13 @@ function ImagesSection({
           disabled={uploadMutation.isPending}
         >
           <Upload size={14} strokeWidth={1.6} />
-          {uploadMutation.isPending ? 'Uploading…' : 'Upload image'}
+          {uploadMutation.isPending ? (
+            <>
+              <Spinner size={14} /> Uploading…
+            </>
+          ) : (
+            'Upload image'
+          )}
         </Button>
       }
     >
@@ -1315,8 +1335,16 @@ function ImagesSection({
             onClick={onPick}
             disabled={uploadMutation.isPending}
           >
-            <Upload size={14} strokeWidth={1.6} />
-            Upload the first image
+            {uploadMutation.isPending ? (
+              <>
+                <Spinner size={14} /> Uploading…
+              </>
+            ) : (
+              <>
+                <Upload size={14} strokeWidth={1.6} />
+                Upload the first image
+              </>
+            )}
           </Button>
         </div>
       ) : (

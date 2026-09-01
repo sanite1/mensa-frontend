@@ -29,6 +29,7 @@ import type {
 } from '@/lib/network/types/partner.types'
 import { formatNaira, cn } from '@/lib/utils'
 import { useSeo } from '@/lib/seo'
+import { Spinner } from '@/components/ui/spinner'
 
 const COMMISSION_BADGE: Record<string, { label: string; cls: string }> = {
   pending: { label: 'Pending', cls: 'bg-cream text-mute' },
@@ -231,7 +232,13 @@ export function PartnerDashboardPage() {
                     : undefined
               }
             >
-              {payout.isPending ? 'Requesting…' : 'Request payout'}
+              {payout.isPending ? (
+                <>
+                  <Spinner size={14} /> Requesting…
+                </>
+              ) : (
+                'Request payout'
+              )}
             </Button>
             {hasPendingPayout ? (
               <p className="t-body-s text-mute">
@@ -440,7 +447,13 @@ function BankAccountPanel({ bankAccount }: { bankAccount?: PartnerBankAccount })
               )}
             />
             <Button type="submit" variant="primary" size="sm" disabled={update.isPending}>
-              {update.isPending ? 'Saving…' : 'Save'}
+              {update.isPending ? (
+                <>
+                  <Spinner size={14} /> Saving…
+                </>
+              ) : (
+                'Save'
+              )}
             </Button>
           </form>
         </Form>

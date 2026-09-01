@@ -17,6 +17,7 @@ import {
 import { useForgotPassword } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { useSeo } from '@/lib/seo'
+import { Spinner } from '@/components/ui/spinner'
 
 const forgotSchema = z.object({
   email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
@@ -107,7 +108,13 @@ export function ForgotPasswordPage() {
             className="w-full mt-2"
             disabled={forgot.isPending}
           >
-            {forgot.isPending ? 'Sending link…' : 'Send reset link'}
+            {forgot.isPending ? (
+              <>
+                <Spinner size={14} /> Sending link…
+              </>
+            ) : (
+              'Send reset link'
+            )}
           </Button>
         </form>
       </Form>

@@ -15,6 +15,7 @@ import {
 } from '@/lib/network/api/partner.api'
 import type { AdminPayoutListItem, PartnerPayoutStatus } from '@/lib/network/types/partner.types'
 import { formatNaira, cn } from '@/lib/utils'
+import { Spinner } from '@/components/ui/spinner'
 
 const STATUS_FILTERS: { id: 'all' | PartnerPayoutStatus; label: string }[] = [
   { id: 'pending', label: 'Pending' },
@@ -303,7 +304,13 @@ function MarkPaidModal({ payoutId, onClose }: { payoutId: string; onClose: () =>
             onClick={onConfirm}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? 'Saving…' : 'Mark paid'}
+            {mutation.isPending ? (
+              <>
+                <Spinner size={14} /> Saving…
+              </>
+            ) : (
+              'Mark paid'
+            )}
           </Button>
         </div>
       </div>

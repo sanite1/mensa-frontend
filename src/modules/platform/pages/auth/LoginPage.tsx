@@ -18,6 +18,7 @@ import { useLogin } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
 import { useSeo } from '@/lib/seo'
+import { Spinner } from '@/components/ui/spinner'
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
@@ -103,7 +104,13 @@ export function LoginPage() {
             className="w-full mt-2"
             disabled={login.isPending}
           >
-            {login.isPending ? 'Signing in…' : 'Sign in'}
+            {login.isPending ? (
+              <>
+                <Spinner size={14} /> Signing in…
+              </>
+            ) : (
+              'Sign in'
+            )}
           </Button>
         </form>
       </Form>

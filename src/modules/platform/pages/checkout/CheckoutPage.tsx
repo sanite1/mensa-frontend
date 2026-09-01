@@ -34,6 +34,7 @@ import { useFormatPrice } from '@/lib/currency'
 import { useCurrencyStore } from '@/lib/network/stores/currency.store'
 import { useSeo } from '@/lib/seo'
 import { handleApiError } from '@/lib/network/helpers/handleApiError'
+import { Spinner } from '@/components/ui/spinner'
 
 // ── Form schema ───────────────────────────────────────────────────
 
@@ -567,9 +568,13 @@ export function CheckoutPage() {
                 className="w-full mt-2"
                 disabled={paying || initialize.isPending || !selectedRate}
               >
-                {paying || initialize.isPending
-                  ? 'Opening Paystack…'
-                  : `Pay ${formatPrice(totalKobo)}`}
+                {paying || initialize.isPending ? (
+                  <>
+                    <Spinner size={14} /> Opening Paystack…
+                  </>
+                ) : (
+                  `Pay ${formatPrice(totalKobo)}`
+                )}
               </Button>
 
               <p className="text-[12px] text-(--mute) text-center">

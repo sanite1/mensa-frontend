@@ -29,6 +29,7 @@ import {
   useUploadContentImage,
   type CreateContentPostInput,
 } from '@/lib/network/api/content.api'
+import { Spinner } from '@/components/ui/spinner'
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required.').max(200),
@@ -456,7 +457,15 @@ export function ContentEditorPage() {
               <Link to="/content">Cancel</Link>
             </Button>
             <Button type="submit" variant="primary" size="lg" disabled={saving}>
-              {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Create post'}
+              {saving ? (
+                <>
+                  <Spinner size={14} /> Saving…
+                </>
+              ) : isEdit ? (
+                'Save changes'
+              ) : (
+                'Create post'
+              )}
             </Button>
           </div>
         </form>
@@ -607,7 +616,15 @@ function CoverImageField({ form }: { form: ReturnType<typeof useForm<FormValues>
           disabled={upload.isPending}
         >
           <Upload size={14} strokeWidth={1.6} />
-          {upload.isPending ? 'Uploading…' : url ? 'Replace image' : 'Upload image'}
+          {upload.isPending ? (
+            <>
+              <Spinner size={14} /> Uploading…
+            </>
+          ) : url ? (
+            'Replace image'
+          ) : (
+            'Upload image'
+          )}
         </Button>
       </div>
     </div>

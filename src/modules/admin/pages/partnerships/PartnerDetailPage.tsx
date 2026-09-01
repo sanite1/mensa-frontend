@@ -14,6 +14,7 @@ import {
 } from '@/lib/network/api/partner.api'
 import type { PartnerStatus } from '@/lib/network/types/partner.types'
 import { formatNaira, cn } from '@/lib/utils'
+import { Spinner } from '@/components/ui/spinner'
 
 export function PartnerDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -210,7 +211,13 @@ export function PartnerDetailPage() {
                     disabled={approve.isPending}
                   >
                     <CheckCircle2 size={16} strokeWidth={1.8} />
-                    {approve.isPending ? 'Approving…' : 'Approve & send link'}
+                    {approve.isPending ? (
+                      <>
+                        <Spinner size={14} /> Approving…
+                      </>
+                    ) : (
+                      'Approve & send link'
+                    )}
                   </Button>
                   <Button
                     type="button"
@@ -220,7 +227,13 @@ export function PartnerDetailPage() {
                     disabled={reject.isPending}
                   >
                     <XCircle size={16} strokeWidth={1.8} />
-                    {reject.isPending ? 'Rejecting…' : 'Reject application'}
+                    {reject.isPending ? (
+                      <>
+                        <Spinner size={14} /> Rejecting…
+                      </>
+                    ) : (
+                      'Reject application'
+                    )}
                   </Button>
                 </div>
               </>
@@ -262,7 +275,13 @@ export function PartnerDetailPage() {
                     onClick={onUpdateRate}
                     disabled={!rate || update.isPending}
                   >
-                    {update.isPending ? 'Saving…' : 'Update rate'}
+                    {update.isPending ? (
+                      <>
+                        <Spinner size={14} /> Saving…
+                      </>
+                    ) : (
+                      'Update rate'
+                    )}
                   </Button>
                   <Button
                     type="button"

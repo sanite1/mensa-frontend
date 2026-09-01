@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { useSubscribeToNewsletter } from '@/lib/network/api/newsletter.api'
 import { MensaLockup } from './MensaWordmark'
 import { IconMail, IconChevronDown, IconInstagram, IconTikTok } from './icons'
+import { Spinner } from '@/components/ui/spinner'
 
 const SOCIALS = [
   {
@@ -269,7 +270,7 @@ function NewsletterInput({ mobile = false }: { mobile?: boolean }) {
           mobile ? 'px-4.5 text-[13px]' : 'px-5.5 text-[14px]',
         )}
       >
-        {subscribe.isPending ? '…' : 'Subscribe'}
+        {subscribe.isPending ? <Spinner size={14} /> : 'Subscribe'}
       </button>
     </form>
   )

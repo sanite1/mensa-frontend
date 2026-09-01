@@ -37,6 +37,7 @@ import {
 import type { UserAddress } from '@/lib/network/types/user.types'
 import { useSeo } from '@/lib/seo'
 import { confirm } from '@/components/ui/confirm'
+import { Spinner } from '@/components/ui/spinner'
 
 // Same shape as the checkout address fieldset, plus an optional label.
 const formSchema = z.object({
@@ -282,7 +283,15 @@ function AddressEditor({ initial, onDone }: { initial: UserAddress | null; onDon
 
         <div className="flex items-center gap-3 mt-2">
           <Button type="submit" variant="primary" size="lg" disabled={busy}>
-            {busy ? 'Saving…' : isEdit ? 'Save changes' : 'Add address'}
+            {busy ? (
+              <>
+                <Spinner size={14} /> Saving…
+              </>
+            ) : isEdit ? (
+              'Save changes'
+            ) : (
+              'Add address'
+            )}
           </Button>
           <Button type="button" variant="secondary" size="lg" disabled={busy} onClick={onDone}>
             Cancel

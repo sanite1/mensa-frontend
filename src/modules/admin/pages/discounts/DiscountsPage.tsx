@@ -38,6 +38,7 @@ import type {
   DiscountType,
 } from '@/lib/network/types/discount.types'
 import { cn, formatNaira, koboToNaira, nairaToKobo } from '@/lib/utils'
+import { Spinner } from '@/components/ui/spinner'
 
 // ── Form schema ──────────────────────────────────────────────────
 // `value` meaning depends on `type`: percent is 1 to 100, fixed is whole naira converted to kobo before submit.
@@ -497,7 +498,15 @@ function DiscountForm({ initial, onDone }: { initial: Discount | null; onDone: (
 
         <div className="flex items-center gap-3 mt-2">
           <Button type="submit" variant="primary" size="lg" disabled={busy}>
-            {busy ? 'Saving…' : isEdit ? 'Save changes' : 'Create code'}
+            {busy ? (
+              <>
+                <Spinner size={14} /> Saving…
+              </>
+            ) : isEdit ? (
+              'Save changes'
+            ) : (
+              'Create code'
+            )}
           </Button>
           <Button type="button" variant="secondary" size="lg" disabled={busy} onClick={onDone}>
             Cancel

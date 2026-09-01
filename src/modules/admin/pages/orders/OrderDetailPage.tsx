@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useAdminOrder, useUpdateOrderFulfilment } from '@/lib/network/api/order.api'
 import type { FulfilmentStatus, Order, PaymentStatus } from '@/lib/network/types/order.types'
 import { formatNaira, cn } from '@/lib/utils'
+import { Spinner } from '@/components/ui/spinner'
 
 const PAYMENT_LABEL: Record<PaymentStatus, string> = {
   pending: 'Pending',
@@ -353,7 +354,13 @@ function FulfilmentControls({ order }: { order: Order }) {
               onClick={() => submitTransition(status)}
             >
               {meta.icon ? <meta.icon size={16} strokeWidth={1.6} /> : null}
-              {update.isPending ? 'Saving…' : meta.label}
+              {update.isPending ? (
+                <>
+                  <Spinner size={14} /> Saving…
+                </>
+              ) : (
+                meta.label
+              )}
             </Button>
           )
         })}

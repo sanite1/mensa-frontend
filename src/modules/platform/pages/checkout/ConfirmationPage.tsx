@@ -25,6 +25,7 @@ import { useCartStore } from '@/lib/network/stores/cart.store'
 import { useTrackOrder, useVerifyCheckout } from '@/lib/network/api/order.api'
 import { clearReferralCode } from '@/lib/referral'
 import { useSeo } from '@/lib/seo'
+import { Spinner } from '@/components/ui/spinner'
 
 const emailSchema = z.object({
   email: z
@@ -263,7 +264,13 @@ export function ConfirmationPage() {
               disabled={verify.isPending}
               className="text-[12px] uppercase tracking-[0.12em] font-medium text-(--ink) underline underline-offset-4 disabled:opacity-50"
             >
-              {verify.isPending ? 'Checking…' : 'Check again now'}
+              {verify.isPending ? (
+                <>
+                  <Spinner size={14} /> Checking…
+                </>
+              ) : (
+                'Check again now'
+              )}
             </button>
           </div>
         ) : null}

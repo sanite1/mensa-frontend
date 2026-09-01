@@ -17,6 +17,7 @@ import { useResetPassword } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
 import { useSeo } from '@/lib/seo'
+import { Spinner } from '@/components/ui/spinner'
 
 const resetSchema = z
   .object({
@@ -120,7 +121,13 @@ export function ResetPasswordPage() {
             className="w-full mt-2"
             disabled={reset.isPending}
           >
-            {reset.isPending ? 'Updating…' : 'Update password'}
+            {reset.isPending ? (
+              <>
+                <Spinner size={14} /> Updating…
+              </>
+            ) : (
+              'Update password'
+            )}
           </Button>
         </form>
       </Form>

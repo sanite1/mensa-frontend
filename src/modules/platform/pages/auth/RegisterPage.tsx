@@ -18,6 +18,7 @@ import { useRegister } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
 import { useSeo } from '@/lib/seo'
+import { Spinner } from '@/components/ui/spinner'
 
 const registerSchema = z.object({
   name: z
@@ -142,7 +143,13 @@ export function RegisterPage() {
             className="w-full mt-1"
             disabled={register.isPending}
           >
-            {register.isPending ? 'Creating account…' : 'Create account'}
+            {register.isPending ? (
+              <>
+                <Spinner size={14} /> Creating account…
+              </>
+            ) : (
+              'Create account'
+            )}
           </Button>
         </form>
       </Form>

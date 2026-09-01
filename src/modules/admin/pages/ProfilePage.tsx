@@ -4,6 +4,7 @@ import { LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/lib/network/stores/auth.store'
 import { useLogout } from '@/lib/network/api/auth.api'
+import { Spinner } from '@/components/ui/spinner'
 
 export function ProfilePage() {
   const user = useAuthStore((s) => s.user)
@@ -55,7 +56,13 @@ export function ProfilePage() {
             disabled={logout.isPending}
           >
             <LogOut size={14} strokeWidth={1.6} />
-            {logout.isPending ? 'Signing out…' : 'Sign out'}
+            {logout.isPending ? (
+              <>
+                <Spinner size={14} /> Signing out…
+              </>
+            ) : (
+              'Sign out'
+            )}
           </Button>
         </div>
       </div>
