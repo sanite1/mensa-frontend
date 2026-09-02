@@ -11,6 +11,15 @@ export function handleApiError(error: unknown): ApiErrorBody {
   }
 
   if (axiosError.message) {
+    // Axios reports any no-response failure (offline, CORS-stripped edge
+    // rejections like an oversized body) as a bare "Network Error".
+    if (axiosError.message === 'Network Error') {
+      return {
+        statusCode: 0,
+        message:
+          'The request could not reach the server. Check your connection, or the file may be too large.',
+      }
+    }
     return { statusCode: 0, message: axiosError.message }
   }
 

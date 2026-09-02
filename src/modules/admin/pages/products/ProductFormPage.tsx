@@ -21,6 +21,7 @@ import {
   FormDescription,
 } from '@/components/ui/form'
 import { cn, koboToNaira, nairaToKobo } from '@/lib/utils'
+import { prepareImageForUpload } from '@/lib/imageUpload'
 import {
   useAdminProduct,
   useCreateProduct,
@@ -1289,16 +1290,17 @@ function ImagesSection({
 
   const onPick = () => fileRef.current?.click()
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file) return
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please pick an image file.')
-      return
-    }
-    uploadMutation.mutate({ slug, file })
     // Reset input so the same file can be uploaded again if needed.
     e.target.value = ''
+    if (!file) return
+    try {
+      const prepared = await prepareImageForUpload(file)
+      uploadMutation.mutate({ slug, file: prepared })
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not prepare that image.')
+    }
   }
 
   return (
@@ -1463,17 +1465,20 @@ function PendingImagesSection({
   const fileRef = useRef<HTMLInputElement | null>(null)
   const onPick = () => fileRef.current?.click()
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
-    for (const file of Array.from(files)) {
-      if (!file.type.startsWith('image/')) {
-        toast.error(`Skipped "${file.name}". Please pick an image file.`)
-        continue
-      }
-      onAdd(file)
-    }
+    const picked = Array.from(files)
     e.target.value = ''
+    for (const file of picked) {
+      try {
+        onAdd(await prepareImageForUpload(file))
+      } catch (err) {
+        toast.error(
+          `Skipped "${file.name}". ${err instanceof Error ? err.message : 'Could not prepare that image.'}`,
+        )
+      }
+    }
   }
 
   return (

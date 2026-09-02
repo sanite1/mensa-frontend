@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ArrowLeft, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { prepareImageForUpload } from '@/lib/imageUpload'
 
 import { Button } from '@/components/ui/button'
 import { confirm } from '@/components/ui/confirm'
@@ -559,15 +560,18 @@ function CoverImageField({ form }: { form: ReturnType<typeof useForm<FormValues>
 
   const onPick = () => fileRef.current?.click()
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
-    if (!file.type.startsWith('image/')) {
-      toast.error('Only image files are allowed.')
+    let prepared: File
+    try {
+      prepared = await prepareImageForUpload(file)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not prepare that image.')
       return
     }
-    upload.mutate(file, {
+    upload.mutate(prepared, {
       onSuccess: (res) => {
         const data = res.data
         if (!data) return
