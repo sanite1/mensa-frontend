@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/form'
 import { MensaWordmark } from '@/components/chrome/MensaWordmark'
 import { useLogin } from '@/lib/network/api/auth.api'
+import { buildAppUrl } from '@/lib/network/helpers/buildAppUrl'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
 import { Spinner } from '@/components/ui/spinner'
 
@@ -105,10 +106,7 @@ export function AdminLoginPage() {
 
       <p className="mt-5 text-center text-[13px] text-white/55">
         Customers, head to{' '}
-        <a
-          href={import.meta.env.VITE_PLATFORM_URL ?? 'http://localhost:3000'}
-          className="text-paper underline underline-offset-2"
-        >
+        <a href={buildAppUrl('platform')} className="text-paper underline underline-offset-2">
           mensaproducts.com
         </a>
         .
