@@ -10,6 +10,7 @@ import type { Product } from '@/lib/network/types/product.types'
 import type { ContentPost } from '@/lib/network/types/content.types'
 import { cn } from '@/lib/utils'
 import { useFormatPrice } from '@/lib/currency'
+import { useScrollLock } from '@/lib/useScrollLock'
 
 const SUGGESTIONS = ['Period pants', 'Reusable pads', 'Starter set', 'Education', 'Sizing']
 const DEBOUNCE_MS = 250
@@ -20,6 +21,8 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
   const debouncedQ = useDebounced(q, DEBOUNCE_MS)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const location = useLocation()
+
+  useScrollLock(open)
 
   // Reset every time we open so prior queries don't persist between sessions.
   useEffect(() => {

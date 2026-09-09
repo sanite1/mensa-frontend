@@ -7,6 +7,7 @@ import { useCartStore, type CartLine } from '@/lib/network/stores/cart.store'
 import { useFormatPrice } from '@/lib/currency'
 import { Photo } from '@/components/shop/Photo'
 import { IconArrowRight, IconClose } from '@/components/chrome/icons'
+import { useScrollLock } from '@/lib/useScrollLock'
 
 export function CartDrawer() {
   const isOpen = useCartStore((s) => s.isDrawerOpen)
@@ -15,16 +16,7 @@ export function CartDrawer() {
   const subtotalKobo = useCartStore((s) => s.subtotal())
   const totalItems = useCartStore((s) => s.totalItems())
 
-  // Lock body scroll while open.
-  useEffect(() => {
-    if (isOpen) {
-      const prev = document.body.style.overflow
-      document.body.style.overflow = 'hidden'
-      return () => {
-        document.body.style.overflow = prev
-      }
-    }
-  }, [isOpen])
+  useScrollLock(isOpen)
 
   // Close on Escape.
   useEffect(() => {

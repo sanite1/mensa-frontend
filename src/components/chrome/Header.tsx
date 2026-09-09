@@ -1,5 +1,5 @@
 // Header — single responsive site header, auth and cart aware, owns the mega menu and mobile drawer state.
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useAuthStore, useIsAuthenticated } from '@/lib/network/stores/auth.store'
@@ -42,6 +42,7 @@ export function Header() {
   const [megaOpen, setMegaOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const closeTimer = useRef<number | null>(null)
+  const { pathname: currentPath } = useLocation()
   const totalItems = useCartStore((s) => s.totalItems())
   const openCart = useCartStore((s) => s.openDrawer)
   const cartBadge = totalItems > 0 ? totalItems : null
@@ -63,6 +64,17 @@ export function Header() {
     cancelMegaClose()
     setMegaOpen(true)
   }
+
+  // Every overlay closes on navigation. A link inside the drawer used to
+  // navigate while the drawer was still closing, and the unmounting portal
+  // could leave its scroll lock pinned on the body.
+  useEffect(() => {
+    setDrawerOpen(false)
+    setMegaOpen(false)
+    setSearchOpen(false)
+    cancelMegaClose()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPath])
 
   return (
     <header className="bg-(--paper) border-b border-(--hairline-soft) sticky top-0 z-40">
