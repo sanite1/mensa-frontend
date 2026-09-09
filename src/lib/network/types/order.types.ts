@@ -7,7 +7,9 @@ export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded' | 'partia
 
 export type FulfilmentStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
 
-export type ShippingMethod = 'inhouse' | 'sendbox'
+/** Id of the admin defined delivery option the customer picked.
+ *  Legacy orders carry the old 'inhouse' / 'sendbox' literals. */
+export type ShippingMethod = string
 export type OrderSource = 'web' | 'manual' | 'imported'
 
 // ── Order document shape ─────────────────────────────────────────
@@ -61,6 +63,11 @@ export interface OrderPayment {
 export interface OrderFulfilment {
   status: FulfilmentStatus
   shippingMethod: ShippingMethod
+  /** Delivery option name frozen at order time. Absent on legacy orders. */
+  shippingLabel?: string
+  /** Promised delivery window in days, frozen at order time. */
+  shippingEtaMinDays?: number
+  shippingEtaMaxDays?: number
   trackingCode?: string
   trackingUrl?: string
   shippedAt?: string

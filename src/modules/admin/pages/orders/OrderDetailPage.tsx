@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useAdminOrder, useUpdateOrderFulfilment } from '@/lib/network/api/order.api'
 import type { FulfilmentStatus, Order, PaymentStatus } from '@/lib/network/types/order.types'
 import { formatNaira, cn } from '@/lib/utils'
+import { shippingLabel } from '@/lib/tracking'
 import { Spinner } from '@/components/ui/spinner'
 
 const PAYMENT_LABEL: Record<PaymentStatus, string> = {
@@ -208,7 +209,7 @@ function LinesCard({ order }: { order: Order }) {
           <span>{formatNaira(order.totals.subtotal)}</span>
         </div>
         <div className="flex justify-between">
-          <span>Shipping ({order.fulfilment.shippingMethod})</span>
+          <span>Shipping ({shippingLabel(order)})</span>
           <span>{formatNaira(order.totals.shipping)}</span>
         </div>
         {order.totals.discount > 0 ? (
@@ -314,9 +315,7 @@ function FulfilmentControls({ order }: { order: Order }) {
             label="Tracking code"
             value={trackingCode}
             onChange={setTrackingCode}
-            placeholder={
-              order.fulfilment.shippingMethod === 'sendbox' ? 'SB-...' : 'In-house rider id'
-            }
+            placeholder="Courier tracking code"
           />
           <FormPair
             label="Tracking URL"

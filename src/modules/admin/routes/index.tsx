@@ -19,6 +19,7 @@ import { ContentListPage } from '@/modules/admin/pages/content/ContentListPage'
 import { ContentEditorPage } from '@/modules/admin/pages/content/ContentEditorPage'
 import { NewsletterPage } from '@/modules/admin/pages/newsletter/NewsletterPage'
 import { LeadsPage } from '@/modules/admin/pages/leads/LeadsPage'
+import { ShippingPage } from '@/modules/admin/pages/shipping/ShippingPage'
 import { PartnershipsListPage } from '@/modules/admin/pages/partnerships/PartnershipsListPage'
 import { PartnershipDetailPage } from '@/modules/admin/pages/partnerships/PartnershipDetailPage'
 import { PartnerDetailPage } from '@/modules/admin/pages/partnerships/PartnerDetailPage'
@@ -54,6 +55,9 @@ export function AdminRoutes() {
 
               {/* Sprint 4 — discounts */}
               <Route path="/discounts" element={<DiscountsPage />} />
+
+              {/* Shipping settings */}
+              <Route path="/shipping" element={<ShippingPage />} />
 
               {/* Sprint 4 — customers */}
               <Route path="/customers" element={<CustomersListPage />} />

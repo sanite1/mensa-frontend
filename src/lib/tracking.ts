@@ -2,13 +2,37 @@
 
 import type { Order } from '@/lib/network/types/order.types'
 
-/** Days from ship time to delivery — inclusive low/high. */
-const SHIPPING_LEAD_DAYS: Record<
-  Order['fulfilment']['shippingMethod'],
-  { min: number; max: number }
-> = {
+/** Legacy lead times for orders created before the delivery option snapshot
+ *  existed. New orders carry their own shippingEtaMinDays / MaxDays. */
+const LEGACY_LEAD_DAYS: Record<string, { min: number; max: number }> = {
   inhouse: { min: 1, max: 2 },
   sendbox: { min: 2, max: 5 },
+}
+
+const FALLBACK_LEAD_DAYS = { min: 2, max: 5 }
+
+const LEGACY_METHOD_LABEL: Record<string, string> = {
+  inhouse: 'In house rider',
+  sendbox: 'Sendbox nationwide',
+}
+
+/** Customer facing name of the delivery option, snapshot first with a
+ *  legacy fallback for orders that predate admin defined options. */
+export function shippingLabel(order: Order): string {
+  return (
+    order.fulfilment.shippingLabel ??
+    LEGACY_METHOD_LABEL[order.fulfilment.shippingMethod] ??
+    'Delivery'
+  )
+}
+
+/** The delivery window promised for this order, snapshot first. */
+export function shippingLeadDays(order: Order): { min: number; max: number } {
+  const { shippingEtaMinDays, shippingEtaMaxDays, shippingMethod } = order.fulfilment
+  if (shippingEtaMinDays != null && shippingEtaMaxDays != null) {
+    return { min: shippingEtaMinDays, max: shippingEtaMaxDays }
+  }
+  return LEGACY_LEAD_DAYS[shippingMethod] ?? FALLBACK_LEAD_DAYS
 }
 
 /** Days we expect to spend packing before the order ships out. Used to
@@ -35,7 +59,7 @@ export function estimatedDelivery(order: Order): DeliveryEta | null {
   if (order.fulfilment.status === 'delivered') return null
   if (order.fulfilment.status === 'cancelled') return null
 
-  const lead = SHIPPING_LEAD_DAYS[order.fulfilment.shippingMethod]
+  const lead = shippingLeadDays(order)
   const anchorIso = order.fulfilment.shippedAt ?? order.payment.paidAt ?? order.createdAt
   if (!anchorIso) return null
 

@@ -10,6 +10,7 @@ import {
   Briefcase,
   Mail,
   UserPlus,
+  Truck,
   X,
   type LucideIcon,
 } from 'lucide-react'
@@ -30,6 +31,7 @@ const items: NavItem[] = [
   { label: 'Products', href: '/products', icon: Package },
   { label: 'Customers', href: '/customers', icon: Users },
   { label: 'Discounts', href: '/discounts', icon: Tag },
+  { label: 'Shipping', href: '/shipping', icon: Truck },
   { label: 'Content', href: '/content', icon: FileText },
   { label: 'Leads', href: '/leads', icon: UserPlus },
   { label: 'Newsletter', href: '/newsletter', icon: Mail },

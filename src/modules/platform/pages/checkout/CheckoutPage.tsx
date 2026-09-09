@@ -427,7 +427,8 @@ export function CheckoutPage() {
                 </div>
               ) : rateOptions.length === 0 ? (
                 <div className="border border-(--hairline) px-4 py-5 text-[14px] text-(--mute)">
-                  No shipping options available for that destination.
+                  We do not deliver to that state yet. Reach us at support@mensaproducts.com and we
+                  will see what we can do.
                 </div>
               ) : (
                 <div className="flex flex-col gap-3">

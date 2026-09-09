@@ -3,7 +3,7 @@
 import type { Order } from '@/lib/network/types/order.types'
 import { Check, Package, Truck, Sparkles, ClipboardCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { estimatedDelivery } from '@/lib/tracking'
+import { estimatedDelivery, shippingLabel, shippingLeadDays } from '@/lib/tracking'
 
 type StageId = 'paid' | 'processing' | 'shipped' | 'delivered'
 
@@ -36,10 +36,11 @@ const STAGES: StageMeta[] = [
     id: 'shipped',
     short: 'Shipped',
     headline: 'Your order is on the way.',
-    body: (order) =>
-      order.fulfilment.shippingMethod === 'inhouse'
-        ? 'A Mensa rider has your order. It should reach you today or tomorrow.'
-        : 'Your order has left our studio with Sendbox. It should reach you within 2 to 5 working days.',
+    body: (order) => {
+      const lead = shippingLeadDays(order)
+      const window = lead.max <= 1 ? 'today or tomorrow' : `within ${lead.max} working days`
+      return `Your order has left our studio via ${shippingLabel(order)}. It should reach you ${window}.`
+    },
   },
   {
     id: 'delivered',

@@ -4,6 +4,7 @@ import type { Order } from '@/lib/network/types/order.types'
 import { Photo } from '@/components/shop/Photo'
 import { cn } from '@/lib/utils'
 import { useFormatPrice } from '@/lib/currency'
+import { shippingLabel } from '@/lib/tracking'
 
 const PAYMENT_LABELS: Record<Order['payment']['status'], string> = {
   pending: 'Awaiting payment',
@@ -128,9 +129,7 @@ export function OrderSummaryCard({ order }: { order: Order }) {
             Shipping
           </div>
           <p className="mt-2 text-[14px] text-(--ink) leading-relaxed m-0">
-            {order.fulfilment.shippingMethod === 'inhouse'
-              ? 'In house rider'
-              : 'Sendbox nationwide'}
+            {shippingLabel(order)}
           </p>
           {order.fulfilment.trackingCode ? (
             <div className="mt-3 text-[13px] text-(--graphite)">
