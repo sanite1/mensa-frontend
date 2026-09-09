@@ -1,14 +1,30 @@
 // /find-my-starter-set — eight question quiz that recommends a starter set.
 // Logic and copy follow the starter set finder spec: two scores, six results.
-// One tap per question auto-advances, back button steps back, no submit.
+// One tap per question auto-advances, back button steps back. A lead form
+// (name + email) sits between the last question and the result, and the
+// answers + result code ride along with the submission.
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Spinner } from '@/components/ui/spinner'
 import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
 import { IconArrowRight } from '@/components/chrome/icons'
 import { useProducts } from '@/lib/network/api/product.api'
+import { useSubmitStarterSetLead, type LeadResultCode } from '@/lib/network/api/lead.api'
 import { useFormatPrice } from '@/lib/currency'
 import type { Product } from '@/lib/network/types/product.types'
 import { useSeo } from '@/lib/seo'
@@ -287,11 +303,15 @@ export function StarterSetFinderPage() {
 
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Answers>({})
-  const done = step >= QUESTIONS.length
+  // Name and email captured before the result shows. Kept after a restart so
+  // a retake only needs one click through the form.
+  const [lead, setLead] = useState<{ name: string; email: string } | null>(null)
+  const [leadDone, setLeadDone] = useState(false)
 
-  // TODO: fire an analytics event with all eight answers + result code once
-  // an events endpoint exists.
-  const result = useMemo(() => (done ? computeResult(answers) : null), [done, answers])
+  const quizDone = step >= QUESTIONS.length
+  const done = quizDone && leadDone
+
+  const result = useMemo(() => (quizDone ? computeResult(answers) : null), [quizDone, answers])
 
   const pick = (qid: QuestionId, value: string) => {
     setAnswers((prev) => ({ ...prev, [qid]: value }))
@@ -301,6 +321,7 @@ export function StarterSetFinderPage() {
   const back = () => setStep((s) => Math.max(0, s - 1))
   const restart = () => {
     setAnswers({})
+    setLeadDone(false)
     setStep(0)
   }
 
@@ -310,30 +331,44 @@ export function StarterSetFinderPage() {
         {/* Head */}
         <SectionEyebrow color="var(--coral)">Starter set</SectionEyebrow>
         <h1 className="mt-5 font-display italic font-semibold text-[clamp(30px,5vw,52px)] leading-[1.02] tracking-tight text-ink">
-          {done ? 'Your starter set.' : 'Not sure what to buy first? Answer 8 questions.'}
+          {done
+            ? 'Your starter set.'
+            : quizDone
+              ? 'One last thing.'
+              : 'Not sure what to buy first? Answer 8 questions.'}
         </h1>
-        {!done ? (
+        {!quizDone ? (
           <p className="mt-3 t-body text-graphite">
             It takes less than a minute. We will tell you what to start with.
           </p>
         ) : null}
 
-        {/* Progress strip */}
+        {/* Progress strip — 8 questions plus the lead step */}
         <div className="mt-7 flex gap-1.5" aria-hidden="true">
-          {QUESTIONS.map((q, i) => (
+          {[...QUESTIONS.map((q) => q.id), 'lead'].map((id, i) => (
             <span
-              key={q.id}
+              key={id}
               className={cn(
                 'h-1 flex-1 rounded-full transition-colors',
-                i < step ? 'bg-pink' : 'bg-hairline',
+                i < step || (i === QUESTIONS.length && leadDone) ? 'bg-pink' : 'bg-hairline',
               )}
             />
           ))}
         </div>
 
         {/* Stage */}
-        {!done ? (
+        {!quizDone ? (
           <QuestionStage question={QUESTIONS[step]} onPick={pick} />
+        ) : !leadDone && result ? (
+          <LeadStage
+            answers={answers}
+            result={result}
+            defaults={lead}
+            onDone={(values) => {
+              setLead(values)
+              setLeadDone(true)
+            }}
+          />
         ) : result ? (
           <ResultStage answers={answers} result={result} onRestart={restart} />
         ) : null}
@@ -352,7 +387,7 @@ export function StarterSetFinderPage() {
             <span />
           )}
           <span className="font-mono text-[11px] tracking-widest uppercase text-mute">
-            {done ? 'Done' : `Question ${step + 1} of ${QUESTIONS.length}`}
+            {done ? 'Done' : quizDone ? 'Last step' : `Question ${step + 1} of ${QUESTIONS.length}`}
           </span>
         </div>
       </div>
@@ -388,6 +423,115 @@ function QuestionStage({
           </button>
         ))}
       </div>
+    </div>
+  )
+}
+
+const leadSchema = z.object({
+  name: z.string().trim().min(2, 'Please enter your name.'),
+  email: z.string().trim().min(1, 'Email is required.').email('Please enter a valid email.'),
+})
+type LeadValues = z.infer<typeof leadSchema>
+
+function LeadStage({
+  answers,
+  result,
+  defaults,
+  onDone,
+}: {
+  answers: Answers
+  result: QuizResult
+  defaults: { name: string; email: string } | null
+  onDone: (values: LeadValues) => void
+}) {
+  const submitLead = useSubmitStarterSetLead()
+  const form = useForm<LeadValues>({
+    resolver: zodResolver(leadSchema),
+    defaultValues: defaults ?? { name: '', email: '' },
+  })
+
+  const onSubmit = async (values: LeadValues) => {
+    // Best effort: if the save fails for any reason the result still shows.
+    // Lead capture must never stand between her and the recommendation.
+    try {
+      await submitLead.mutateAsync({
+        name: values.name,
+        email: values.email,
+        answers: answers as Record<string, string>,
+        resultCode: result.code as LeadResultCode,
+      })
+    } catch {
+      // Swallowed on purpose, see above.
+    }
+    onDone(values)
+  }
+
+  return (
+    <div className="mt-9">
+      <h2 className="m-0 font-display italic font-semibold text-[clamp(22px,3vw,30px)] leading-[1.15] tracking-tight text-ink">
+        Who is this starter set for?
+      </h2>
+      <p className="mt-2 t-body-s text-graphite max-w-150">
+        Tell us your name and email and your recommendation is next.
+      </p>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-5 max-w-120">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input type="text" autoComplete="name" placeholder="Your name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            className="mt-1 self-start"
+            disabled={submitLead.isPending}
+          >
+            {submitLead.isPending ? (
+              <>
+                <Spinner size={14} /> One moment…
+              </>
+            ) : (
+              <>
+                Show my starter set <IconArrowRight size={14} />
+              </>
+            )}
+          </Button>
+
+          <p className="m-0 text-[12.5px] leading-[1.5] text-mute">
+            We will only use this to help you find the right products.
+          </p>
+        </form>
+      </Form>
     </div>
   )
 }
