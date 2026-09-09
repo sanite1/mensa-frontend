@@ -18,6 +18,7 @@ import { CustomerDetailPage } from '@/modules/admin/pages/customers/CustomerDeta
 import { ContentListPage } from '@/modules/admin/pages/content/ContentListPage'
 import { ContentEditorPage } from '@/modules/admin/pages/content/ContentEditorPage'
 import { NewsletterPage } from '@/modules/admin/pages/newsletter/NewsletterPage'
+import { LeadsPage } from '@/modules/admin/pages/leads/LeadsPage'
 import { PartnershipsListPage } from '@/modules/admin/pages/partnerships/PartnershipsListPage'
 import { PartnershipDetailPage } from '@/modules/admin/pages/partnerships/PartnershipDetailPage'
 import { PartnerDetailPage } from '@/modules/admin/pages/partnerships/PartnerDetailPage'
@@ -65,6 +66,9 @@ export function AdminRoutes() {
 
               {/* Sprint 5 — newsletter */}
               <Route path="/newsletter" element={<NewsletterPage />} />
+
+              {/* Starter set finder leads */}
+              <Route path="/leads" element={<LeadsPage />} />
 
               {/* Sprint 6 (MVP) — partnerships */}
               <Route path="/partnerships" element={<PartnershipsListPage />} />

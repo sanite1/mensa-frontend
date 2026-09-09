@@ -9,6 +9,7 @@ import {
   FileText,
   Briefcase,
   Mail,
+  UserPlus,
   X,
   type LucideIcon,
 } from 'lucide-react'
@@ -30,6 +31,7 @@ const items: NavItem[] = [
   { label: 'Customers', href: '/customers', icon: Users },
   { label: 'Discounts', href: '/discounts', icon: Tag },
   { label: 'Content', href: '/content', icon: FileText },
+  { label: 'Leads', href: '/leads', icon: UserPlus },
   { label: 'Newsletter', href: '/newsletter', icon: Mail },
   { label: 'Partnerships', href: '/partnerships', icon: Briefcase },
 ]
