@@ -20,6 +20,10 @@ import { ContentEditorPage } from '@/modules/admin/pages/content/ContentEditorPa
 import { NewsletterPage } from '@/modules/admin/pages/newsletter/NewsletterPage'
 import { LeadsPage } from '@/modules/admin/pages/leads/LeadsPage'
 import { ShippingPage } from '@/modules/admin/pages/shipping/ShippingPage'
+import { InvoicesListPage } from '@/modules/admin/pages/invoices/InvoicesListPage'
+import { InvoiceFormPage } from '@/modules/admin/pages/invoices/InvoiceFormPage'
+import { InvoiceDetailPage } from '@/modules/admin/pages/invoices/InvoiceDetailPage'
+import { InvoiceSettingsPage } from '@/modules/admin/pages/invoices/InvoiceSettingsPage'
 import { PartnershipsListPage } from '@/modules/admin/pages/partnerships/PartnershipsListPage'
 import { PartnershipDetailPage } from '@/modules/admin/pages/partnerships/PartnershipDetailPage'
 import { PartnerDetailPage } from '@/modules/admin/pages/partnerships/PartnerDetailPage'
@@ -48,6 +52,13 @@ export function AdminRoutes() {
               <Route path="/products" element={<ProductsListPage />} />
               <Route path="/products/new" element={<ProductFormPage />} />
               <Route path="/products/:slug/edit" element={<ProductFormPage />} />
+
+              {/* Invoices. Static paths before :id so "new" and "settings" never resolve as ids. */}
+              <Route path="/invoices" element={<InvoicesListPage />} />
+              <Route path="/invoices/new" element={<InvoiceFormPage />} />
+              <Route path="/invoices/settings" element={<InvoiceSettingsPage />} />
+              <Route path="/invoices/:id" element={<InvoiceDetailPage />} />
+              <Route path="/invoices/:id/edit" element={<InvoiceFormPage />} />
 
               {/* Sprint 3 — orders */}
               <Route path="/orders" element={<OrdersListPage />} />

@@ -11,6 +11,7 @@ import {
   Mail,
   UserPlus,
   Truck,
+  Receipt,
   X,
   type LucideIcon,
 } from 'lucide-react'
@@ -28,6 +29,7 @@ interface NavItem {
 const items: NavItem[] = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
   { label: 'Orders', href: '/orders', icon: ShoppingBag },
+  { label: 'Invoices', href: '/invoices', icon: Receipt },
   { label: 'Products', href: '/products', icon: Package },
   { label: 'Customers', href: '/customers', icon: Users },
   { label: 'Discounts', href: '/discounts', icon: Tag },
