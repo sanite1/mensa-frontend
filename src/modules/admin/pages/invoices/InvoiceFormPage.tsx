@@ -818,7 +818,7 @@ function LineRow({
   return (
     <div
       className={cn(
-        'border p-4 grid grid-cols-1 md:grid-cols-[1fr_130px_90px_120px_auto] gap-3 items-end',
+        'border p-4 grid grid-cols-1 md:grid-cols-[1fr_130px_90px_120px_auto] gap-3 items-start',
         overStock ? 'border-coral bg-blush/40' : 'border-hairline-soft',
       )}
     >
@@ -873,13 +873,23 @@ function LineRow({
           {formatNaira(lineTotal)}
         </div>
       </Field>
+      {/* Same label height as the inputs so the button lines up with them. */}
+      <Field label="" className="hidden md:block">
+        <button
+          type="button"
+          onClick={onRemove}
+          aria-label="Remove line"
+          className="inline-flex h-11 w-11 items-center justify-center text-mute hover:text-err hover:bg-blush rounded-sm"
+        >
+          <Trash2 size={15} strokeWidth={1.6} />
+        </button>
+      </Field>
       <button
         type="button"
         onClick={onRemove}
-        aria-label="Remove line"
-        className="inline-flex h-11 w-11 items-center justify-center text-mute hover:text-err hover:bg-blush rounded-sm"
+        className="md:hidden inline-flex items-center gap-2 text-[13px] text-mute hover:text-err"
       >
-        <Trash2 size={15} strokeWidth={1.6} />
+        <Trash2 size={14} strokeWidth={1.6} /> Remove line
       </button>
     </div>
   )
@@ -899,7 +909,8 @@ function Field({
   return (
     <div className={className}>
       <div className="text-[11px] uppercase tracking-widest font-medium text-mute font-mono mb-2">
-        {label}
+        {/* A blank label keeps its height so columns without one still line up. */}
+        {label || ' '}
       </div>
       {children}
     </div>
