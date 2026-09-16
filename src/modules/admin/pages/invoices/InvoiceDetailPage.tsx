@@ -1,7 +1,8 @@
 // /invoices/:id (admin) — one invoice: lines, totals, timeline and actions.
 
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Pencil, Send, Link2, Ban, BellRing } from 'lucide-react'
+import { ArrowLeft, Pencil, Send, Link2, Ban, BellRing, Download } from 'lucide-react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -9,10 +10,12 @@ import { Spinner } from '@/components/ui/spinner'
 import { confirm } from '@/components/ui/confirm'
 import {
   useAdminInvoice,
+  useInvoiceSettings,
   useRemindInvoice,
   useSendInvoice,
   useVoidInvoice,
 } from '@/lib/network/api/invoice.api'
+import { downloadInvoicePdf } from '@/lib/invoicePdf'
 import { buildAppUrl } from '@/lib/network/helpers/buildAppUrl'
 import { formatNaira } from '@/lib/utils'
 import { InvoiceStatusPill, formatDate } from './invoiceShared'
@@ -23,7 +26,22 @@ export function InvoiceDetailPage() {
   const send = useSendInvoice()
   const remind = useRemindInvoice()
   const voidInvoice = useVoidInvoice()
+  const settingsQuery = useInvoiceSettings()
+  const [downloading, setDownloading] = useState(false)
   const invoice = query.data?.data?.invoice
+
+  const onDownloadPdf = async () => {
+    const settings = settingsQuery.data?.data
+    if (!invoice || !settings) return
+    setDownloading(true)
+    try {
+      await downloadInvoicePdf(invoice, settings)
+    } catch {
+      toast.error('Could not build the PDF. Please try again.')
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   if (query.isLoading || !invoice) {
     return (
@@ -110,6 +128,23 @@ export function InvoiceDetailPage() {
               </Link>
             </Button>
           ) : null}
+          <Button
+            type="button"
+            variant="secondary"
+            size="md"
+            onClick={onDownloadPdf}
+            disabled={downloading || !settingsQuery.data}
+          >
+            {downloading ? (
+              <>
+                <Spinner size={14} /> Building…
+              </>
+            ) : (
+              <>
+                <Download size={14} strokeWidth={1.8} /> Download PDF
+              </>
+            )}
+          </Button>
           {shareable ? (
             <Button type="button" variant="secondary" size="md" onClick={onCopyLink}>
               <Link2 size={14} strokeWidth={1.8} /> Copy link

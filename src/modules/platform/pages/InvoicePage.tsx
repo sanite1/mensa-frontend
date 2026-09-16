@@ -19,6 +19,7 @@ import {
   type Invoice,
 } from '@/lib/network/api/invoice.api'
 import { openPaystackInline } from '@/lib/paystack'
+import { downloadInvoicePdf } from '@/lib/invoicePdf'
 import { handleApiError } from '@/lib/network/helpers/handleApiError'
 import { useSeo } from '@/lib/seo'
 import { formatNaira, cn } from '@/lib/utils'
@@ -42,6 +43,19 @@ export function InvoicePage() {
   const pay = usePayInvoice()
   const verify = useVerifyInvoice()
   const [paying, setPaying] = useState(false)
+  const [downloading, setDownloading] = useState(false)
+
+  const onDownloadPdf = async () => {
+    if (!data) return
+    setDownloading(true)
+    try {
+      await downloadInvoicePdf(data.invoice, data.settings)
+    } catch {
+      toast.error('Could not build the PDF. Please try again.')
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   // Verify on load, once: after a hosted Paystack redirect (reference in the
   // URL) or whenever an attempt was started but the invoice is still unpaid,
@@ -125,6 +139,24 @@ export function InvoicePage() {
     <div className="bg-cream-soft min-h-[70vh] px-4 md:px-8 py-8 md:py-14">
       <div className="max-w-190 mx-auto">
         <StatusBanner invoice={invoice} overdue={overdue} />
+
+        <div className="mb-4 flex justify-end">
+          <Button
+            type="button"
+            variant="secondary"
+            size="md"
+            onClick={onDownloadPdf}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <>
+                <Spinner size={14} /> Building PDF…
+              </>
+            ) : (
+              'Download PDF'
+            )}
+          </Button>
+        </div>
 
         {payable ? (
           <div className="mb-4 bg-paper border border-hairline-soft px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
