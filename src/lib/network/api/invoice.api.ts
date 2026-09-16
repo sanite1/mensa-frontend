@@ -213,6 +213,33 @@ export const useVoidInvoice = () => {
   })
 }
 
+export const useRemindInvoice = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api.post<{ invoice: Invoice }>(`/admin/invoices/${id}/remind`),
+    onSuccess: (res) => {
+      toast.success(res.message || 'Reminder sent.')
+      qc.invalidateQueries({ queryKey: invoiceKeys.all })
+    },
+    onError: toastApiError,
+  })
+}
+
+// ── Public: the customer's view ─────────────────────────────────
+
+export interface PublicInvoiceData {
+  invoice: Invoice
+  settings: InvoiceSettings
+}
+
+export const usePublicInvoice = (token: string | undefined) =>
+  useQuery({
+    queryKey: [...invoiceKeys.all, 'public', token ?? ''] as const,
+    queryFn: () => api.get<PublicInvoiceData>(`/invoices/${token}`),
+    enabled: !!token,
+    retry: false,
+  })
+
 // ── Settings ────────────────────────────────────────────────────
 
 export const useInvoiceSettings = () =>

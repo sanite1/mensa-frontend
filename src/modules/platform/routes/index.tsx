@@ -31,6 +31,7 @@ import { StarterSetFinderPage } from '@/modules/platform/pages/StarterSetFinderP
 import { ProductDetailPage } from '@/modules/platform/pages/shop/ProductDetailPage'
 import { CheckoutPage } from '@/modules/platform/pages/checkout/CheckoutPage'
 import { ConfirmationPage } from '@/modules/platform/pages/checkout/ConfirmationPage'
+import { InvoicePage } from '@/modules/platform/pages/InvoicePage'
 import { TrackOrderPage } from '@/modules/platform/pages/orders/TrackOrderPage'
 
 export function PlatformRoutes() {
@@ -92,6 +93,9 @@ export function PlatformRoutes() {
           {/* Phase 3 — Checkout (guest-friendly, no auth guard) */}
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/checkout/confirmation/:orderNumber" element={<ConfirmationPage />} />
+
+          {/* Pay by link invoices, the token in the URL is the only credential. */}
+          <Route path="/invoice/:token" element={<InvoicePage />} />
           <Route path="/orders/track" element={<TrackOrderPage />} />
 
           {/* 404 catch-all — must be last so it only matches unrouted paths. */}

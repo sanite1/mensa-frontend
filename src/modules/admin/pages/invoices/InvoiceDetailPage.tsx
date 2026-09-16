@@ -1,13 +1,18 @@
 // /invoices/:id (admin) — one invoice: lines, totals, timeline and actions.
 
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Pencil, Send, Link2, Ban } from 'lucide-react'
+import { ArrowLeft, Pencil, Send, Link2, Ban, BellRing } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { confirm } from '@/components/ui/confirm'
-import { useAdminInvoice, useSendInvoice, useVoidInvoice } from '@/lib/network/api/invoice.api'
+import {
+  useAdminInvoice,
+  useRemindInvoice,
+  useSendInvoice,
+  useVoidInvoice,
+} from '@/lib/network/api/invoice.api'
 import { buildAppUrl } from '@/lib/network/helpers/buildAppUrl'
 import { formatNaira } from '@/lib/utils'
 import { InvoiceStatusPill, formatDate } from './invoiceShared'
@@ -16,6 +21,7 @@ export function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>()
   const query = useAdminInvoice(id)
   const send = useSendInvoice()
+  const remind = useRemindInvoice()
   const voidInvoice = useVoidInvoice()
   const invoice = query.data?.data?.invoice
 
@@ -34,14 +40,27 @@ export function InvoiceDetailPage() {
   const shareable = invoice.status !== 'draft' && invoice.status !== 'void'
   const publicUrl = buildAppUrl('platform', `/invoice/${invoice.accessToken}`)
 
+  const awaitingPayment = invoice.status === 'sent' || invoice.status === 'viewed'
+
   const onSend = async () => {
+    const resend = invoice.status !== 'draft'
     const ok = await confirm({
-      title: `Send ${invoice.invoiceNumber} to ${invoice.customer.email}?`,
-      description:
-        'They get an email with a link to view and pay. Catalogue stock on the invoice is held until it is paid or voided.',
-      confirmLabel: 'Send invoice',
+      title: `${resend ? 'Resend' : 'Send'} ${invoice.invoiceNumber} to ${invoice.customer.email}?`,
+      description: resend
+        ? 'They get the invoice email again with the same payment link.'
+        : 'They get an email with a link to view and pay. Catalogue stock on the invoice is held until it is paid or voided.',
+      confirmLabel: resend ? 'Resend invoice' : 'Send invoice',
     })
     if (ok) send.mutate(invoice._id)
+  }
+
+  const onRemind = async () => {
+    const ok = await confirm({
+      title: `Send a payment reminder to ${invoice.customer.email}?`,
+      description: `A short reminder that ${invoice.invoiceNumber} is still open, with the payment link. Nothing else changes.`,
+      confirmLabel: 'Send reminder',
+    })
+    if (ok) remind.mutate(invoice._id)
   }
 
   const onVoid = async () => {
@@ -96,10 +115,29 @@ export function InvoiceDetailPage() {
               <Link2 size={14} strokeWidth={1.8} /> Copy link
             </Button>
           ) : null}
-          {invoice.status === 'draft' ? (
+          {awaitingPayment ? (
             <Button
               type="button"
-              variant="ink"
+              variant="secondary"
+              size="md"
+              onClick={onRemind}
+              disabled={remind.isPending}
+            >
+              {remind.isPending ? (
+                <>
+                  <Spinner size={14} /> Sending…
+                </>
+              ) : (
+                <>
+                  <BellRing size={14} strokeWidth={1.8} /> Send reminder
+                </>
+              )}
+            </Button>
+          ) : null}
+          {invoice.status === 'draft' || awaitingPayment ? (
+            <Button
+              type="button"
+              variant={invoice.status === 'draft' ? 'ink' : 'secondary'}
               size="md"
               onClick={onSend}
               disabled={send.isPending}
@@ -110,7 +148,8 @@ export function InvoiceDetailPage() {
                 </>
               ) : (
                 <>
-                  <Send size={14} strokeWidth={1.8} /> Send invoice
+                  <Send size={14} strokeWidth={1.8} />{' '}
+                  {invoice.status === 'draft' ? 'Send invoice' : 'Resend'}
                 </>
               )}
             </Button>
