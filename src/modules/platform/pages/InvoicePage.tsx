@@ -1,12 +1,25 @@
 // /invoice/:token — the customer's invoice. Laid out like the printed
 // template: title and logo, billed to and invoice meta, an ink header line
 // table, totals with an ink grand total bar, then payment information and
-// the studio contact footer. Pay now arrives with the payment phase.
+// the studio contact footer. Pay now runs the same Paystack inline flow as
+// checkout, then verifies on return so the page never waits on the webhook.
 
-import { useParams } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useParams, useSearchParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
+import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { MensaWordmark } from '@/components/chrome/MensaWordmark'
-import { usePublicInvoice, isInvoiceOverdue, type Invoice } from '@/lib/network/api/invoice.api'
+import {
+  usePayInvoice,
+  usePublicInvoice,
+  useVerifyInvoice,
+  isInvoiceOverdue,
+  type Invoice,
+} from '@/lib/network/api/invoice.api'
+import { openPaystackInline } from '@/lib/paystack'
+import { handleApiError } from '@/lib/network/helpers/handleApiError'
 import { useSeo } from '@/lib/seo'
 import { formatNaira, cn } from '@/lib/utils'
 
@@ -21,9 +34,65 @@ function formatDate(iso: string | null | undefined): string {
 
 export function InvoicePage() {
   const { token } = useParams<{ token: string }>()
+  const [searchParams, setSearchParams] = useSearchParams()
   useSeo({ title: 'Invoice', noindex: true })
   const query = usePublicInvoice(token)
   const data = query.data?.data
+
+  const pay = usePayInvoice()
+  const verify = useVerifyInvoice()
+  const [paying, setPaying] = useState(false)
+
+  // Verify on load, once: after a hosted Paystack redirect (reference in the
+  // URL) or whenever an attempt was started but the invoice is still unpaid,
+  // so a customer who closed the modal after paying still sees Paid.
+  const verifiedRef = useRef(false)
+  useEffect(() => {
+    if (!token || !data || verifiedRef.current) return
+    const inv = data.invoice
+    const returnedFromPaystack = searchParams.has('reference') || searchParams.has('trxref')
+    const attempted = (inv.payment?.attempts ?? 0) > 0
+    const awaiting = inv.status === 'sent' || inv.status === 'viewed'
+    if (!awaiting || (!returnedFromPaystack && !attempted)) return
+    verifiedRef.current = true
+    verify.mutate(token, {
+      onSettled: () => {
+        query.refetch()
+        if (returnedFromPaystack) setSearchParams({}, { replace: true })
+      },
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, data])
+
+  const onPay = async () => {
+    if (!token) return
+    setPaying(true)
+    try {
+      const init = await pay.mutateAsync(token)
+      const p = init.data
+      if (!p) throw new Error('Could not start the payment.')
+      const outcome = await openPaystackInline({
+        publicKey: p.publicKey,
+        email: p.email,
+        amountKobo: p.amount,
+        reference: p.reference,
+        metadata: { kind: 'invoice' },
+      })
+      if (outcome.status === 'success') {
+        await verify.mutateAsync(token)
+        await query.refetch()
+        toast.success('Payment received. Thank you.')
+      } else if (outcome.status === 'cancelled') {
+        toast.message('Payment cancelled. You can pay whenever you are ready.')
+      } else {
+        toast.error(outcome.message)
+      }
+    } catch (err) {
+      toast.error(handleApiError(err).message)
+    } finally {
+      setPaying(false)
+    }
+  }
 
   if (query.isLoading) {
     return (
@@ -49,11 +118,45 @@ export function InvoicePage() {
 
   const { invoice, settings } = data
   const overdue = isInvoiceOverdue(invoice)
+  const payable = invoice.status === 'sent' || invoice.status === 'viewed'
+  const checking = verify.isPending && !paying
 
   return (
     <div className="bg-cream-soft min-h-[70vh] px-4 md:px-8 py-8 md:py-14">
       <div className="max-w-190 mx-auto">
         <StatusBanner invoice={invoice} overdue={overdue} />
+
+        {payable ? (
+          <div className="mb-4 bg-paper border border-hairline-soft px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <div className="text-[11px] uppercase tracking-widest font-medium text-mute font-mono">
+                Amount due
+              </div>
+              <div className="font-display italic font-semibold text-[28px] leading-none text-ink mt-1">
+                {formatNaira(invoice.totals.total)}
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="primary"
+              size="lg"
+              onClick={onPay}
+              disabled={paying || checking}
+            >
+              {paying ? (
+                <>
+                  <Spinner size={14} /> Opening Paystack…
+                </>
+              ) : checking ? (
+                <>
+                  <Spinner size={14} /> Checking payment…
+                </>
+              ) : (
+                'Pay now'
+              )}
+            </Button>
+          </div>
+        ) : null}
 
         <article className="bg-paper border border-hairline-soft px-6 py-8 md:px-12 md:py-12">
           {/* Title row */}

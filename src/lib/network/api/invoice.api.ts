@@ -228,9 +228,31 @@ export const useRemindInvoice = () => {
 // ── Public: the customer's view ─────────────────────────────────
 
 export interface PublicInvoiceData {
-  invoice: Invoice
+  /** The public read includes the payment block so the page can tell
+   *  whether an attempt was ever started and verify it on load. */
+  invoice: Invoice & { payment?: { attempts?: number } }
   settings: InvoiceSettings
 }
+
+export interface InvoicePaymentInit {
+  reference: string
+  accessCode: string
+  authorizationUrl: string
+  amount: number
+  publicKey: string
+  email: string
+}
+
+/** Silent mutations, the invoice page owns the messaging. */
+export const usePayInvoice = () =>
+  useMutation({
+    mutationFn: (token: string) => api.post<InvoicePaymentInit>(`/invoices/${token}/pay`),
+  })
+
+export const useVerifyInvoice = () =>
+  useMutation({
+    mutationFn: (token: string) => api.post<{ invoice: Invoice }>(`/invoices/${token}/verify`),
+  })
 
 export const usePublicInvoice = (token: string | undefined) =>
   useQuery({
