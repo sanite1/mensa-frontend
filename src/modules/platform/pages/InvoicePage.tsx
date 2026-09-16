@@ -1,6 +1,6 @@
 // /invoice/:token — the customer's invoice. Laid out like the printed
-// template: title and logo, billed to and invoice meta, an ink header line
-// table, totals with an ink grand total bar, then payment information and
+// template: title and logo, billed to and invoice meta, a pink header line
+// table, totals with a pink grand total bar, then payment information and
 // the studio contact footer. Pay now runs the same Paystack inline flow as
 // checkout, then verifies on return so the page never waits on the webhook.
 
@@ -196,7 +196,7 @@ export function InvoicePage() {
             <h1 className="m-0 font-sans font-bold text-[clamp(34px,7vw,56px)] leading-none tracking-tight text-ink">
               INVOICE
             </h1>
-            <MensaWordmark height={36} tone="ink" />
+            <MensaWordmark height={36} tone="pink" />
           </header>
 
           {/* Billed to and meta */}
@@ -236,7 +236,7 @@ export function InvoicePage() {
           <div className="mt-10 md:mt-12 overflow-x-auto">
             <table className="w-full border-collapse text-[15px]">
               <thead>
-                <tr className="bg-ink text-paper">
+                <tr className="bg-pink text-paper">
                   <th className="text-left font-semibold tracking-[0.08em] uppercase text-[13px] px-5 py-3.5">
                     Description
                   </th>
@@ -292,7 +292,7 @@ export function InvoicePage() {
                   value={formatNaira(invoice.totals.shipping)}
                 />
               ) : null}
-              <div className="mt-2 bg-ink text-paper flex items-center justify-between px-5 py-3 font-bold text-[16px]">
+              <div className="mt-2 bg-pink text-paper flex items-center justify-between px-5 py-3 font-bold text-[16px]">
                 <span>Grand Total:</span>
                 <span>{formatNaira(invoice.totals.total)}</span>
               </div>
@@ -306,7 +306,7 @@ export function InvoicePage() {
           ) : null}
 
           {/* Payment information and contact footer */}
-          <footer className="mt-14 md:mt-20 pt-6 border-t border-ink flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+          <footer className="mt-14 md:mt-20 pt-6 border-t border-pink flex flex-col sm:flex-row sm:items-end justify-between gap-6">
             <div>
               <div className="text-[13px] font-bold tracking-[0.06em] uppercase text-ink">
                 Payment information

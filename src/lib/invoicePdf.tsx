@@ -1,8 +1,8 @@
 // invoicePdf.tsx — the printable invoice, one template shared by the admin
 // detail page and the customer's public page. Follows the house template:
-// INVOICE title with the logo, billed to and invoice meta, an ink header
-// line table with alternating rows, right aligned totals ending in an ink
-// grand total bar, notes, then payment information and the studio contact
+// INVOICE title with the logo, billed to and invoice meta, a brand pink
+// header line table with alternating rows, right aligned totals ending in a
+// pink grand total bar, notes, then payment information and the studio contact
 // pinned to the foot of the page. Rendered in the browser, no server work.
 //
 // Amounts print as "NGN" because DM Sans has no naira glyph and standard
@@ -29,6 +29,7 @@ Font.register({
 Font.registerHyphenationCallback((word) => [word])
 
 const INK = '#1A1410'
+const PINK = '#FE718E'
 const PAPER = '#FFFCF6'
 const GRAPHITE = '#4F433B'
 const CREAM_SOFT = '#F6EFE4'
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
   metaText: { fontSize: 10.5, lineHeight: 1.55 },
   metaRight: { alignItems: 'flex-end', textAlign: 'right' },
   table: { marginTop: 40 },
-  headRow: { flexDirection: 'row', backgroundColor: INK, color: PAPER },
+  headRow: { flexDirection: 'row', backgroundColor: PINK, color: PAPER },
   row: { flexDirection: 'row' },
   rowAlt: { backgroundColor: CREAM_SOFT },
   cellHead: {
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
   grandRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: INK,
+    backgroundColor: PINK,
     color: PAPER,
     paddingVertical: 9,
     paddingHorizontal: 14,
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
     right: 48,
     bottom: 48,
     borderTopWidth: 1,
-    borderTopColor: INK,
+    borderTopColor: PINK,
     paddingTop: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
