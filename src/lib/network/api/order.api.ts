@@ -10,6 +10,7 @@ import type {
   InitializeCheckoutResponseData,
   ListOrdersParams,
   ListOrdersResponseData,
+  OrderFacets,
   OrderResponseData,
   ShippingRatesInput,
   ShippingRatesResponseData,
@@ -143,6 +144,15 @@ export const useAdminOrders = (params?: ListOrdersParams) =>
     queryKey: orderKeys.adminList(params),
     queryFn: () => adminListOrdersFn(params),
     placeholderData: keepPreviousData,
+  })
+
+// ─── 6b. GET /api/v1/admin/orders/facets  (admin) ────
+
+export const useAdminOrderFacets = () =>
+  useQuery({
+    queryKey: [...orderKeys.all, 'admin', 'facets'] as const,
+    queryFn: () => api.get<OrderFacets>('/admin/orders/facets'),
+    staleTime: 60_000,
   })
 
 // ─── 7. GET /api/v1/admin/orders/:id  (admin) ────

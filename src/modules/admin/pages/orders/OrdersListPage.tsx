@@ -1,20 +1,23 @@
-// /orders (admin) — read-only orders table for Sprint 3.
+// /orders (admin) — orders table with spreadsheet style column filters.
+// State, Delivery, Payment and Fulfilment headers each open a checklist of
+// every value that exists across all orders. Filters are applied server
+// side so paging stays correct.
 
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Search } from 'lucide-react'
+import { Search, ListFilter, X } from 'lucide-react'
 
-import { useAdminOrders } from '@/lib/network/api/order.api'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { useAdminOrderFacets, useAdminOrders } from '@/lib/network/api/order.api'
 import type { FulfilmentStatus, Order, PaymentStatus } from '@/lib/network/types/order.types'
+import { shippingLabel } from '@/lib/tracking'
 import { formatNaira, cn } from '@/lib/utils'
-
-const PAYMENT_FILTERS: { id: PaymentStatus | 'all'; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'paid', label: 'Paid' },
-  { id: 'pending', label: 'Pending' },
-  { id: 'failed', label: 'Failed' },
-  { id: 'refunded', label: 'Refunded' },
-]
 
 const PAYMENT_LABEL: Record<PaymentStatus, string> = {
   pending: 'Pending',
@@ -32,12 +35,33 @@ const FULFILMENT_LABEL: Record<FulfilmentStatus, string> = {
   cancelled: 'Cancelled',
 }
 
+const PAYMENT_OPTIONS = (Object.keys(PAYMENT_LABEL) as PaymentStatus[]).map((id) => ({
+  id,
+  label: PAYMENT_LABEL[id],
+}))
+const FULFILMENT_OPTIONS = (Object.keys(FULFILMENT_LABEL) as FulfilmentStatus[]).map((id) => ({
+  id,
+  label: FULFILMENT_LABEL[id],
+}))
+
+const GRID = 'grid grid-cols-[1.3fr_1.6fr_0.9fr_0.9fr_1.1fr_0.9fr_0.9fr_0.9fr] gap-x-4 items-center'
+
 export function OrdersListPage() {
-  const [payment, setPayment] = useState<PaymentStatus | 'all'>('all')
   const [search, setSearch] = useState('')
+  const [paymentSel, setPaymentSel] = useState<string[]>([])
+  const [fulfilmentSel, setFulfilmentSel] = useState<string[]>([])
+  const [stateSel, setStateSel] = useState<string[]>([])
+  const [deliverySel, setDeliverySel] = useState<string[]>([])
+
+  const facets = useAdminOrderFacets()
+  const stateOptions = (facets.data?.data?.states ?? []).map((s) => ({ id: s, label: s }))
+  const deliveryOptions = (facets.data?.data?.deliveries ?? []).map((d) => ({ id: d, label: d }))
 
   const query = useAdminOrders({
-    paymentStatus: payment === 'all' ? undefined : payment,
+    paymentStatuses: paymentSel.join(',') || undefined,
+    fulfilmentStatuses: fulfilmentSel.join(',') || undefined,
+    states: stateSel.join(',') || undefined,
+    deliveries: deliverySel.join(',') || undefined,
     pageSize: 100,
   })
   const orders: Order[] = query.data?.data?.items ?? []
@@ -53,9 +77,17 @@ export function OrdersListPage() {
     )
   }, [orders, search])
 
+  const activeFilters =
+    paymentSel.length + fulfilmentSel.length + stateSel.length + deliverySel.length
+  const clearAll = () => {
+    setPaymentSel([])
+    setFulfilmentSel([])
+    setStateSel([])
+    setDeliverySel([])
+  }
+
   return (
     <section className="px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
-      {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap mb-6 md:mb-8">
         <div className="min-w-0">
           <div className="t-eyebrow text-mute mb-3">Operations</div>
@@ -63,13 +95,12 @@ export function OrdersListPage() {
             Orders
           </h1>
           <p className="t-body-s mt-2 text-graphite">
-            Every order placed through Mensa. Filter by payment status or search by number, email,
-            or name.
+            Every order placed through Mensa. Search by number, email or name, and use the column
+            headers to filter by state, delivery, payment or fulfilment.
           </p>
         </div>
       </div>
 
-      {/* Toolbar */}
       <div className="flex items-center gap-3 md:gap-4 flex-wrap mb-5 md:mb-6">
         <div className="relative flex-1 min-w-full sm:min-w-60 max-w-full sm:max-w-105">
           <Search
@@ -85,64 +116,150 @@ export function OrdersListPage() {
             className="h-10 w-full pl-10 pr-3.5 bg-paper border border-hairline text-[14px] text-ink placeholder:text-mute focus-visible:outline-none focus-visible:border-ink"
           />
         </div>
-
-        <div className="flex gap-1.5 flex-wrap">
-          {PAYMENT_FILTERS.map((f) => {
-            const isActive = f.id === payment
-            return (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => setPayment(f.id)}
-                className={cn(
-                  'inline-flex items-center rounded-full font-sans font-medium whitespace-nowrap transition-colors',
-                  'px-3.5 py-1.5 text-[12.5px]',
-                  isActive
-                    ? 'bg-ink text-paper border border-ink'
-                    : 'bg-transparent text-ink border border-hairline hover:border-ink',
-                )}
-              >
-                {f.label}
-              </button>
-            )
-          })}
-        </div>
+        {activeFilters > 0 ? (
+          <button
+            type="button"
+            onClick={clearAll}
+            className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-ink underline underline-offset-2"
+          >
+            <X size={13} /> Clear {activeFilters} filter{activeFilters === 1 ? '' : 's'}
+          </button>
+        ) : null}
       </div>
 
-      {query.isLoading ? (
-        <LoadingState />
-      ) : query.isError ? (
-        <ErrorState onRetry={() => query.refetch()} />
-      ) : visible.length === 0 ? (
-        <EmptyState hasFilter={search !== '' || payment !== 'all'} />
-      ) : (
-        <OrdersTable orders={visible} />
-      )}
+      <div className="border border-hairline-soft bg-paper overflow-x-auto">
+        <div className="min-w-260">
+          <div
+            className={cn(
+              GRID,
+              'px-5 py-2 border-b border-hairline-soft bg-cream-soft text-[10px] uppercase tracking-[0.12em] font-medium text-mute font-mono',
+            )}
+          >
+            <div>Order</div>
+            <div>Customer</div>
+            <div>Placed</div>
+            <ColumnFilter
+              label="State"
+              options={stateOptions}
+              selected={stateSel}
+              onChange={setStateSel}
+              loading={facets.isLoading}
+            />
+            <ColumnFilter
+              label="Delivery"
+              options={deliveryOptions}
+              selected={deliverySel}
+              onChange={setDeliverySel}
+              loading={facets.isLoading}
+            />
+            <div>Amount</div>
+            <ColumnFilter
+              label="Payment"
+              options={PAYMENT_OPTIONS}
+              selected={paymentSel}
+              onChange={setPaymentSel}
+            />
+            <ColumnFilter
+              label="Fulfilment"
+              options={FULFILMENT_OPTIONS}
+              selected={fulfilmentSel}
+              onChange={setFulfilmentSel}
+            />
+          </div>
+
+          {query.isLoading ? (
+            <LoadingRows />
+          ) : query.isError ? (
+            <ErrorState onRetry={() => query.refetch()} />
+          ) : visible.length === 0 ? (
+            <EmptyState hasFilter={search !== '' || activeFilters > 0} />
+          ) : (
+            visible.map((order, i) => (
+              <Row key={order._id} order={order} isLast={i === visible.length - 1} />
+            ))
+          )}
+        </div>
+      </div>
     </section>
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
-function OrdersTable({ orders }: { orders: Order[] }) {
-  return (
-    <div className="border border-hairline-soft bg-paper overflow-x-auto">
-      <div className="min-w-215">
-        <div className="grid grid-cols-[1.4fr_1.6fr_1fr_1fr_1fr_0.8fr] items-center px-5 py-3 border-b border-hairline-soft bg-cream-soft text-[10px] uppercase tracking-[0.12em] font-medium text-mute font-mono">
-          <div>Order</div>
-          <div>Customer</div>
-          <div>Placed</div>
-          <div className="text-right">Total</div>
-          <div>Payment</div>
-          <div>Fulfilment</div>
-        </div>
+// ─── Column filter (spreadsheet style checklist) ─────────────────
 
-        {orders.map((order, i) => (
-          <Row key={order._id} order={order} isLast={i === orders.length - 1} />
-        ))}
-      </div>
-    </div>
+function ColumnFilter({
+  label,
+  options,
+  selected,
+  onChange,
+  loading,
+}: {
+  label: string
+  options: { id: string; label: string }[]
+  selected: string[]
+  onChange: (next: string[]) => void
+  loading?: boolean
+}) {
+  const active = selected.length > 0
+  const toggle = (id: string) =>
+    onChange(selected.includes(id) ? selected.filter((s) => s !== id) : [...selected, id])
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            'inline-flex items-center gap-1.5 -ml-2 px-2 py-1 rounded-sm uppercase tracking-[0.12em] font-medium font-mono text-[10px] transition-colors hover:bg-cream hover:text-ink',
+            active ? 'text-ink' : 'text-mute',
+          )}
+        >
+          {label}
+          <ListFilter size={12} strokeWidth={2} />
+          {active ? (
+            <span className="inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-pink text-paper text-[9px] leading-none">
+              {selected.length}
+            </span>
+          ) : null}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-60 max-h-80 overflow-y-auto">
+        <div className="flex items-center justify-between px-2 py-1.5 text-[11px] uppercase tracking-widest font-mono text-mute">
+          <button
+            type="button"
+            onClick={() => onChange(options.map((o) => o.id))}
+            className="hover:text-ink"
+          >
+            Select all
+          </button>
+          <button type="button" onClick={() => onChange([])} className="hover:text-ink">
+            Clear
+          </button>
+        </div>
+        <DropdownMenuSeparator />
+        {loading ? (
+          <div className="px-2 py-2 text-[13px] text-mute">Loading…</div>
+        ) : options.length === 0 ? (
+          <div className="px-2 py-2 text-[13px] text-mute">No values yet.</div>
+        ) : (
+          options.map((o) => (
+            <DropdownMenuCheckboxItem
+              key={o.id}
+              checked={selected.includes(o.id)}
+              onCheckedChange={() => toggle(o.id)}
+              // Keep the menu open so several boxes can be ticked in one go.
+              onSelect={(e) => e.preventDefault()}
+              className="text-[13.5px] normal-case tracking-normal font-sans text-ink"
+            >
+              {o.label}
+            </DropdownMenuCheckboxItem>
+          ))
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
+
+// ─── Rows ────────────────────────────────────────────────────────
 
 function Row({ order, isLast }: { order: Order; isLast: boolean }) {
   const placed = new Date(order.createdAt).toLocaleDateString('en-NG', {
@@ -155,7 +272,8 @@ function Row({ order, isLast }: { order: Order; isLast: boolean }) {
     <Link
       to={`/orders/${order._id}`}
       className={cn(
-        'grid grid-cols-[1.4fr_1.6fr_1fr_1fr_1fr_0.8fr] items-center px-5 py-4 no-underline transition-colors hover:bg-cream-soft text-ink',
+        GRID,
+        'px-5 py-4 no-underline transition-colors hover:bg-cream-soft text-ink',
         !isLast && 'border-b border-hairline-soft',
       )}
     >
@@ -174,8 +292,10 @@ function Row({ order, isLast }: { order: Order; isLast: boolean }) {
       </div>
 
       <div className="text-[13px] text-graphite">{placed}</div>
+      <div className="text-[13px] text-graphite truncate pr-2">{order.address.state}</div>
+      <div className="text-[13px] text-graphite truncate pr-2">{shippingLabel(order)}</div>
 
-      <div className="text-right text-[14px] text-ink font-medium">
+      <div className="text-[14px] text-ink font-medium whitespace-nowrap">
         {formatNaira(order.totals.total)}
       </div>
 
@@ -189,12 +309,11 @@ function Row({ order, isLast }: { order: Order; isLast: boolean }) {
 }
 
 function StatusChip({ status }: { status: PaymentStatus }) {
-  // Tone class lookup keeps the chip Tailwind only, hex fallbacks preserved for environments without the CSS vars.
   const toneClass =
     status === 'paid'
-      ? 'bg-[#E5F1E1] text-[#2F6B3A]'
+      ? 'bg-ok/10 text-ok'
       : status === 'failed'
-        ? 'bg-[#FBE4E4] text-[#B14242]'
+        ? 'bg-blush text-berry'
         : 'bg-cream-soft text-mute'
 
   return (
@@ -209,10 +328,11 @@ function StatusChip({ status }: { status: PaymentStatus }) {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
-function LoadingState() {
+// ─── States ──────────────────────────────────────────────────────
+
+function LoadingRows() {
   return (
-    <div className="border border-hairline-soft bg-paper">
+    <>
       {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}
@@ -224,16 +344,16 @@ function LoadingState() {
           </div>
         </div>
       ))}
-    </div>
+    </>
   )
 }
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="border border-hairline-soft bg-paper p-12 text-center">
+    <div className="p-12 text-center">
       <div className="t-eyebrow text-err mb-3">Something went wrong</div>
       <h3 className="m-0 font-display italic font-semibold text-[24px] text-ink">
-        We couldn't load the orders.
+        We could not load the orders.
       </h3>
       <button
         type="button"
@@ -248,11 +368,11 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 
 function EmptyState({ hasFilter }: { hasFilter: boolean }) {
   return (
-    <div className="border border-hairline-soft bg-paper p-12 text-center">
+    <div className="p-12 text-center">
       <div className="t-eyebrow text-mute mb-3">{hasFilter ? 'No matches' : 'No orders yet'}</div>
       <h3 className="m-0 font-display italic font-semibold text-[24px] text-ink">
         {hasFilter
-          ? 'Nothing matches that filter.'
+          ? 'Nothing matches those filters.'
           : 'Once customers start placing orders, they will show up here.'}
       </h3>
     </div>

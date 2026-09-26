@@ -163,8 +163,19 @@ export interface InitializeCheckoutResponseData {
 export interface ListOrdersParams {
   paymentStatus?: PaymentStatus
   fulfilmentStatus?: FulfilmentStatus
+  /** Comma separated multi selects from the admin column filters. */
+  paymentStatuses?: string
+  fulfilmentStatuses?: string
+  states?: string
+  deliveries?: string
   page?: number
   pageSize?: number
+}
+
+/** Distinct values the admin column filters can offer. */
+export interface OrderFacets {
+  states: string[]
+  deliveries: string[]
 }
 
 export interface ListOrdersResponseData {
