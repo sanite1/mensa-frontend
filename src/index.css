@@ -162,6 +162,16 @@ svg {
   button {
     font-family: inherit;
   }
+
+  /* Tailwind v4 preflight leaves buttons on the default arrow. Anything
+     clickable shows a hand, disabled controls keep the arrow. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [role^='menuitem']:not([data-disabled]),
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
 }
 
 /* iOS Safari auto-zooms the viewport whenever the user focuses a form

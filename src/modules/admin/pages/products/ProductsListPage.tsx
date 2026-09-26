@@ -1,6 +1,6 @@
 // /products (admin) — catalogue table.
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, MoreVertical, PackageX, PackageCheck, Plus, Search } from 'lucide-react'
 import { useAdminProducts, useUpdateProduct } from '@/lib/network/api/product.api'
 import type { Product, ProductCategory } from '@/lib/network/types/product.types'
@@ -163,6 +163,7 @@ function ProductsTable({ products }: { products: Product[] }) {
 }
 
 function Row({ product, isLast }: { product: Product; isLast: boolean }) {
+  const navigate = useNavigate()
   const variants = product.variants ?? []
   const totalStock = variants.reduce((sum, v) => sum + v.stockCount, 0)
   const variantCount = variants.length
@@ -188,8 +189,9 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
 
   return (
     <div
+      onClick={() => navigate(`/products/${product.slug}/edit`)}
       className={cn(
-        'grid items-center px-5 py-4 transition-colors hover:bg-cream-soft',
+        'grid items-center px-5 py-4 transition-colors hover:bg-cream-soft cursor-pointer',
         ROW_COLS,
         !isLast && 'border-b border-hairline-soft',
       )}
@@ -259,8 +261,8 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
         {product.isSoldOut ? <StatusPill tone="coral" label="Sold out" /> : null}
       </div>
 
-      {/* Row actions */}
-      <div className="flex justify-end">
+      {/* Row actions. Stop the click so the kebab never opens the row. */}
+      <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button

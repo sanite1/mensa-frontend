@@ -190,8 +190,9 @@ function Row({ d, isLast, onEdit }: { d: Discount; isLast: boolean; onEdit: () =
 
   return (
     <div
+      onClick={onEdit}
       className={cn(
-        'grid items-center px-5 py-4 transition-colors hover:bg-cream-soft',
+        'grid items-center px-5 py-4 transition-colors hover:bg-cream-soft cursor-pointer',
         TABLE_COLS,
         !isLast && 'border-b border-hairline-soft',
       )}
@@ -222,7 +223,7 @@ function Row({ d, isLast, onEdit }: { d: Discount; isLast: boolean; onEdit: () =
           {d.isActive ? 'Active' : 'Paused'}
         </span>
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button

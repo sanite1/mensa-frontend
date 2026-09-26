@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useAdminContent, type ContentListParams } from '@/lib/network/api/content.api'
 import type { ContentKind, ContentPost, ContentCategory } from '@/lib/network/types/content.types'
 import { cn } from '@/lib/utils'
+import { ClickableRow } from '@/modules/admin/components/ClickableRow'
 
 const KIND_FILTERS: { id: ContentKind | 'all'; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -141,8 +142,9 @@ export function ContentListPage() {
               </tr>
             ) : (
               items.map((p: ContentPost) => (
-                <tr
+                <ClickableRow
                   key={p._id}
+                  to={`/content/${p._id}/edit`}
                   className="border-b border-hairline-soft last:border-b-0 hover:bg-cream-soft"
                 >
                   <Td>
@@ -171,7 +173,7 @@ export function ContentListPage() {
                       year: 'numeric',
                     })}
                   </Td>
-                </tr>
+                </ClickableRow>
               ))
             )}
           </tbody>

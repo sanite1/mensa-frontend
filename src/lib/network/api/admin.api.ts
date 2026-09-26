@@ -91,22 +91,31 @@ export const useAdminReports = (days: number) =>
 
 // ── Customers ────────────────────────────────────────────────────
 
+export type CustomerKind = 'account' | 'guest'
+
 export interface AdminCustomerListItem {
+  /** User id for account holders, email for guests. Both open the detail page. */
   _id: string
   name: string
   email: string
   phone: string
-  role: CustomerRole
+  state: string | null
+  hasAccount: boolean
+  userId: string | null
+  role: CustomerRole | null
   emailVerified: boolean
-  createdAt: string
-  lastLoginAt: string | null
   orderCount: number
+  paidOrderCount: number
   lifetimeValueKobo: number
+  firstOrderAt: string | null
+  lastOrderAt: string | null
+  createdAt: string
 }
 
 export interface AdminCustomersListParams {
   q?: string
   role?: CustomerRole
+  kind?: CustomerKind
   page?: number
   pageSize?: number
 }
@@ -125,17 +134,31 @@ export interface AdminCustomerDetailOrder {
   createdAt: string
 }
 
+export interface CustomerOrderAddress {
+  fullName: string
+  phone: string
+  line1: string
+  line2?: string
+  city: string
+  state: string
+  country: string
+  postal?: string
+}
+
 export interface AdminCustomerDetail {
   _id: string
   name: string
   email: string
   phone: string
-  role: CustomerRole
+  hasAccount: boolean
+  role: CustomerRole | null
   emailVerified: boolean
   addresses: UserAddress[]
+  lastOrderAddress: CustomerOrderAddress | null
   createdAt: string
   lastLoginAt: string | null
   orderCount: number
+  paidOrderCount: number
   lifetimeValueKobo: number
   orders: AdminCustomerDetailOrder[]
 }
@@ -159,6 +182,23 @@ export const useAdminCustomers = (params: AdminCustomersListParams) =>
     placeholderData: keepPreviousData,
     staleTime: 30_000,
   })
+
+/** Walks every page for a CSV export, honouring the current filters. */
+export async function fetchAllCustomers(
+  params: Omit<AdminCustomersListParams, 'page' | 'pageSize'>,
+): Promise<AdminCustomerListItem[]> {
+  const all: AdminCustomerListItem[] = []
+  let page = 1
+  for (;;) {
+    const res = await listCustomersFn({ ...params, page, pageSize: 100 })
+    const data = res.data
+    if (!data) break
+    all.push(...data.items)
+    if (page >= data.pagination.totalPages) break
+    page += 1
+  }
+  return all
+}
 
 const getCustomerFn = async (
   id: string,

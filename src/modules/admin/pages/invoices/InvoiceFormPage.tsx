@@ -552,7 +552,8 @@ function CustomerCard({
       name: c.name,
       email: c.email,
       phone: c.phone ?? '',
-      userId: c._id,
+      // Guests have no account, their key is an email, so only link real users.
+      userId: c.userId,
       b2bOrgId: null,
     })
     setQ('')

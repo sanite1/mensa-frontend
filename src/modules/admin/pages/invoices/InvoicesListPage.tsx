@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { Search, Plus, Settings2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { ClickableRow } from '@/modules/admin/components/ClickableRow'
 import {
   useAdminInvoices,
   type AdminListInvoicesParams,
@@ -142,8 +143,9 @@ export function InvoicesListPage() {
               </tr>
             ) : (
               items.map((inv) => (
-                <tr
+                <ClickableRow
                   key={inv._id}
+                  to={`/invoices/${inv._id}`}
                   className="border-b border-hairline-soft last:border-b-0 hover:bg-cream-soft"
                 >
                   <Td>
@@ -166,7 +168,7 @@ export function InvoicesListPage() {
                   <Td className="text-right text-ink font-medium whitespace-nowrap">
                     {formatNaira(inv.totals.total)}
                   </Td>
-                </tr>
+                </ClickableRow>
               ))
             )}
           </tbody>

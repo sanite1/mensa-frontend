@@ -7,6 +7,7 @@ import { Search } from 'lucide-react'
 import { useAdminPartners, type AdminListPartnersParams } from '@/lib/network/api/partner.api'
 import type { PartnerStatus, PartnerSummary } from '@/lib/network/types/partner.types'
 import { formatNaira, cn } from '@/lib/utils'
+import { ClickableRow } from '@/modules/admin/components/ClickableRow'
 
 const STATUS_FILTERS: { id: 'all' | PartnerStatus; label: string }[] = [
   { id: 'pending', label: 'Pending' },
@@ -108,8 +109,9 @@ export function IndividualsTab() {
               </tr>
             ) : (
               items.map((p: PartnerSummary) => (
-                <tr
+                <ClickableRow
                   key={p._id}
+                  to={`/partnerships/individuals/${p._id}`}
                   className="border-b border-hairline-soft last:border-b-0 hover:bg-cream-soft"
                 >
                   <Td>
@@ -146,7 +148,7 @@ export function IndividualsTab() {
                       year: 'numeric',
                     })}
                   </Td>
-                </tr>
+                </ClickableRow>
               ))
             )}
           </tbody>

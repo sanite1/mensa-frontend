@@ -7,6 +7,7 @@ import { Search } from 'lucide-react'
 import { useAdminPartnerships, type AdminPartnershipsListParams } from '@/lib/network/api/b2b.api'
 import type { B2BOrg, B2BOrgType, B2BVerificationStatus } from '@/lib/network/types/b2b.types'
 import { cn } from '@/lib/utils'
+import { ClickableRow } from '@/modules/admin/components/ClickableRow'
 
 const STATUS_FILTERS: { id: 'all' | B2BVerificationStatus; label: string }[] = [
   { id: 'pending', label: 'Pending' },
@@ -111,8 +112,9 @@ export function OrganisationsTab() {
               </tr>
             ) : (
               items.map((o: B2BOrg) => (
-                <tr
+                <ClickableRow
                   key={o._id}
+                  to={`/partnerships/${o._id}`}
                   className="border-b border-hairline-soft last:border-b-0 hover:bg-cream-soft"
                 >
                   <Td>
@@ -147,7 +149,7 @@ export function OrganisationsTab() {
                       year: 'numeric',
                     })}
                   </Td>
-                </tr>
+                </ClickableRow>
               ))
             )}
           </tbody>
