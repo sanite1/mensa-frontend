@@ -502,7 +502,12 @@ export function CheckoutPage() {
                   if (!trimmed) return
                   setDiscountError(null)
                   applyDiscount.mutate(
-                    { code: trimmed, subtotal: subtotalKobo },
+                    {
+                      code: trimmed,
+                      subtotal: subtotalKobo,
+                      email: form.getValues('customerEmail'),
+                      lines: lines.map((l) => ({ qty: l.qty })),
+                    },
                     {
                       onSuccess: (res) => {
                         if (res.data) {

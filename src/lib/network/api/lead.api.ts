@@ -22,6 +22,13 @@ export interface StarterSetLead {
   orderedAt?: string | null
   contactedAt?: string | null
   retakes: number
+  /** Personal 10 percent code. Null on leads captured before codes existed. */
+  discountCode?: string | null
+  discountIssuedAt?: string | null
+  discountExpiresAt?: string | null
+  discountRedeemedAt?: string | null
+  discountRedeemedOrderNumber?: string | null
+  reminderSentAt?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -31,14 +38,29 @@ export interface SubmitLeadInput {
   email: string
   answers: Record<string, string>
   resultCode: LeadResultCode
+  /** The result page reasoning, reused in the code email. */
+  reason?: string
+  /** Storefront path of the recommended product. */
+  shopPath?: string
+}
+
+export type LeadCodeFilter = 'redeemed' | 'unredeemed' | 'expired'
+
+export interface LeadCodeStats {
+  issued: number
+  redeemed: number
+  expired: number
 }
 
 export interface AdminListLeadsParams {
   status?: LeadStatus
+  code?: LeadCodeFilter
   q?: string
   page?: number
   pageSize?: number
 }
+
+export type AdminLeadsList = Paginated<StarterSetLead> & { codeStats: LeadCodeStats }
 
 export const leadKeys = {
   all: ['leads'] as const,
@@ -62,8 +84,8 @@ export const useSubmitStarterSetLead = () =>
 
 const adminListLeadsFn = async (
   params: AdminListLeadsParams,
-): Promise<ApiResponse<Paginated<StarterSetLead>>> => {
-  return api.get<Paginated<StarterSetLead>>('/admin/leads', { params })
+): Promise<ApiResponse<AdminLeadsList>> => {
+  return api.get<AdminLeadsList>('/admin/leads', { params })
 }
 
 export const useAdminLeads = (params: AdminListLeadsParams) =>

@@ -24,6 +24,10 @@ export interface ApplyDiscountInput {
   code: string
   /** Cart subtotal in kobo (sum of line totals, before shipping). */
   subtotal: number
+  /** Checkout email, personal codes only work for the address they were sent to. */
+  email?: string
+  /** Line quantities, personal codes cap units per product. */
+  lines?: Array<{ qty: number }>
 }
 
 export interface ApplyDiscountResponseData {

@@ -11,6 +11,7 @@ import {
   useDeleteLead,
   useUpdateLeadStatus,
   type AdminListLeadsParams,
+  type LeadCodeFilter,
   type LeadResultCode,
   type LeadStatus,
   type StarterSetLead,
@@ -22,6 +23,13 @@ const STATUS_FILTERS: { id: 'all' | LeadStatus; label: string }[] = [
   { id: 'contacted', label: 'Contacted' },
   { id: 'ordered', label: 'Ordered' },
   { id: 'all', label: 'All' },
+]
+
+const CODE_FILTERS: { id: 'all' | LeadCodeFilter; label: string }[] = [
+  { id: 'all', label: 'Any code' },
+  { id: 'unredeemed', label: 'Unredeemed' },
+  { id: 'redeemed', label: 'Redeemed' },
+  { id: 'expired', label: 'Expired' },
 ]
 
 const RESULT_LABEL: Record<LeadResultCode, string> = {
@@ -37,17 +45,19 @@ const PAGE_SIZE = 50
 
 export function LeadsPage() {
   const [status, setStatus] = useState<'all' | LeadStatus>('all')
+  const [code, setCode] = useState<'all' | LeadCodeFilter>('all')
   const [q, setQ] = useState('')
   const [page, setPage] = useState(1)
 
   const params: AdminListLeadsParams = useMemo(
     () => ({
       status: status === 'all' ? undefined : status,
+      code: code === 'all' ? undefined : code,
       q: q.trim() || undefined,
       page,
       pageSize: PAGE_SIZE,
     }),
-    [status, q, page],
+    [status, code, q, page],
   )
 
   const query = useAdminLeads(params)
@@ -55,14 +65,29 @@ export function LeadsPage() {
   const deleteMutation = useDeleteLead()
   const items: StarterSetLead[] = query.data?.data?.items ?? []
   const pagination = query.data?.data?.pagination
+  const codeStats = query.data?.data?.codeStats
 
   const onExportCsv = () => {
     if (items.length === 0) return
-    const header = 'name,email,recommended,status,orderNumber,createdAt\n'
+    const header =
+      'name,email,recommended,status,orderNumber,code,codeIssuedAt,codeExpiresAt,codeRedeemedAt,codeRedeemedOrder,createdAt\n'
     const rows = items
-      .map(
-        (l: StarterSetLead) =>
-          `${csv(l.name)},${csv(l.email)},${csv(RESULT_LABEL[l.resultCode] ?? l.resultCode)},${csv(l.status)},${csv(l.orderNumber ?? '')},${csv(l.createdAt)}`,
+      .map((l: StarterSetLead) =>
+        [
+          l.name,
+          l.email,
+          RESULT_LABEL[l.resultCode] ?? l.resultCode,
+          l.status,
+          l.orderNumber ?? '',
+          l.discountCode ?? '',
+          l.discountIssuedAt ?? '',
+          l.discountExpiresAt ?? '',
+          l.discountRedeemedAt ?? '',
+          l.discountRedeemedOrderNumber ?? '',
+          l.createdAt,
+        ]
+          .map(csv)
+          .join(','),
       )
       .join('\n')
     const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8' })
@@ -137,7 +162,31 @@ export function LeadsPage() {
             setPage(1)
           }}
         />
+        <FilterPills
+          items={CODE_FILTERS}
+          value={code}
+          onChange={(v) => {
+            setCode(v)
+            setPage(1)
+          }}
+        />
       </div>
+
+      {codeStats ? (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5 md:mb-6">
+          <Stat label="Codes issued" value={String(codeStats.issued)} />
+          <Stat label="Redeemed" value={String(codeStats.redeemed)} />
+          <Stat label="Expired unused" value={String(codeStats.expired)} />
+          <Stat
+            label="Redemption rate"
+            value={
+              codeStats.issued > 0
+                ? `${Math.round((codeStats.redeemed / codeStats.issued) * 100)}%`
+                : '—'
+            }
+          />
+        </div>
+      ) : null}
 
       {/* Table */}
       <div className="border border-hairline-soft bg-paper overflow-x-auto">
@@ -148,6 +197,8 @@ export function LeadsPage() {
               <Th>Email</Th>
               <Th>Recommended</Th>
               <Th>Status</Th>
+              <Th>Code</Th>
+              <Th>Redeemed</Th>
               <Th>Submitted</Th>
               <Th className="text-right">Actions</Th>
             </tr>
@@ -155,13 +206,13 @@ export function LeadsPage() {
           <tbody>
             {query.isLoading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-mute t-body-s">
+                <td colSpan={8} className="px-4 py-8 text-center text-mute t-body-s">
                   Loading…
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-mute t-body-s">
+                <td colSpan={8} className="px-4 py-8 text-center text-mute t-body-s">
                   No leads match these filters.
                 </td>
               </tr>
@@ -185,6 +236,23 @@ export function LeadsPage() {
                   </Td>
                   <Td>
                     <StatusBadge status={l.status} orderNumber={l.orderNumber} />
+                  </Td>
+                  <Td>
+                    <CodeCell lead={l} />
+                  </Td>
+                  <Td className="text-[12px]">
+                    {l.discountRedeemedAt ? (
+                      <div>
+                        <div className="text-ok font-medium">
+                          {formatDate(l.discountRedeemedAt)}
+                        </div>
+                        {l.discountRedeemedOrderNumber ? (
+                          <div className="font-mono text-mute">{l.discountRedeemedOrderNumber}</div>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <span className="text-mute">—</span>
+                    )}
                   </Td>
                   <Td className="text-mute text-[12px]">{formatDate(l.createdAt)}</Td>
                   <Td className="text-right whitespace-nowrap">
@@ -283,6 +351,45 @@ function FilterPills<T extends string>({
   )
 }
 
+/** The personal code with its state: unredeemed and live, expired unused, or none. */
+function CodeCell({ lead }: { lead: StarterSetLead }) {
+  if (!lead.discountCode) return <span className="text-mute text-[12px]">No code</span>
+  const expired =
+    !lead.discountRedeemedAt &&
+    !!lead.discountExpiresAt &&
+    new Date(lead.discountExpiresAt).getTime() <= Date.now()
+  return (
+    <div>
+      <div
+        className={cn('font-mono text-[12.5px]', expired ? 'text-mute line-through' : 'text-ink')}
+      >
+        {lead.discountCode}
+      </div>
+      <div className="text-[11px] text-mute">
+        {lead.discountRedeemedAt
+          ? 'Used'
+          : expired
+            ? `Expired ${formatDate(lead.discountExpiresAt)}`
+            : `Ends ${formatDate(lead.discountExpiresAt)}`}
+        {lead.reminderSentAt && !lead.discountRedeemedAt ? ' · reminded' : ''}
+      </div>
+    </div>
+  )
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border border-hairline-soft bg-paper px-4 py-3">
+      <div className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono">
+        {label}
+      </div>
+      <div className="mt-1 font-display italic font-semibold text-[24px] leading-none text-ink">
+        {value}
+      </div>
+    </div>
+  )
+}
+
 function StatusBadge({ status, orderNumber }: { status: LeadStatus; orderNumber?: string | null }) {
   if (status === 'ordered') {
     return (
@@ -325,7 +432,8 @@ function Td({ children, className }: { children: React.ReactNode; className?: st
   return <td className={cn('px-4 py-3', className)}>{children}</td>
 }
 
-function formatDate(iso: string): string {
+function formatDate(iso: string | null | undefined): string {
+  if (!iso) return ''
   try {
     return new Date(iso).toLocaleDateString('en-NG', {
       day: '2-digit',

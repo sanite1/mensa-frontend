@@ -307,6 +307,8 @@ export function StarterSetFinderPage() {
   // a retake only needs one click through the form.
   const [lead, setLead] = useState<{ name: string; email: string } | null>(null)
   const [leadDone, setLeadDone] = useState(false)
+  // True once the backend accepted the lead, which is when the code email goes out.
+  const [codeEmailed, setCodeEmailed] = useState(false)
 
   const quizDone = step >= QUESTIONS.length
   const done = quizDone && leadDone
@@ -364,13 +366,19 @@ export function StarterSetFinderPage() {
             answers={answers}
             result={result}
             defaults={lead}
-            onDone={(values) => {
+            onDone={(values, emailed) => {
               setLead(values)
+              setCodeEmailed(emailed)
               setLeadDone(true)
             }}
           />
         ) : result ? (
-          <ResultStage answers={answers} result={result} onRestart={restart} />
+          <ResultStage
+            answers={answers}
+            result={result}
+            onRestart={restart}
+            codeEmailed={codeEmailed}
+          />
         ) : null}
 
         {/* Foot */}
@@ -442,7 +450,7 @@ function LeadStage({
   answers: Answers
   result: QuizResult
   defaults: { name: string; email: string } | null
-  onDone: (values: LeadValues) => void
+  onDone: (values: LeadValues, emailed: boolean) => void
 }) {
   const submitLead = useSubmitStarterSetLead()
   const form = useForm<LeadValues>({
@@ -453,17 +461,23 @@ function LeadStage({
   const onSubmit = async (values: LeadValues) => {
     // Best effort: if the save fails for any reason the result still shows.
     // Lead capture must never stand between her and the recommendation.
+    let emailed = false
     try {
       await submitLead.mutateAsync({
         name: values.name,
         email: values.email,
         answers: answers as Record<string, string>,
         resultCode: result.code as LeadResultCode,
+        // The same reasoning she is about to read, plus where to buy, so
+        // the code email can repeat the recommendation.
+        reason: buildReason(answers, result).join('\n\n'),
+        shopPath: `/shop/${RESULTS[result.code].slugs[0]}`,
       })
+      emailed = true
     } catch {
       // Swallowed on purpose, see above.
     }
-    onDone(values)
+    onDone(values, emailed)
   }
 
   return (
@@ -540,10 +554,12 @@ function ResultStage({
   answers,
   result,
   onRestart,
+  codeEmailed,
 }: {
   answers: Answers
   result: QuizResult
   onRestart: () => void
+  codeEmailed: boolean
 }) {
   const spec = RESULTS[result.code]
   const reasonParagraphs = buildReason(answers, result)
@@ -571,6 +587,18 @@ function ResultStage({
           </p>
         ))}
       </div>
+
+      {codeEmailed ? (
+        <div className="mt-6 border border-pink/40 bg-blush px-5 py-4 max-w-150">
+          <div className="font-mono text-[11px] tracking-widest uppercase text-berry font-medium">
+            10% off your first order
+          </div>
+          <p className="m-0 mt-1.5 text-[14px] leading-[1.55] text-ink">
+            We have emailed you a personal code. It works once, with this email, for the next 7
+            days.
+          </p>
+        </div>
+      ) : null}
 
       {/* One card per item in the set. Pants need a size, so the buttons go
           to the product page instead of straight into the bag. */}
