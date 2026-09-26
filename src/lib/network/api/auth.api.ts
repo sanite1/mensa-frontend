@@ -90,8 +90,13 @@ export const useLogin = () => {
       toast.success('Welcome back.')
 
       if (user.role === 'admin') {
-        // buildAppUrl knows the right admin origin per environment, the old
-        // VITE_ADMIN_URL fallback pointed at a stale port.
+        // Already on the admin console: go straight to the dashboard. From
+        // the storefront: hop across to the admin origin (buildAppUrl knows
+        // the right one per environment).
+        if (getModule() === 'admin') {
+          navigate('/', { replace: true })
+          return
+        }
         window.location.href = buildAppUrl('admin')
         return
       }
