@@ -1,8 +1,22 @@
 // /products (admin) — catalogue table.
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, MoreVertical, PackageX, PackageCheck, Plus, Search } from 'lucide-react'
-import { useAdminProducts, useUpdateProduct } from '@/lib/network/api/product.api'
+import {
+  ArrowDown,
+  ArrowUp,
+  Eye,
+  EyeOff,
+  MoreVertical,
+  PackageX,
+  PackageCheck,
+  Plus,
+  Search,
+} from 'lucide-react'
+import {
+  useAdminProducts,
+  useReorderProducts,
+  useUpdateProduct,
+} from '@/lib/network/api/product.api'
 import type { Product, ProductCategory } from '@/lib/network/types/product.types'
 import { Button } from '@/components/ui/button'
 import {
@@ -33,7 +47,7 @@ const CATEGORY_LABEL: Record<ProductCategory, string> = {
 
 // Grid columns are kept on the className with an arbitrary value so the
 // header and every row stay in lock-step automatically.
-const ROW_COLS = 'grid-cols-[2.2fr_1fr_1fr_0.9fr_0.7fr_0.9fr_44px]'
+const ROW_COLS = 'grid-cols-[64px_2.2fr_1fr_1fr_0.9fr_0.7fr_0.9fr_44px]'
 
 export function ProductsListPage() {
   const query = useAdminProducts({ pageSize: 100 })
@@ -65,7 +79,8 @@ export function ProductsListPage() {
             Products
           </h1>
           <p className="t-body-s mt-2 text-graphite">
-            Every product in the store. Search by name, slug, or SKU.
+            Every product in the store. Search by name, slug, or SKU. The arrows set the order
+            customers see on the storefront.
           </p>
         </div>
         <Button asChild variant="primary" size="lg">
@@ -135,9 +150,21 @@ export function ProductsListPage() {
 
 // ─────────────────────────────────────────────────────────────────
 function ProductsTable({ products }: { products: Product[] }) {
+  const reorder = useReorderProducts()
+
+  // Swap two neighbours and save the whole visible order. Products outside
+  // the current filter keep their position on the server.
+  const move = (index: number, dir: -1 | 1) => {
+    const target = index + dir
+    if (target < 0 || target >= products.length || reorder.isPending) return
+    const next = [...products]
+    ;[next[index], next[target]] = [next[target], next[index]]
+    reorder.mutate(next.map((p) => p.slug))
+  }
+
   return (
     <div className="border border-hairline-soft bg-paper overflow-x-auto">
-      <div className="min-w-220">
+      <div className="min-w-235">
         {/* Header row */}
         <div
           className={cn(
@@ -145,6 +172,7 @@ function ProductsTable({ products }: { products: Product[] }) {
             ROW_COLS,
           )}
         >
+          <div>Order</div>
           <div>Product</div>
           <div>Category</div>
           <div className="text-right">B2C price</div>
@@ -155,14 +183,39 @@ function ProductsTable({ products }: { products: Product[] }) {
         </div>
 
         {products.map((product, i) => (
-          <Row key={product.slug} product={product} isLast={i === products.length - 1} />
+          <Row
+            key={product.slug}
+            product={product}
+            isLast={i === products.length - 1}
+            canMoveUp={i > 0}
+            canMoveDown={i < products.length - 1}
+            moving={reorder.isPending}
+            onMoveUp={() => move(i, -1)}
+            onMoveDown={() => move(i, 1)}
+          />
         ))}
       </div>
     </div>
   )
 }
 
-function Row({ product, isLast }: { product: Product; isLast: boolean }) {
+function Row({
+  product,
+  isLast,
+  canMoveUp,
+  canMoveDown,
+  moving,
+  onMoveUp,
+  onMoveDown,
+}: {
+  product: Product
+  isLast: boolean
+  canMoveUp: boolean
+  canMoveDown: boolean
+  moving: boolean
+  onMoveUp: () => void
+  onMoveDown: () => void
+}) {
   const navigate = useNavigate()
   const variants = product.variants ?? []
   const totalStock = variants.reduce((sum, v) => sum + v.stockCount, 0)
@@ -196,6 +249,28 @@ function Row({ product, isLast }: { product: Product; isLast: boolean }) {
         !isLast && 'border-b border-hairline-soft',
       )}
     >
+      {/* Storefront order. Stop the click so the arrows never open the row. */}
+      <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          onClick={onMoveUp}
+          disabled={!canMoveUp || moving}
+          aria-label={`Move ${product.name} up`}
+          className="inline-flex h-7 w-7 items-center justify-center text-mute hover:text-ink hover:bg-cream rounded-sm disabled:opacity-25"
+        >
+          <ArrowUp size={14} strokeWidth={1.8} />
+        </button>
+        <button
+          type="button"
+          onClick={onMoveDown}
+          disabled={!canMoveDown || moving}
+          aria-label={`Move ${product.name} down`}
+          className="inline-flex h-7 w-7 items-center justify-center text-mute hover:text-ink hover:bg-cream rounded-sm disabled:opacity-25"
+        >
+          <ArrowDown size={14} strokeWidth={1.8} />
+        </button>
+      </div>
+
       {/* Product cell — only the name + thumb area navigates. Keeps the
           actions kebab from fighting the row link for clicks. */}
       <Link

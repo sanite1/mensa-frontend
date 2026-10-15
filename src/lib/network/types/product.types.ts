@@ -91,6 +91,8 @@ export interface Product {
   /** When true, the PDP renders a "Size guide" link that opens the pants
    *  size-chart dialog. Off by default — admin opts in per product. */
   showSizeGuide: boolean
+  /** Admin set storefront position, lower first. */
+  displayOrder?: number
   createdAt: string
   updatedAt: string
 }

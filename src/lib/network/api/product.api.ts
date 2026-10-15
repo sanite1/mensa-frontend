@@ -41,6 +41,21 @@ export const useProducts = (params?: ProductListParams) =>
     placeholderData: keepPreviousData,
   })
 
+// ─── 1b. PUT /api/v1/admin/products/order  (admin) ─────
+// Saves the storefront arrangement, slugs in the order they should appear.
+
+export const useReorderProducts = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (slugs: string[]) =>
+      api.put<{ updated: number }>('/admin/products/order', { slugs }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: productKeys.all })
+    },
+    onError: (error) => toast.error(handleApiError(error).message),
+  })
+}
+
 // ─── 2. GET /api/v1/products/:slug  (public) ─────
 
 const getProductFn = async (slug: string): Promise<ApiResponse<ProductResponseData>> => {
