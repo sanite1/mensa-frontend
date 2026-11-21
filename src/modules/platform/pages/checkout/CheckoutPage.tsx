@@ -153,8 +153,11 @@ export function CheckoutPage() {
   const watchedState = form.watch('address.state')
   const watchedCity = form.watch('address.city')
 
+  // Delivery is priced by state only. The city just has to be filled in
+  // before options show, it is not sent, so typing it never triggers a fetch.
+  const cityReady = (watchedCity ?? '').trim().length >= 2
   const shippingPayload = useMemo(() => {
-    if (!watchedState || !watchedCity || lines.length === 0) return undefined
+    if (!watchedState || !cityReady || lines.length === 0) return undefined
     return {
       lines: lines.map((l) => ({
         productId: l.productId,
@@ -162,12 +165,11 @@ export function CheckoutPage() {
         qty: l.qty,
       })),
       destination: {
-        city: watchedCity,
         state: watchedState,
         country: 'NG',
       },
     }
-  }, [watchedCity, watchedState, lines])
+  }, [cityReady, watchedState, lines])
 
   const ratesQuery = useShippingRates(shippingPayload)
   const rateOptions: ShippingRateOption[] = ratesQuery.data?.data?.options ?? []

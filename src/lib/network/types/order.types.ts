@@ -113,7 +113,8 @@ export interface CheckoutAddressInput {
 export interface ShippingRatesInput {
   lines: CheckoutLineInput[]
   destination: {
-    city: string
+    /** Not sent any more, delivery is priced by state only. */
+    city?: string
     state: string
     country: string
     postal?: string
