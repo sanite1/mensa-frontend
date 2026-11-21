@@ -1,118 +1,183 @@
-// Header — single responsive site header, auth and cart aware, owns the mega menu and mobile drawer state.
+// Header: the design system's sticky nav. It blurs once the page scrolls and
+// collapses into a full width menu on mobile. Carries our own features too:
+// the live Shop mega menu, product search, currency, account menu and cart.
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { cn } from '@/lib/utils'
 import { useAuthStore, useIsAuthenticated } from '@/lib/network/stores/auth.store'
 import { useCartStore } from '@/lib/network/stores/cart.store'
 import { useLogout } from '@/lib/network/api/auth.api'
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MensaWordmark } from './MensaWordmark'
-import { UtilityStrip } from './UtilityStrip'
-import { NavIconBtn } from './NavIconBtn'
+import logoSrc from '@/assets/mensa_logo.png'
 import { MegaMenu } from './MegaMenu'
-import { MobileDrawer } from './MobileDrawer'
 import { SearchOverlay } from './SearchOverlay'
-import { IconSearch, IconUser, IconBag, IconMenu, IconChevronDown } from './icons'
+import { CurrencyPicker } from './CurrencyPicker'
 
-interface NavLinkSpec {
-  label: string
-  href: string
-  hasMenu?: boolean
-}
+const links = [
+  { href: '/shop', label: 'Shop', mega: true },
+  { href: '/how-it-works', label: 'How it works' },
+  { href: '/find-my-starter-set', label: 'Find your fit' },
+  { href: '/about', label: 'Our story' },
+  { href: '/partnerships', label: 'Partnerships' },
+  { href: '/journal', label: 'Journal' },
+]
 
-const navLinks: NavLinkSpec[] = [
-  { label: 'Home', href: '/' },
-  { label: 'Shop', href: '/shop', hasMenu: true },
-  { label: 'Our Story', href: '/about' },
-  { label: 'Partnerships', href: '/partnerships' },
-  { label: 'Journal', href: '/journal' },
+// Shown only in the mobile menu, desktop reaches these from the footer.
+const mobileExtras = [
+  { href: '/education', label: 'Education' },
+  { href: '/orders/track', label: 'Track an order' },
+  { href: '/contact', label: 'Help' },
 ]
 
 const MEGA_CLOSE_DELAY_MS = 120
 
 export function Header() {
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const { pathname } = useLocation()
+  const [scrolled, setScrolled] = useState(false)
+  const [open, setOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const closeTimer = useRef<number | null>(null)
-  const { pathname: currentPath } = useLocation()
-  const totalItems = useCartStore((s) => s.totalItems())
+  const count = useCartStore((s) => s.totalItems())
   const openCart = useCartStore((s) => s.openDrawer)
-  const cartBadge = totalItems > 0 ? totalItems : null
-  const openSearch = () => setSearchOpen(true)
 
-  // Schedule a delayed close — gives the cursor a moment to travel between
-  // the Shop link and the menu panel without accidentally dismissing it.
-  const scheduleMegaClose = () => {
-    if (closeTimer.current) window.clearTimeout(closeTimer.current)
-    closeTimer.current = window.setTimeout(() => setMegaOpen(false), MEGA_CLOSE_DELAY_MS)
-  }
-  const cancelMegaClose = () => {
-    if (closeTimer.current) {
-      window.clearTimeout(closeTimer.current)
-      closeTimer.current = null
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Every overlay closes on navigation.
+  useEffect(() => {
+    setOpen(false)
+    setMegaOpen(false)
+    setSearchOpen(false)
+  }, [pathname])
+
+  // Lock page scroll while the mobile menu is open.
+  useEffect(() => {
+    document.documentElement.style.overflow = open ? 'hidden' : ''
+    return () => {
+      document.documentElement.style.overflow = ''
     }
+  }, [open])
+
+  // A short delay lets the cursor travel from the Shop link into the panel.
+  const cancelMegaClose = () => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current)
+    closeTimer.current = null
+  }
+  const scheduleMegaClose = () => {
+    cancelMegaClose()
+    closeTimer.current = window.setTimeout(() => setMegaOpen(false), MEGA_CLOSE_DELAY_MS)
   }
   const openMega = () => {
     cancelMegaClose()
     setMegaOpen(true)
   }
 
-  // Every overlay closes on navigation. A link inside the drawer used to
-  // navigate while the drawer was still closing, and the unmounting portal
-  // could leave its scroll lock pinned on the body.
-  useEffect(() => {
-    setDrawerOpen(false)
-    setMegaOpen(false)
-    setSearchOpen(false)
-    cancelMegaClose()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPath])
+  const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`)
 
   return (
-    <header className="bg-(--paper) border-b border-(--hairline-soft) sticky top-0 z-40">
-      {/* Mobile: slim banner. Desktop/Tablet: utility strip. */}
-      <div className="hidden md:block">
-        <UtilityStrip />
+    <header className={`nav${scrolled ? ' is-scrolled' : ''}`}>
+      <div className="wrap nav__inner">
+        <button
+          type="button"
+          className="icon-btn menu-btn"
+          aria-label={open ? 'Close menu' : 'Menu'}
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+        >
+          {open ? (
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.7}
+              strokeLinecap="round"
+            >
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          ) : (
+            <svg>
+              <use href="#i-menu" />
+            </svg>
+          )}
+        </button>
+
+        <nav className={`nav__links${open ? ' is-open' : ''}`} aria-label="Primary">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              to={l.href}
+              aria-current={isCurrent(l.href) ? 'page' : undefined}
+              onMouseEnter={l.mega ? openMega : undefined}
+              onMouseLeave={l.mega ? scheduleMegaClose : undefined}
+              onClick={() => setOpen(false)}
+            >
+              {l.label}
+            </Link>
+          ))}
+          {open ? (
+            <>
+              {mobileExtras.map((l) => (
+                <Link key={l.href} to={l.href} onClick={() => setOpen(false)}>
+                  {l.label}
+                </Link>
+              ))}
+              <MobileAccountLinks onNavigate={() => setOpen(false)} />
+              <div className="text-base">
+                <CurrencyPicker tone="light" />
+              </div>
+            </>
+          ) : null}
+        </nav>
+
+        <Link className="nav__logo" to="/" aria-label="Mensa home">
+          <img src={logoSrc} alt="Mensa Period Products" />
+        </Link>
+
+        <div className="nav__actions">
+          <button
+            type="button"
+            className="icon-btn"
+            aria-label="Search products"
+            onClick={() => setSearchOpen(true)}
+          >
+            <svg>
+              <use href="#i-search" />
+            </svg>
+          </button>
+          <AccountButton />
+          <button
+            type="button"
+            className="icon-btn"
+            aria-label={`Bag, ${count} item${count === 1 ? '' : 's'}`}
+            onClick={openCart}
+          >
+            <svg>
+              <use href="#i-bag" />
+            </svg>
+            {count > 0 ? (
+              <span className="bag-count" key={count}>
+                {count}
+              </span>
+            ) : null}
+          </button>
+        </div>
       </div>
 
-      {/* DESKTOP (≥ lg) */}
-      <DesktopRow
-        megaOpen={megaOpen}
-        onShopEnter={openMega}
-        onShopLeave={scheduleMegaClose}
-        cartBadge={cartBadge}
-        onCartClick={openCart}
-        onSearchClick={openSearch}
-      />
-
-      {/* TABLET (md → lg) */}
-      <TabletRow
-        onMenuClick={() => setDrawerOpen(true)}
-        cartBadge={cartBadge}
-        onCartClick={openCart}
-        onSearchClick={openSearch}
-      />
-
-      {/* MOBILE (< md) */}
-      <MobileRow
-        onMenuClick={() => setDrawerOpen(true)}
-        cartBadge={cartBadge}
-        onCartClick={openCart}
-        onSearchClick={openSearch}
-      />
-
-      {/* Mega menu, desktop only, absolutely positioned so it overlays rather than pushes content. */}
+      {/* Mega menu, desktop only. Overlays the page rather than pushing it. */}
       {megaOpen ? (
         <div
-          className="hidden lg:block absolute left-0 right-0 top-full z-30 shadow-[0_24px_60px_-20px_rgba(26,20,16,0.18)] animate-in fade-in duration-150"
+          className="hidden lg:block absolute left-0 right-0 top-full z-30 bg-(--paper) shadow-(--shadow) animate-in fade-in duration-150"
           onMouseEnter={cancelMegaClose}
           onMouseLeave={scheduleMegaClose}
         >
@@ -125,241 +190,92 @@ export function Header() {
         </div>
       ) : null}
 
-      <MobileDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
-
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   )
 }
 
-// ─── DESKTOP ROW ────────────────────────────────────────────────────────
-function DesktopRow({
-  megaOpen,
-  onShopEnter,
-  onShopLeave,
-  cartBadge,
-  onCartClick,
-  onSearchClick,
-}: {
-  megaOpen: boolean
-  onShopEnter: () => void
-  onShopLeave: () => void
-  cartBadge: number | null
-  onCartClick: () => void
-  onSearchClick: () => void
-}) {
-  return (
-    <div className="hidden lg:grid items-center grid-cols-[1fr_auto_1fr] py-5 px-12 gap-8">
-      <div className="flex items-center">
-        <Link to="/" aria-label="Mensa home">
-          <MensaWordmark height={36} />
-        </Link>
-      </div>
-      <nav className="flex items-center gap-9">
-        {navLinks.map((link) => (
-          <DesktopNavLink
-            key={link.label}
-            link={link}
-            activeMenu={megaOpen && link.label === 'Shop'}
-            onShopEnter={onShopEnter}
-            onShopLeave={onShopLeave}
-          />
-        ))}
-      </nav>
-      <div className="flex items-center justify-end gap-1">
-        <NavIconBtn label="Search" onClick={onSearchClick}>
-          <IconSearch />
-        </NavIconBtn>
-        <AccountIcon />
-        <NavIconBtn label="Cart" onClick={onCartClick} badge={cartBadge}>
-          <IconBag />
-        </NavIconBtn>
-      </div>
-    </div>
-  )
-}
-
-function DesktopNavLink({
-  link,
-  activeMenu,
-  onShopEnter,
-  onShopLeave,
-}: {
-  link: NavLinkSpec
-  activeMenu: boolean
-  onShopEnter: () => void
-  onShopLeave: () => void
-}) {
-  const { pathname } = useLocation()
-  // "/" would prefix-match every route, so Home needs an exact match.
-  const isCurrent = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href)
-
-  if (link.hasMenu && link.label === 'Shop') {
-    // Shop: click navigates to /shop, hover opens the mega menu.
-    return (
-      <Link
-        to={link.href}
-        onMouseEnter={onShopEnter}
-        onMouseLeave={onShopLeave}
-        onClick={onShopLeave}
-        className={cn(
-          'inline-flex items-center gap-1 text-[14.5px] font-medium text-ink py-2.5 no-underline transition-colors tracking-[0.01em]',
-          'border-b-[1.5px]',
-          activeMenu || isCurrent ? 'border-ink' : 'border-transparent',
-        )}
-      >
-        {link.label}
-        <IconChevronDown size={14} />
-      </Link>
-    )
-  }
-
-  return (
-    <Link
-      to={link.href}
-      className={cn(
-        'inline-flex items-center gap-1 text-[14.5px] font-medium text-ink py-2.5 no-underline transition-colors tracking-[0.01em]',
-        'border-b-[1.5px]',
-        isCurrent ? 'border-ink' : 'border-transparent hover:border-hairline',
-      )}
-    >
-      {link.label}
-      {link.hasMenu ? <IconChevronDown size={14} /> : null}
-    </Link>
-  )
-}
-
-// ─── TABLET ROW ─────────────────────────────────────────────────────────
-function TabletRow({
-  onMenuClick,
-  cartBadge,
-  onCartClick,
-  onSearchClick,
-}: {
-  onMenuClick: () => void
-  cartBadge: number | null
-  onCartClick: () => void
-  onSearchClick: () => void
-}) {
-  return (
-    <div className="hidden md:grid lg:hidden items-center grid-cols-[auto_1fr_auto] py-4 px-6 gap-4">
-      <button
-        type="button"
-        onClick={onMenuClick}
-        aria-label="Open menu"
-        className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-(--ink) hover:bg-(--cream)"
-      >
-        <IconMenu />
-      </button>
-      <div className="flex justify-center">
-        <Link to="/" aria-label="Mensa home">
-          <MensaWordmark height={32} />
-        </Link>
-      </div>
-      <div className="flex items-center gap-1">
-        <NavIconBtn label="Search" onClick={onSearchClick}>
-          <IconSearch />
-        </NavIconBtn>
-        <AccountIcon />
-        <NavIconBtn label="Cart" onClick={onCartClick} badge={cartBadge}>
-          <IconBag />
-        </NavIconBtn>
-      </div>
-    </div>
-  )
-}
-
-// ─── MOBILE ROW ─────────────────────────────────────────────────────────
-function MobileRow({
-  onMenuClick,
-  cartBadge,
-  onCartClick,
-  onSearchClick,
-}: {
-  onMenuClick: () => void
-  cartBadge: number | null
-  onCartClick: () => void
-  onSearchClick: () => void
-}) {
-  return (
-    // 1fr_auto_1fr keeps the wordmark dead-centre in the viewport even
-    // though the right flank holds two icons and the left only one.
-    <div className="grid md:hidden items-center grid-cols-[1fr_auto_1fr] py-3 px-3.5 gap-1">
-      <button
-        type="button"
-        onClick={onMenuClick}
-        aria-label="Open menu"
-        className="inline-flex h-10 w-10 items-center justify-center justify-self-start rounded-sm text-(--ink)"
-      >
-        <IconMenu />
-      </button>
-      <Link to="/" aria-label="Mensa home" className="justify-self-center">
-        <MensaWordmark height={26} />
-      </Link>
-      <div className="flex items-center gap-1 justify-self-end">
-        <NavIconBtn label="Search" onClick={onSearchClick}>
-          <IconSearch size={20} />
-        </NavIconBtn>
-        <NavIconBtn label="Cart" onClick={onCartClick} badge={cartBadge}>
-          <IconBag size={20} />
-        </NavIconBtn>
-      </div>
-    </div>
-  )
-}
-
-// ─── Account icon — dropdown if signed in, link to /login if not ──────
-function AccountIcon() {
+// Signed out: a link to sign in. Signed in: a small account menu.
+function AccountButton() {
   const isAuthed = useIsAuthenticated()
   const user = useAuthStore((s) => s.user)
   const logout = useLogout()
 
   if (!isAuthed || !user) {
     return (
-      <NavIconBtn label="Sign in" href="/login">
-        <IconUser />
-      </NavIconBtn>
+      <Link className="icon-btn" to="/login" aria-label="Sign in" title="Sign in">
+        <svg>
+          <use href="#i-user" />
+        </svg>
+      </Link>
     )
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          aria-label="Account menu"
-          className="relative inline-flex h-10 w-10 items-center justify-center rounded-sm bg-transparent text-(--ink) hover:bg-(--cream)"
-        >
-          <IconUser />
+        <button type="button" className="icon-btn" aria-label="Account menu">
+          <svg>
+            <use href="#i-user" />
+          </svg>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="bg-(--paper) border border-(--hairline) rounded-none min-w-50"
+        className="min-w-56 rounded-(--r-sm) border-(--line) bg-(--white) p-1.5 shadow-(--shadow)"
       >
-        <DropdownMenuLabel className="text-(--mute) uppercase text-[11px] tracking-[0.12em] font-medium">
+        <DropdownMenuLabel className="text-(--mute) text-(length:--fs-xs) font-medium uppercase tracking-[.14em]">
           Signed in as
         </DropdownMenuLabel>
-        <div className="px-2 pb-2 text-[14px] text-(--ink) truncate">{user.email}</div>
-        <DropdownMenuSeparator className="bg-(--hairline-soft)" />
+        <div className="truncate px-2 pb-2 text-(length:--fs-sm) text-(--ink)">{user.email}</div>
+        <DropdownMenuSeparator className="bg-(--line)" />
         <DropdownMenuItem asChild>
-          <Link to="/account" className="text-(--ink) text-[14px]">
+          <Link to="/account" className="text-(length:--fs-sm) text-(--ink)">
             My account
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/account/orders" className="text-(--ink) text-[14px]">
+          <Link to="/account/orders" className="text-(length:--fs-sm) text-(--ink)">
             Orders
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-(--hairline-soft)" />
+        <DropdownMenuSeparator className="bg-(--line)" />
         <DropdownMenuItem
           onClick={() => logout.mutate()}
-          className="text-(--ink) text-[14px] cursor-pointer"
+          className="cursor-pointer text-(length:--fs-sm) text-(--ink)"
         >
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+function MobileAccountLinks({ onNavigate }: { onNavigate: () => void }) {
+  const isAuthed = useIsAuthenticated()
+  const logout = useLogout()
+  if (!isAuthed) {
+    return (
+      <Link to="/login" onClick={onNavigate}>
+        Sign in
+      </Link>
+    )
+  }
+  return (
+    <>
+      <Link to="/account" onClick={onNavigate}>
+        My account
+      </Link>
+      <button
+        type="button"
+        className="text-left"
+        onClick={() => {
+          onNavigate()
+          logout.mutate()
+        }}
+      >
+        Sign out
+      </button>
+    </>
   )
 }
