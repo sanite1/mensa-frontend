@@ -1,5 +1,15 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+/* Design system ported from the design repo. The reset sits in the base layer
+   and the component classes in the components layer, so Tailwind utilities
+   still win wherever both are applied to one element. */
+@import './styles/design/tokens.css';
+@import './styles/design/base.css' layer(base);
+@import './styles/design/site.css' layer(components);
+@import './styles/design/shop.css' layer(components);
+@import './styles/design/fit.css' layer(components);
+@import './styles/design/info.css' layer(components);
+@import './styles/design/forms.css' layer(components);
 
 /* ─── Mensa Design Tokens ────────────────────────────────────────────────── */
 @theme {
@@ -29,7 +39,7 @@
 
   /* Typography */
   --font-display: 'Newsreader', Georgia, serif;
-  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-sans: 'Figtree Variable', 'Figtree', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'DM Mono', 'Courier New', monospace;
 
   /* Spacing scale (8-root) */
@@ -118,7 +128,7 @@
   --err: #b23a3a;
 
   --font-display: 'Newsreader', Georgia, serif;
-  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-sans: 'Figtree Variable', 'Figtree', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'DM Mono', 'Courier New', monospace;
 }
 
@@ -138,9 +148,10 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: 16px;
+  font-family: var(--font);
+  font-size: var(--fs-md);
   line-height: 1.55;
+  text-rendering: optimizeLegibility;
 }
 
 img,

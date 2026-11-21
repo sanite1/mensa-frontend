@@ -1,0 +1,27 @@
+/* Ported from the Mensa design repo (apps/web). Edit with care: class names,
+   keyframes, easings and timings match the design exactly; only colours were
+   mapped onto our palette. */
+:root {
+  /* Design system tokens. Colour comes from our palette (index.css). */
+  --white: #ffffff;
+  --line: rgba(26, 20, 16, 0.12);
+  --water: #d8eef4;
+  --font:
+    'Figtree Variable', 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fs-xs: 0.78rem;
+  --fs-sm: 0.9rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: clamp(1.15rem, 1rem + 0.6vw, 1.4rem);
+  --fs-h3: clamp(1.4rem, 1.1rem + 1vw, 1.9rem);
+  --fs-h2: clamp(2.2rem, 1.4rem + 3.2vw, 4.4rem);
+  --fs-h1: clamp(3rem, 1.6rem + 6vw, 7.6rem);
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --max: 1360px;
+  --r-sm: 12px;
+  --r-md: 22px;
+  --r-lg: 36px;
+  --r-pill: 999px;
+  --shadow: 0 1px 2px rgba(26, 20, 16, 0.06), 0 12px 40px -12px rgba(139, 31, 53, 0.22);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}

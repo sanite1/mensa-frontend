@@ -19,6 +19,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@fontsource-variable/figtree": "^5.3.0",
     "@fontsource/dm-sans": "^5.3.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-dialog": "^1.1.15",

@@ -1,0 +1,222 @@
+/* Ported from the Mensa design repo (apps/web). Edit with care: class names,
+   keyframes, easings and timings match the design exactly; only colours were
+   mapped onto our palette. */
+/* Text pages: About, Delivery & returns, Privacy, Terms. */
+.info-hero {
+  background: var(--blush);
+  padding-block: clamp(3.5rem, 8vw, 7rem) clamp(2.5rem, 5vw, 4rem);
+}
+.info-hero h1 {
+  font-size: var(--fs-h1);
+  margin-top: 1.1rem;
+  letter-spacing: -0.045em;
+  line-height: 0.92;
+  max-width: 14ch;
+}
+.info-hero .lede {
+  margin-top: 1.6rem;
+  max-width: 46ch;
+}
+.info-updated {
+  margin-top: 1rem;
+  font-size: var(--fs-xs);
+  color: var(--mute);
+  letter-spacing: 0.04em;
+}
+.info-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: clamp(2rem, 6vw, 6rem);
+  padding-block: clamp(3rem, 7vw, 6rem);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .info-body {
+    grid-template-columns: 1fr;
+  }
+}
+.info-aside {
+  position: sticky;
+  top: 96px;
+}
+.prose {
+  max-width: 68ch;
+  font-size: var(--fs-md);
+  line-height: 1.7;
+}
+.prose > * + * {
+  margin-top: 1.1rem;
+}
+.prose h2 {
+  font-size: var(--fs-h3);
+  margin-top: 3rem;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.prose h2:first-child {
+  margin-top: 0;
+}
+.prose h3 {
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+.prose p,
+.prose li {
+  color: #4f433b;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.3rem;
+  display: grid;
+  gap: 0.5rem;
+}
+.prose a {
+  color: var(--berry);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+.prose th,
+.prose td {
+  text-align: left;
+  padding: 0.8rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+}
+.prose th {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 500;
+}
+.prose .callout {
+  padding: 1.3rem 1.5rem;
+  border-radius: var(--r-md);
+  background: var(--blush);
+  border-left: 3px solid var(--pink);
+}
+.prose .toc {
+  list-style: none;
+  padding: 1.2rem 1.4rem;
+  border-radius: var(--r-md);
+  box-shadow: inset 0 0 0 1px var(--line);
+  display: grid;
+  gap: 0.35rem;
+  font-size: var(--fs-sm);
+}
+.prose .toc a {
+  text-decoration: none;
+  color: var(--ink);
+}
+.prose .toc a:hover {
+  color: var(--berry);
+}
+.help-card {
+  background: var(--ink);
+  color: var(--blush);
+  border-radius: var(--r-md);
+  padding: 1.8rem;
+  display: grid;
+  gap: 0.9rem;
+  justify-items: start;
+}
+.help-card h3 {
+  font-size: 1.5rem;
+  color: var(--white);
+}
+.help-card p {
+  color: var(--blush-2);
+  font-size: var(--fs-sm);
+}
+.help-card > a:last-child {
+  font-size: var(--fs-sm);
+  color: var(--blush-2);
+}
+.help-card > a:last-child:hover {
+  color: var(--white);
+}
+
+/* About */
+.about-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+}
+.about-pillars article {
+  padding: clamp(1.6rem, 3vw, 2.4rem);
+  border-radius: var(--r-md);
+  background: var(--white);
+  box-shadow: inset 0 0 0 1px var(--line);
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+}
+.about-pillars .reason__icon {
+  margin-bottom: 0.4rem;
+}
+.about-pillars h3 {
+  font-size: var(--fs-h3);
+}
+.about-pillars p {
+  color: var(--mute);
+}
+@media (max-width: 900px) {
+  .about-pillars {
+    grid-template-columns: 1fr;
+  }
+}
+.about-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+.about-timeline li {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 1.5rem;
+  padding-block: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+.about-timeline b {
+  font-weight: 500;
+  color: var(--berry);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.about-timeline h3 {
+  font-size: 1.35rem;
+}
+.about-timeline p {
+  color: var(--mute);
+  margin-top: 0.35rem;
+}
+@media (max-width: 600px) {
+  .about-timeline li {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+}
+
+/* Five nav links: tighten the gap before the mobile menu takes over. */
+@media (max-width: 1240px) {
+  .nav__links {
+    gap: 1.25rem;
+  }
+}
+.footer__links a {
+  transition: color 0.3s;
+}
+.footer__links a:hover {
+  color: var(--white);
+}

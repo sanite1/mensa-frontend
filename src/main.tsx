@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/lib/network/query/client'
 import { Toaster } from '@/components/ui/sonner'
 import { ConfirmHost } from '@/components/ui/confirm'
+import '@fontsource-variable/figtree'
 import './index.css'
 import App from './App'
 
