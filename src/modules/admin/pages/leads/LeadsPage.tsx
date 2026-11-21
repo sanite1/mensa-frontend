@@ -17,6 +17,7 @@ import {
   type StarterSetLead,
 } from '@/lib/network/api/lead.api'
 import { cn } from '@/lib/utils'
+import { useDebounced } from '@/lib/useDebounced'
 
 const STATUS_FILTERS: { id: 'all' | LeadStatus; label: string }[] = [
   { id: 'new', label: 'New' },
@@ -47,17 +48,19 @@ export function LeadsPage() {
   const [status, setStatus] = useState<'all' | LeadStatus>('all')
   const [code, setCode] = useState<'all' | LeadCodeFilter>('all')
   const [q, setQ] = useState('')
+  // The box updates instantly, the request waits until typing pauses.
+  const debouncedQ = useDebounced(q, 300)
   const [page, setPage] = useState(1)
 
   const params: AdminListLeadsParams = useMemo(
     () => ({
       status: status === 'all' ? undefined : status,
       code: code === 'all' ? undefined : code,
-      q: q.trim() || undefined,
+      q: debouncedQ.trim() || undefined,
       page,
       pageSize: PAGE_SIZE,
     }),
-    [status, code, q, page],
+    [status, code, debouncedQ, page],
   )
 
   const query = useAdminLeads(params)

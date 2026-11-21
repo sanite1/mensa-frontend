@@ -15,6 +15,7 @@ import {
   type CustomerKind,
 } from '@/lib/network/api/admin.api'
 import { formatNaira, cn } from '@/lib/utils'
+import { useDebounced } from '@/lib/useDebounced'
 
 const KIND_FILTERS: { id: CustomerKind | 'all'; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -27,17 +28,19 @@ const PAGE_SIZE = 24
 export function CustomersListPage() {
   const [kind, setKind] = useState<CustomerKind | 'all'>('all')
   const [q, setQ] = useState('')
+  // The box updates instantly, the request waits until typing pauses.
+  const debouncedQ = useDebounced(q, 300)
   const [page, setPage] = useState(1)
   const [exporting, setExporting] = useState(false)
 
   const params = useMemo(
     () => ({
       kind: kind === 'all' ? undefined : kind,
-      q: q.trim() || undefined,
+      q: debouncedQ.trim() || undefined,
       page,
       pageSize: PAGE_SIZE,
     }),
-    [kind, q, page],
+    [kind, debouncedQ, page],
   )
 
   const query = useAdminCustomers(params)

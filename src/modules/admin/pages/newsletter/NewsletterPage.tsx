@@ -14,6 +14,7 @@ import {
   type NewsletterSubscriber,
 } from '@/lib/network/api/newsletter.api'
 import { cn } from '@/lib/utils'
+import { useDebounced } from '@/lib/useDebounced'
 
 const STATUS_FILTERS: { id: 'all' | NewsletterStatus; label: string }[] = [
   { id: 'subscribed', label: 'Active' },
@@ -35,17 +36,19 @@ export function NewsletterPage() {
   const [status, setStatus] = useState<'all' | NewsletterStatus>('subscribed')
   const [source, setSource] = useState<'all' | NewsletterSource>('all')
   const [q, setQ] = useState('')
+  // The box updates instantly, the request waits until typing pauses.
+  const debouncedQ = useDebounced(q, 300)
   const [page, setPage] = useState(1)
 
   const params: AdminListSubscribersParams = useMemo(
     () => ({
       status: status === 'all' ? undefined : status,
       source: source === 'all' ? undefined : source,
-      q: q.trim() || undefined,
+      q: debouncedQ.trim() || undefined,
       page,
       pageSize: PAGE_SIZE,
     }),
-    [status, source, q, page],
+    [status, source, debouncedQ, page],
   )
 
   const query = useAdminSubscribers(params)

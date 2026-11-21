@@ -13,6 +13,7 @@ import {
   type InvoiceStatus,
 } from '@/lib/network/api/invoice.api'
 import { formatNaira, cn } from '@/lib/utils'
+import { useDebounced } from '@/lib/useDebounced'
 import { InvoiceStatusPill, formatDate } from './invoiceShared'
 
 type Filter = 'all' | InvoiceStatus | 'overdue'
@@ -32,16 +33,18 @@ const PAGE_SIZE = 50
 export function InvoicesListPage() {
   const [filter, setFilter] = useState<Filter>('all')
   const [q, setQ] = useState('')
+  // The box updates instantly, the request waits until typing pauses.
+  const debouncedQ = useDebounced(q, 300)
   const [page, setPage] = useState(1)
 
   const params: AdminListInvoicesParams = useMemo(
     () => ({
       status: filter === 'all' ? undefined : filter,
-      q: q.trim() || undefined,
+      q: debouncedQ.trim() || undefined,
       page,
       pageSize: PAGE_SIZE,
     }),
-    [filter, q, page],
+    [filter, debouncedQ, page],
   )
 
   const query = useAdminInvoices(params)
