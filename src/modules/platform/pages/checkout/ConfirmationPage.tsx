@@ -96,7 +96,8 @@ export function ConfirmationPage() {
   useEffect(() => {
     if (!order || paymentStatus !== 'pending') return
     const id = setInterval(() => {
-      refetch()
+      // Skip while the tab is in the background.
+      if (!document.hidden) refetch()
     }, 4000)
     // Stop polling after ~2 minutes regardless.
     const stop = setTimeout(() => clearInterval(id), 120_000)

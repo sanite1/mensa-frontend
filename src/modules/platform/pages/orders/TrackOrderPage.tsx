@@ -37,7 +37,10 @@ const lookupSchema = z.object({
 })
 type LookupValues = z.infer<typeof lookupSchema>
 
-const POLL_INTERVAL_MS = 30_000 // 30s while the order is in flight
+const POLL_INTERVAL_MS = 60_000 // once a minute while the order is in flight
+// Fulfilment moves in hours, not seconds. A tab left open on a shipped order
+// would otherwise poll for days, so polling stops after this long.
+const POLL_MAX_MS = 10 * 60_000
 
 export function TrackOrderPage() {
   useSeo({
@@ -83,7 +86,14 @@ export function TrackOrderPage() {
   const refetch = trackQuery.refetch
   useEffect(() => {
     if (!isInFlight) return
+    const startedAt = Date.now()
     const id = setInterval(() => {
+      if (Date.now() - startedAt > POLL_MAX_MS) {
+        clearInterval(id)
+        return
+      }
+      // Skip while the tab is in the background, nobody is looking at it.
+      if (document.hidden) return
       refetch()
     }, POLL_INTERVAL_MS)
     return () => clearInterval(id)
