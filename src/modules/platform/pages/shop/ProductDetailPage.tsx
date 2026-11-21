@@ -1,48 +1,58 @@
-// /shop/:slug Product Detail Page. Two column on desktop, stacked below lg, sticky Add to bag on mobile.
-import { useMemo, useState } from 'react'
+// /shop/:slug: the design system's product page. Sticky gallery on the left,
+// buy box and accordions on the right, related products below. Our extras:
+// any number of admin option types, admin trust lines and accordions, the
+// rating line, and a sticky Add to bag bar on phones.
+import { useMemo, useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { useProduct } from '@/lib/network/api/product.api'
+import { useProduct, useProducts } from '@/lib/network/api/product.api'
 import { useCartStore } from '@/lib/network/stores/cart.store'
 import { useFormatPrice } from '@/lib/currency'
-import { Button } from '@/components/ui/button'
-import { Gallery } from '@/components/shop/Gallery'
-import { OptionPicker } from '@/components/shop/OptionPicker'
 import { Stars } from '@/components/shop/Stars'
-import { TrustLine } from '@/components/shop/TrustLine'
 import { SizeGuideDialog } from '@/components/shop/SizeGuideDialog'
 import { useSeo } from '@/lib/seo'
-import {
-  IconArrowRight,
-  IconCheck,
-  IconChevronDown,
-  IconChevronRight,
-  IconLeaf,
-  IconMail,
-  IconShield,
-  IconStar,
-  IconTruck,
-} from '@/components/chrome/icons'
+import { Gallery } from '@/modules/platform/components/shop/Gallery'
+import { ProductCard, variantPrice } from '@/modules/platform/components/shop/ProductCard'
 import type { Product, ProductVariant, TrustIcon } from '@/lib/network/types/product.types'
-import type { ComponentType } from 'react'
 
-// Map of icon shorthand to the corresponding Mensa icon component.
-const TRUST_ICONS: Record<TrustIcon, ComponentType<{ size?: number }>> = {
-  truck: IconTruck,
-  shield: IconShield,
-  leaf: IconLeaf,
-  star: IconStar,
-  check: IconCheck,
-  mail: IconMail,
-}
-
-// Category label used in eyebrow + breadcrumb.
 const CATEGORY_LABEL: Record<Product['category'], string> = {
   pants: 'Period pants',
   pads: 'Reusable pads',
   bundles: 'Bundles',
   education: 'Education',
-  advocacy: 'Fashion · Advocacy',
+  advocacy: 'Advocacy',
+}
+
+const WEARABLE: Product['category'][] = ['pants', 'pads', 'bundles']
+
+const ICONS: Record<TrustIcon, ReactNode> = {
+  truck: (
+    <path d="M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19.6a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2ZM17 19.6a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2Z" />
+  ),
+  shield: <path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3ZM9 12l2 2 4-4" />,
+  leaf: <path d="M5 19c0-9 6-14 15-14 0 9-5 15-14 15M5 19 14 10" />,
+  star: <path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z" />,
+  mail: <path d="M4 6h16v12H4zM4 7l8 6 8-6" />,
+  check: <path d="m5 12 5 5 9-10" />,
+}
+
+function Icon({ name }: { name: TrustIcon }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="20"
+      height="20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className="shrink-0"
+    >
+      {ICONS[name] ?? ICONS.check}
+    </svg>
+  )
 }
 
 export function ProductDetailPage() {
@@ -53,49 +63,49 @@ export function ProductDetailPage() {
   if (productQuery.isError || !productQuery.data?.data) return <NotFoundState />
 
   const product = productQuery.data.data.product
-  return <ProductView product={product} />
+  // Keyed so the option state resets when moving between products.
+  return <ProductView key={product.id} product={product} />
 }
 
-// ─────────────────────────────────────────────────────────────────
-function ProductView({ product }: { product: Product }) {
+function ProductView({ product: p }: { product: Product }) {
+  const formatPrice = useFormatPrice()
   const addItem = useCartStore((s) => s.addItem)
+  const openCart = useCartStore((s) => s.openDrawer)
 
-  // Defensive defaults so a malformed response can't crash the render.
-  const variants = product.variants ?? []
-  const images = product.images ?? []
-  const metadata = product.metadata ?? {}
-  const optionTypes = product.optionTypes ?? []
+  const variants = useMemo(() => (p.variants ?? []).filter((v) => v.isActive !== false), [p])
+  const images = useMemo(
+    () => [...(p.images ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+    [p],
+  )
+  const optionTypes = p.optionTypes ?? []
+  const metadata = p.metadata ?? {}
+  const inStock = (v?: ProductVariant | null) => !p.isSoldOut && !!v && v.stockCount > 0
 
-  // SEO uses the hero image when present, otherwise the index.html default falls through.
-  const seoHeroUrl = (images.find((img) => img.order === 0) ?? images[0])?.url
-  const seoDescription =
-    product.shortDescription ||
-    product.subheading ||
-    `${product.name} — reusable period products designed in Abuja.`
-  const anyInStock =
-    !product.isSoldOut && (product.variants ?? []).some((v) => v.isActive && v.stockCount > 0)
+  const description =
+    p.shortDescription || p.subheading || `${p.name}, reusable period products made in Abuja.`
   useSeo({
-    title: product.name,
-    description: seoDescription,
-    image: seoHeroUrl,
+    title: p.name,
+    description,
+    image: images[0]?.url,
     type: 'product',
     jsonLd: [
       {
         '@context': 'https://schema.org',
         '@type': 'Product',
-        name: product.name,
-        description: seoDescription,
+        name: p.name,
+        description,
         image: images.map((img) => img.url).filter(Boolean),
-        sku: product.slug,
+        sku: p.slug,
         brand: { '@type': 'Brand', name: 'Mensa Period Products' },
-        offers: {
+        offers: variants.map((v) => ({
           '@type': 'Offer',
-          url: `https://mensaproducts.com/shop/${product.slug}`,
-          // Schema.org price is in the main currency unit, catalogue stores kobo.
-          price: ((product.salePrice ?? product.basePriceB2C) / 100).toFixed(2),
+          sku: v.sku,
+          url: `https://mensaproducts.com/shop/${p.slug}`,
+          // Schema.org price is in the main currency unit, the catalogue stores kobo.
+          price: (variantPrice(p, v) / 100).toFixed(2),
           priceCurrency: 'NGN',
-          availability: anyInStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-        },
+          availability: inStock(v) ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        })),
       },
       {
         '@context': 'https://schema.org',
@@ -107,466 +117,372 @@ function ProductView({ product }: { product: Product }) {
             name: 'Shop',
             item: 'https://mensaproducts.com/shop',
           },
-          { '@type': 'ListItem', position: 2, name: product.name },
+          { '@type': 'ListItem', position: 2, name: p.name },
         ],
       },
     ],
   })
 
-  // Default selection: pull options from the first in stock variant.
-  const defaultOptions = useMemo(() => {
-    const seed: Record<string, string> = {}
-    const seedVariant = variants.find((v) => v.isActive && v.stockCount > 0) ?? variants[0] ?? null
-    if (seedVariant) {
-      for (const type of optionTypes) {
-        seed[type] = seedVariant.options?.[type] ?? ''
-      }
-    }
-    return seed
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product.id])
-
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(defaultOptions)
+  // Start on the first in stock choice.
+  const [selected, setSelected] = useState<Record<string, string>>(() => {
+    const seed = variants.find((v) => inStock(v)) ?? variants[0]
+    return Object.fromEntries(optionTypes.map((t) => [t, seed?.options?.[t] ?? '']))
+  })
   const [qty, setQty] = useState(1)
+  const [added, setAdded] = useState(false)
 
-  // Resolve the current option selection to a specific variant.
-  const selectedVariant: ProductVariant | null = useMemo(() => {
-    if (optionTypes.length === 0) return variants[0] ?? null
-    return (
-      variants.find((v) =>
-        optionTypes.every((t) => (v.options?.[t] ?? '') === (selectedOptions[t] ?? '')),
-      ) ?? null
-    )
-  }, [variants, optionTypes, selectedOptions])
+  const match = (opts: Record<string, string>) =>
+    variants.find((v) => optionTypes.every((t) => (v.options?.[t] ?? '') === (opts[t] ?? '')))
+  const variant = optionTypes.length ? (match(selected) ?? null) : (variants[0] ?? null)
+  const price = variantPrice(p, variant ?? undefined)
+  const onSale = p.salePrice != null && p.salePrice < p.basePriceB2C
+  const compareAt = onSale && variant?.b2cPriceOverride == null ? p.basePriceB2C : null
+  const off = compareAt ? Math.round((1 - price / compareAt) * 100) : 0
+  const available = inStock(variant)
+  const fewLeft = available && variant!.stockCount <= (variant!.lowStockThreshold || 5)
+  const label = variant
+    ? optionTypes
+        .map((t) => variant.options?.[t])
+        .filter(Boolean)
+        .join(' · ')
+    : ''
 
-  const effectivePrice = useMemo(() => {
-    if (selectedVariant?.b2cPriceOverride != null) return selectedVariant.b2cPriceOverride
-    return product.salePrice ?? product.basePriceB2C
-  }, [selectedVariant, product])
+  const valuesOf = (type: string) => [
+    ...new Set(variants.map((v) => v.options?.[type]).filter((x): x is string => !!x)),
+  ]
+  // A chip is live when picking it, with the other current choices, lands on stock.
+  const chipInStock = (type: string, value: string) =>
+    inStock(match({ ...selected, [type]: value })) ||
+    variants.some((v) => v.options?.[type] === value && inStock(v))
 
-  const hasSale = product.salePrice != null && product.salePrice < product.basePriceB2C
-  const savings = hasSale ? product.basePriceB2C - (product.salePrice ?? 0) : 0
-
-  // Admin-controlled sold-out override forces the storefront into the same
-  // state as a true zero-stock variant, without touching inventory.
-  const isOutOfStock = product.isSoldOut || !selectedVariant || selectedVariant.stockCount <= 0
-  const isLowStock =
-    !product.isSoldOut &&
-    !!selectedVariant &&
-    selectedVariant.stockCount > 0 &&
-    selectedVariant.stockCount <= 5
-  const heroImage = images.find((img) => img.order === 0) ?? images[0] ?? null
-
-  const openCartDrawer = useCartStore((s) => s.openDrawer)
-
-  const variantLabel = useMemo(() => {
-    if (!selectedVariant || optionTypes.length === 0) return product.name
-    return optionTypes
-      .map((t) => selectedVariant.options?.[t])
-      .filter(Boolean)
-      .join(' · ')
-  }, [selectedVariant, optionTypes, product.name])
-
-  const onAddToBag = () => {
-    if (!selectedVariant || isOutOfStock) return
+  const addToBag = () => {
+    if (!variant || !available) return
     addItem({
-      productId: product.id,
-      variantId: selectedVariant._id,
-      productName: product.name,
-      variantLabel,
-      unitPrice: effectivePrice,
+      productId: p.id,
+      variantId: variant._id,
+      productName: p.name,
+      variantLabel: label || p.name,
+      unitPrice: price,
       qty,
-      slug: product.slug,
-      imageUrl: heroImage?.url,
+      slug: p.slug,
+      imageUrl: images[0]?.url,
     })
-    openCartDrawer()
-    toast.success(`${product.name} added to bag.`)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1800)
+    openCart()
+    toast.success(`${p.name} added to bag.`)
   }
 
-  const badge = metadata.badge
-    ? { label: metadata.badge, tone: metadata.badgeTone ?? 'pink' }
-    : null
+  const buttonText = !variant
+    ? 'Choose an option'
+    : !available
+      ? 'Sold out'
+      : added
+        ? 'Added to bag ✓'
+        : `Add to bag · ${formatPrice(price * qty)}`
+
+  const accordions = (p.accordions ?? []).filter((a) => a.heading && a.body)
+  const hasCare = accordions.some((a) => /care|wash/i.test(a.heading))
+  const hasShipping = accordions.some((a) => /ship|deliver|return/i.test(a.heading))
+  const trust = p.trustLines?.length
+    ? p.trustLines
+    : [
+        {
+          _id: 'd',
+          icon: 'truck' as const,
+          text: 'Delivery across Nigeria from our studio in Abuja.',
+        },
+        {
+          _id: 'p',
+          icon: 'shield' as const,
+          text: 'Secure checkout with Paystack: card, bank transfer or USSD.',
+        },
+      ]
 
   return (
-    <div className="bg-(--paper) pb-24 md:pb-0">
-      {/* Breadcrumb */}
-      <nav className="border-b border-hairline-soft bg-paper font-sans py-3 px-5 text-[12px]">
-        <div className="flex items-center gap-2.5 flex-wrap text-(--mute)">
-          <Link to="/" className="text-inherit no-underline">
-            Mensa
-          </Link>
-          <IconChevronRight size={11} />
-          <Link to="/shop" className="text-inherit no-underline">
-            Shop
-          </Link>
-          <IconChevronRight size={11} />
-          <span className="text-(--ink)">{CATEGORY_LABEL[product.category]}</span>
-          <IconChevronRight size={11} />
-          <span className="text-(--ink)">{product.name}</span>
-        </div>
-      </nav>
+    <main className="pdp pb-24 md:pb-8">
+      <div className="wrap">
+        <nav className="crumbs" aria-label="Breadcrumb">
+          <Link to="/shop">Shop</Link>
+          <span aria-hidden>/</span>
+          <Link to={`/shop?category=${p.category}`}>{CATEGORY_LABEL[p.category]}</Link>
+          <span aria-hidden>/</span>
+          <span aria-current="page">{p.name}</span>
+        </nav>
 
-      {/* Hero */}
-      <section className="px-5 md:px-10 lg:px-16 py-8 md:py-10 lg:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-start">
-          <Gallery images={images} productName={product.name} badge={badge} />
+        <div className="pdp__grid">
+          <div className="pdp__media">
+            <Gallery
+              images={images}
+              alt={p.name}
+              badge={p.isSoldOut ? 'Sold out' : metadata.badge}
+            />
+          </div>
 
-          {/* Info */}
-          <ProductInfo
-            product={product}
-            selectedVariant={selectedVariant}
-            selectedOptions={selectedOptions}
-            onSelectOptions={setSelectedOptions}
-            qty={qty}
-            onQtyChange={setQty}
-            effectivePrice={effectivePrice}
-            hasSale={hasSale}
-            savings={savings}
-            isOutOfStock={isOutOfStock}
-            isLowStock={!!isLowStock}
-            onAddToBag={onAddToBag}
-          />
-        </div>
-      </section>
-
-      {/* Sticky add to bag on mobile only */}
-      <StickyAddToBag
-        product={product}
-        selectedVariant={selectedVariant}
-        effectivePrice={effectivePrice}
-        isOutOfStock={isOutOfStock}
-        onAddToBag={onAddToBag}
-      />
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────
-interface ProductInfoProps {
-  product: Product
-  selectedVariant: ProductVariant | null
-  selectedOptions: Record<string, string>
-  onSelectOptions: (next: Record<string, string>) => void
-  qty: number
-  onQtyChange: (n: number) => void
-  effectivePrice: number
-  hasSale: boolean
-  savings: number
-  isOutOfStock: boolean
-  isLowStock: boolean
-  onAddToBag: () => void
-}
-
-function ProductInfo({
-  product,
-  selectedVariant,
-  selectedOptions,
-  onSelectOptions,
-  qty,
-  onQtyChange,
-  effectivePrice,
-  hasSale,
-  savings,
-  isOutOfStock,
-  isLowStock,
-  onAddToBag,
-}: ProductInfoProps) {
-  const metadata = product.metadata ?? {}
-  const variants = product.variants ?? []
-  const optionTypes = product.optionTypes ?? []
-  const formatPrice = useFormatPrice()
-  return (
-    <div className="flex flex-col gap-5 md:gap-6">
-      {/* Title block */}
-      <div>
-        <div className="t-eyebrow text-(--coral)">
-          {CATEGORY_LABEL[product.category]}
-          {metadata.badge ? <> · {metadata.badge}</> : null}
-        </div>
-        <h1 className="m-0 mt-2.5 font-display italic font-semibold text-[clamp(36px,5vw,56px)] leading-[0.98] tracking-tight text-ink">
-          {product.name}
-        </h1>
-
-        <div className="flex items-baseline gap-2.5 flex-wrap mt-1.5">
-          {product.subheading ? (
-            <span className="font-mono uppercase text-mute text-[12px] tracking-widest">
-              {product.subheading}
-            </span>
-          ) : null}
-          {typeof metadata.rating === 'number' ? (
-            <>
-              {product.subheading ? (
-                <span className="rounded-full opacity-50 w-1 h-1 bg-mute" />
+          <div className="pdp__info">
+            <span className="eyebrow">{CATEGORY_LABEL[p.category]}</span>
+            <div className="pdp__title">
+              <h1>{p.name}</h1>
+              {p.subheading ? <p className="pdp__sub">{p.subheading}</p> : null}
+              {typeof metadata.rating === 'number' ? (
+                <div className="inline-flex items-center gap-1.5 mt-2">
+                  <Stars value={metadata.rating} size={13} />
+                  <span className="text-[13px] text-mute">
+                    {metadata.rating.toFixed(1)}
+                    {metadata.reviewCount != null ? <> ({metadata.reviewCount} reviews)</> : null}
+                  </span>
+                </div>
               ) : null}
-              <div className="inline-flex items-center gap-1.5">
-                <Stars value={metadata.rating} size={13} />
-                <span className="text-[13px] text-(--graphite)">
-                  {metadata.rating.toFixed(1)}
-                  {metadata.reviewCount != null ? <> ({metadata.reviewCount} reviews)</> : null}
-                </span>
-              </div>
-            </>
-          ) : null}
-        </div>
-      </div>
-
-      {/* Price */}
-      <div className="flex items-baseline gap-3 flex-wrap">
-        <div className="font-sans text-ink font-semibold text-[32px] leading-none">
-          {formatPrice(effectivePrice)}
-        </div>
-        {hasSale ? (
-          <>
-            <div className="text-[16px] text-mute line-through">
-              {formatPrice(product.basePriceB2C)}
             </div>
-            <span className="font-sans px-2 py-0.5 rounded-sm bg-blush text-berry text-[11.5px] font-medium tracking-[0.04em]">
-              Save {formatPrice(savings)}
-            </span>
-          </>
-        ) : null}
-      </div>
+            {p.shortDescription ? <p className="pdp__desc">{p.shortDescription}</p> : null}
 
-      {/* Description */}
-      {product.shortDescription ? (
-        <p className="t-body m-0 text-(--graphite)">{product.shortDescription}</p>
-      ) : null}
+            <div className="buy">
+              <div className="buy__price" aria-live="polite">
+                <b>{formatPrice(price)}</b>
+                {compareAt ? (
+                  <>
+                    <s>{formatPrice(compareAt)}</s>
+                    <span className="pbadge pbadge--rose">Save {off}%</span>
+                  </>
+                ) : null}
+              </div>
 
-      {/* Option picker (Size, Color, etc.) */}
-      {optionTypes.length > 0 ? (
-        <div>
-          {product.showSizeGuide ? (
-            <div className="flex items-baseline justify-end mb-3">
-              <SizeGuideDialog>
+              {optionTypes.map((type) => {
+                const isSize = type.toLowerCase() === 'size'
+                return (
+                  <fieldset className="opt" key={type}>
+                    <legend>
+                      {type}
+                      <span>{selected[type]}</span>
+                      {isSize && p.showSizeGuide ? (
+                        <SizeGuideDialog>
+                          <button type="button" className="opt__guide">
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={1.7}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              width="16"
+                              height="16"
+                              aria-hidden
+                            >
+                              <rect x="2" y="8" width="20" height="8" rx="2" />
+                              <path d="M6 8v3M10 8v4M14 8v3M18 8v4" />
+                            </svg>
+                            Size guide
+                          </button>
+                        </SizeGuideDialog>
+                      ) : null}
+                    </legend>
+                    <div className="opt__list">
+                      {valuesOf(type).map((value) => {
+                        const live = chipInStock(type, value)
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            className={`chip${isSize ? ' chip--size' : ''}${selected[type] === value ? ' is-on' : ''}${live ? '' : ' is-out'}`}
+                            aria-pressed={selected[type] === value}
+                            title={live ? value : `${value}: sold out`}
+                            onClick={() => setSelected((s) => ({ ...s, [type]: value }))}
+                          >
+                            {value}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    {isSize ? (
+                      <p className="opt__hint">
+                        Between two sizes? Size up: it should feel like a hug, not a squeeze.
+                      </p>
+                    ) : null}
+                  </fieldset>
+                )
+              })}
+
+              <div className="buy__row">
+                <div className="qty" aria-label="Quantity">
+                  <button
+                    type="button"
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    aria-label="One less"
+                    disabled={qty <= 1}
+                  >
+                    −
+                  </button>
+                  <span aria-live="polite">{qty}</span>
+                  <button
+                    type="button"
+                    onClick={() => setQty((q) => Math.min(20, q + 1))}
+                    aria-label="One more"
+                    disabled={qty >= 20}
+                  >
+                    +
+                  </button>
+                </div>
                 <button
                   type="button"
-                  className="text-[13px] font-medium text-ink border-b border-ink pb-0.5 hover:text-pink-deep hover:border-pink-deep cursor-pointer bg-transparent"
+                  className={`btn buy__add${added ? ' is-added' : ''}`}
+                  onClick={addToBag}
+                  disabled={!available}
                 >
-                  Size guide →
+                  {buttonText}
                 </button>
-              </SizeGuideDialog>
+              </div>
+              {fewLeft ? (
+                <p className="buy__few">
+                  <span /> Only {variant!.stockCount} left{label ? ` in ${label}` : ''}
+                </p>
+              ) : null}
+              {variant && !available ? (
+                <p className="buy__few buy__few--out">
+                  This one is sold out. We restock every few weeks, so try another option or{' '}
+                  <Link to="/contact">ask us</Link> to hear first.
+                </p>
+              ) : null}
             </div>
-          ) : null}
-          <OptionPicker
-            optionTypes={optionTypes}
-            variants={variants}
-            selectedOptions={selectedOptions}
-            onChange={onSelectOptions}
-          />
-          {/* Stock note */}
-          {isOutOfStock ? (
-            <div className="inline-flex items-center gap-2 mt-3 text-[13px] text-(--err)">
-              <span className="rounded-full w-2 h-2 bg-err" />
-              Out of stock. Try another option or come back soon.
-            </div>
-          ) : isLowStock ? (
-            <div className="inline-flex items-center gap-2 mt-3 text-[13px] text-(--coral)">
-              <span className="rounded-full w-2 h-2 bg-coral" />
-              Only {selectedVariant?.stockCount} left.
-            </div>
-          ) : (
-            <div className="inline-flex items-center gap-2 mt-3 text-[13px] text-(--ok)">
-              <span className="rounded-full w-2 h-2 bg-ok" />
-              In stock. Ships in 2 to 3 days.
-            </div>
-          )}
-        </div>
-      ) : (
-        // Single variant — no picker, just show stock status.
-        <div>
-          {isOutOfStock ? (
-            <div className="inline-flex items-center gap-2 text-[13px] text-(--err)">
-              <span className="rounded-full w-2 h-2 bg-err" />
-              Out of stock.
-            </div>
-          ) : (
-            <div className="inline-flex items-center gap-2 text-[13px] text-(--ok)">
-              <span className="rounded-full w-2 h-2 bg-ok" />
-              In stock. Ships in 2 to 3 days.
-            </div>
-          )}
-        </div>
-      )}
 
-      {/* Qty + CTA */}
-      <div className="flex gap-2.5 items-stretch">
-        <div className="inline-flex items-center bg-paper border border-hairline rounded-sm">
-          <button
-            type="button"
-            onClick={() => onQtyChange(Math.max(1, qty - 1))}
-            className="w-11 h-12 text-[17px] text-(--ink) hover:bg-(--cream)"
-            aria-label="Decrease quantity"
-          >
-            −
-          </button>
-          <span className="text-center text-ink min-w-8 text-[15px]">{qty}</span>
-          <button
-            type="button"
-            onClick={() => onQtyChange(qty + 1)}
-            className="w-11 h-12 text-[17px] text-(--ink) hover:bg-(--cream)"
-            aria-label="Increase quantity"
-          >
-            +
-          </button>
+            <ul className="pdp__trust">
+              {trust.map((t) => (
+                <li key={t._id}>
+                  <Icon name={t.icon} />
+                  <span>{t.text}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="pdp__acc">
+              {p.description?.trim() ? (
+                <details open>
+                  <summary>Description</summary>
+                  <div className="whitespace-pre-line">{p.description}</div>
+                </details>
+              ) : null}
+              {accordions.map((a, i) => (
+                <details key={a._id ?? i} open={!p.description?.trim() && i === 0}>
+                  <summary>{a.heading}</summary>
+                  <div className="whitespace-pre-line">{a.body}</div>
+                </details>
+              ))}
+              {!hasCare && WEARABLE.includes(p.category) ? (
+                <details>
+                  <summary>Care</summary>
+                  <div>
+                    <ol className="pdp__care">
+                      <li>Rinse in cold water straight after wearing.</li>
+                      <li>Wash cold, or by hand with a neutral detergent.</li>
+                      <li>Hang to dry.</li>
+                    </ol>
+                    <p>No bleach or fabric softener.</p>
+                  </div>
+                </details>
+              ) : null}
+              {!hasShipping ? (
+                <details>
+                  <summary>Delivery and returns</summary>
+                  <div>
+                    <p>
+                      We deliver across Nigeria from Abuja. Delivery options and fees show at
+                      checkout once you enter your address. Something not right when it arrives?{' '}
+                      <Link to="/returns">See delivery and returns</Link>.
+                    </p>
+                  </div>
+                </details>
+              ) : null}
+            </div>
+          </div>
         </div>
-        <Button
-          variant="primary"
-          size="lg"
-          className="flex-1"
-          disabled={isOutOfStock || !selectedVariant}
-          onClick={onAddToBag}
-        >
-          {isOutOfStock ? (
-            'Out of stock'
-          ) : (
-            <>
-              Add to bag · {formatPrice(effectivePrice * qty)}
-              <IconArrowRight size={16} />
-            </>
-          )}
-        </Button>
       </div>
 
-      {/* Trust block — admin-authored per product via product.trustLines. */}
-      {(() => {
-        const trustLines = product.trustLines ?? []
-        if (trustLines.length === 0) return null
-        return (
-          <div className="flex flex-col gap-2.5 pt-1.5">
-            {trustLines.map((line) => {
-              const Icon = TRUST_ICONS[line.icon] ?? IconCheck
-              return (
-                <TrustLine key={line._id} icon={<Icon size={16} />}>
-                  {line.text}
-                </TrustLine>
-              )
-            })}
-          </div>
-        )
-      })()}
+      <Related product={p} />
 
-      {/* Accordions — fully admin authored */}
-      {(() => {
-        const accordions = product.accordions ?? []
-        const hasDescription = !!product.description?.trim()
-        if (accordions.length === 0 && !hasDescription) return null
-        return (
-          <div className="border-t border-(--hairline) mt-2">
-            {hasDescription ? (
-              <Acc label="Product details" defaultOpen>
-                <div className="text-graphite whitespace-pre-line text-[14.5px] leading-[1.6]">
-                  {product.description}
-                </div>
-              </Acc>
-            ) : null}
-            {accordions.map((section, i) => (
-              <Acc
-                key={section._id ?? `acc-${i}`}
-                label={section.heading}
-                defaultOpen={!hasDescription && i === 0}
-              >
-                <div className="m-0 text-graphite whitespace-pre-line text-[14.5px] leading-[1.6]">
-                  {section.body}
-                </div>
-              </Acc>
-            ))}
-          </div>
-        )
-      })()}
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────
-function Acc({
-  label,
-  children,
-  defaultOpen,
-}: {
-  label: string
-  children: React.ReactNode
-  defaultOpen?: boolean
-}) {
-  return (
-    <details open={defaultOpen ? true : undefined} className="border-b border-(--hairline)">
-      <summary className="list-none cursor-pointer flex items-center justify-between text-ink font-sans font-medium py-4.5 text-[15px]">
-        {label}
-        <IconChevronDown size={16} />
-      </summary>
-      <div className="pb-4.5 text-[14.5px]">{children}</div>
-    </details>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────
-function StickyAddToBag({
-  product,
-  selectedVariant,
-  effectivePrice,
-  isOutOfStock,
-  onAddToBag,
-}: {
-  product: Product
-  selectedVariant: ProductVariant | null
-  effectivePrice: number
-  isOutOfStock: boolean
-  onAddToBag: () => void
-}) {
-  const formatPrice = useFormatPrice()
-  return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-(--paper) border-t border-(--hairline) px-4 py-3 flex items-center gap-3">
-      <div className="flex flex-col flex-1 min-w-0">
-        <span className="text-[13px] truncate text-(--graphite)">{product.name}</span>
-        <span className="text-[15px] font-semibold text-(--ink)">
-          {formatPrice(effectivePrice)}
-        </span>
+      {/* Our extra: a sticky Add to bag bar on phones, styled in the design's tokens. */}
+      <div className="md:hidden fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-(--line) bg-(--paper) px-4 py-3">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <span className="truncate text-[13px] text-(--mute)">
+            {p.name}
+            {label ? ` · ${label}` : ''}
+          </span>
+          <span className="text-[15px] font-semibold text-(--ink)">{formatPrice(price)}</span>
+        </div>
+        <button type="button" className="btn" onClick={addToBag} disabled={!available}>
+          {!variant ? 'Choose an option' : available ? 'Add to bag' : 'Sold out'}
+        </button>
       </div>
-      <Button
-        variant="primary"
-        size="default"
-        onClick={onAddToBag}
-        disabled={isOutOfStock || !selectedVariant}
-      >
-        {isOutOfStock ? 'Out of stock' : 'Add to bag'}
-        {!isOutOfStock ? <IconArrowRight size={14} /> : null}
-      </Button>
-    </div>
+    </main>
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
+/** Same category first, topped up from the rest of the shop. */
+function Related({ product }: { product: Product }) {
+  const { data } = useProducts()
+  const items = data?.data?.items ?? []
+  const others = items.filter((x) => x.id !== product.id && !x.isSoldOut)
+  const related = [
+    ...others.filter((x) => x.category === product.category),
+    ...others.filter((x) => x.category !== product.category),
+  ].slice(0, 4)
+  if (!related.length) return null
+
+  return (
+    <section className="section pdp__related">
+      <div className="wrap">
+        <div className="section__head">
+          <div>
+            <span className="eyebrow">Pairs well with</span>
+            <h2>Complete your kit.</h2>
+          </div>
+          <Link className="btn btn--ghost" to="/shop">
+            Shop everything{' '}
+            <svg className="arrow" width="18" height="18">
+              <use href="#i-arrow" />
+            </svg>
+          </Link>
+        </div>
+        <div className="shop-grid shop-grid--4">
+          {related.map((r, i) => (
+            <ProductCard key={r.id} product={r} index={i} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function LoadingState() {
   return (
-    <div className="bg-(--paper)">
-      <div className="px-5 md:px-10 lg:px-16 py-10 grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14">
-        <div className="w-full bg-cream-soft animate-pulse aspect-4/5" />
-        <div className="flex flex-col gap-4">
-          <div className="h-3 w-32 bg-(--cream-soft) animate-pulse" />
-          <div className="h-12 w-3/4 bg-(--cream-soft) animate-pulse" />
-          <div className="h-3 w-1/2 bg-(--cream-soft) animate-pulse" />
-          <div className="h-8 w-32 bg-(--cream-soft) animate-pulse mt-4" />
+    <main className="pdp">
+      <div className="wrap">
+        <div className="crumbs">&nbsp;</div>
+        <div className="pdp__grid">
+          <div className="aspect-4/5 w-full animate-pulse rounded-(--r-md) bg-(--blush)" />
+          <div className="flex flex-col gap-4">
+            <div className="h-3 w-32 animate-pulse bg-(--blush)" />
+            <div className="h-12 w-3/4 animate-pulse bg-(--blush)" />
+            <div className="h-3 w-1/2 animate-pulse bg-(--blush)" />
+            <div className="mt-4 h-8 w-32 animate-pulse bg-(--blush)" />
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 
 function NotFoundState() {
   return (
-    <section className="px-5 md:px-10 lg:px-16 py-32 text-center">
-      <div className="t-eyebrow text-(--mute) mb-4">404</div>
-      <h1 className="m-0 font-display italic font-semibold text-[56px] text-ink">
-        We can't find that one.
-      </h1>
-      <p className="t-body mt-3 text-(--graphite) max-w-105 mx-auto">
-        It may have been archived or moved. Everything else is still in the shop.
-      </p>
-      <Link
-        to="/shop"
-        className="mt-6 inline-flex items-center gap-2 text-(--ink) text-[14px] font-medium border-b border-(--ink) pb-0.5 no-underline"
-      >
-        Back to shop <IconArrowRight size={14} />
-      </Link>
-    </section>
+    <main className="pdp">
+      <div className="wrap">
+        <div className="shop-empty">
+          <span className="eyebrow">Not found</span>
+          <h2>We can't find that one.</h2>
+          <p>It may have been archived or moved. Everything else is still in the shop.</p>
+          <Link className="btn" to="/shop">
+            Back to the shop
+          </Link>
+        </div>
+      </div>
+    </main>
   )
 }
