@@ -86,7 +86,11 @@ export function Header() {
   const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`)
 
   return (
-    <header className={`nav${scrolled ? ' is-scrolled' : ''}`}>
+    // On the home page the nav floats transparent over the hero until scrolled,
+    // and the hero sets data-theme so it reads on light and dark slides.
+    <header
+      className={`nav${pathname === '/' ? ' nav--overlay' : ''}${scrolled ? ' is-scrolled' : ''}`}
+    >
       <div className="wrap nav__inner">
         <button
           type="button"
