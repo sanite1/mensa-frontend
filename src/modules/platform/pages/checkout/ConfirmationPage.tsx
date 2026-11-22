@@ -1,22 +1,12 @@
-// /checkout/confirmation/:orderNumber. Paid status arrives async via the Paystack webhook,
+// /checkout/confirmation/:orderNumber, in the design system's centred result layout. Paid status arrives async via the Paystack webhook,
 // so the page polls until payment.status settles. Guests enter their email once, kept in the URL.
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
 import { OrderSummaryCard } from '@/modules/platform/components/OrderSummaryCard'
 import { FulfilmentTimeline } from '@/modules/platform/components/FulfilmentTimeline'
 
@@ -25,7 +15,7 @@ import { useCartStore } from '@/lib/network/stores/cart.store'
 import { useTrackOrder, useVerifyCheckout } from '@/lib/network/api/order.api'
 import { clearReferralCode } from '@/lib/referral'
 import { useSeo } from '@/lib/seo'
-import { Spinner } from '@/components/ui/spinner'
+import { cn } from '@/lib/utils'
 
 const emailSchema = z.object({
   email: z
@@ -136,171 +126,137 @@ export function ConfirmationPage() {
   }
 
   if (!email) {
+    const err = form.formState.errors.email
     return (
-      <div className="mx-auto max-w-md px-4 py-16">
-        <header className="mb-6">
-          <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
-            Order {orderNumber}
-          </p>
-          <h1 className="mt-2 font-serif italic text-3xl text-(--ink)">Confirm the email.</h1>
-          <p className="mt-2 text-[14px] text-(--graphite)">
-            Enter the email you used at checkout so we can pull up your order.
-          </p>
-        </header>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmitEmail)} className="flex flex-col gap-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      autoComplete="email"
-                      placeholder="you@example.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+      <Shell>
+        <span className="eyebrow">Order {orderNumber}</span>
+        <h1 className="text-(length:--fs-h3)">Confirm your email</h1>
+        <p className="lede max-w-[40ch]">
+          Enter the email you used at checkout so we can pull up your order.
+        </p>
+        <form
+          onSubmit={form.handleSubmit(onSubmitEmail)}
+          className="grid w-full max-w-sm gap-3 text-left"
+          noValidate
+        >
+          <label className={cn('fld', err && 'is-invalid')}>
+            <span>Email</span>
+            <input
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              aria-invalid={Boolean(err)}
+              {...form.register('email')}
             />
-            <Button type="submit" variant="primary" size="lg" className="w-full">
-              Show my order
-            </Button>
-          </form>
-        </Form>
-      </div>
+            {err ? <em>{err.message}</em> : null}
+          </label>
+          <button type="submit" className="btn">
+            Show my order
+          </button>
+        </form>
+      </Shell>
     )
   }
 
   if (trackQuery.isLoading) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center text-[14px] text-(--mute)">
-        Looking up order {orderNumber}…
-      </div>
+      <Shell>
+        <span className="eyebrow">Order {orderNumber}</span>
+        <h1 className="text-(length:--fs-h3)">Looking up your order…</h1>
+      </Shell>
     )
   }
 
   if (trackQuery.isError || !order) {
     return (
-      <div className="mx-auto max-w-md px-4 py-16">
-        <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
-          Order {orderNumber}
+      <Shell>
+        <span className="eyebrow">Order {orderNumber}</span>
+        <h1 className="text-(length:--fs-h3)">We couldn't find that order</h1>
+        <p className="lede max-w-[40ch]">
+          Check the email you used at checkout, or open the link in the confirmation email we sent
+          you.
         </p>
-        <h1 className="mt-2 font-serif italic text-3xl text-(--ink)">
-          We could not find that order.
-        </h1>
-        <p className="mt-2 text-[14px] text-(--graphite)">
-          Double check the email you used at checkout, or paste the link from the confirmation we
-          sent you.
-        </p>
-        <Button
-          variant="secondary"
-          size="lg"
-          className="mt-6 w-full"
+        <button
+          type="button"
+          className="btn btn--ghost"
           onClick={() => {
             setEmail('')
             setParams({}, { replace: true })
           }}
         >
           Try a different email
-        </Button>
-      </div>
+        </button>
+      </Shell>
     )
   }
 
   const paid = order.payment.status === 'paid'
   const failed = order.payment.status === 'failed'
   const checking = !paid && !failed && (verify.isPending || trackQuery.isFetching)
+  const firstName = order.address.fullName.split(' ')[0]
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 lg:py-16">
-      <header className="mb-8 text-center">
-        <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
-          Order {order.orderNumber}
-        </p>
-        <h1 className="mt-2 font-serif italic text-4xl text-(--ink)">
+    <main className="wrap py-[clamp(4rem,10vw,7rem)]">
+      <div className="mx-auto grid max-w-140 justify-items-center gap-5 text-center">
+        <span className="eyebrow">
+          {paid ? 'Payment received' : failed ? 'Not paid' : 'Checking with Paystack'}
+        </span>
+        <h1 className="text-(length:--fs-h2)">
           {paid
-            ? `Thank you, ${order.address.fullName.split(' ')[0]}.`
+            ? `Thank you, ${firstName}!`
             : failed
-              ? 'Payment did not go through.'
-              : 'Almost there…'}
+              ? "Your payment didn't go through"
+              : 'Confirming your payment…'}
         </h1>
-        <p className="mt-3 text-[15px] text-(--graphite) max-w-xl mx-auto">
+        <p className="font-medium">Order {order.orderNumber}</p>
+        <p className="lede max-w-[40ch]">
           {paid
-            ? 'Your order is confirmed. We are getting it ready and will email a tracking link the moment it leaves our studio.'
+            ? "Your order is paid and we're getting it ready in the studio. We'll email a tracking link the moment it leaves."
             : failed
-              ? 'We were not able to confirm your payment. Nothing was charged. You can try again whenever you are ready.'
-              : 'We are checking with Paystack to confirm your payment. This usually takes a few seconds.'}
+              ? 'No money has left your account. You can try again whenever you are ready.'
+              : 'This usually takes a few seconds. Leave this page open and it updates the moment Paystack responds.'}
         </p>
         {!paid && !failed ? (
-          <div className="mt-8 mx-auto flex flex-col items-center gap-5 px-6 py-7 max-w-md bg-cream-soft border border-hairline-soft">
-            {/* Border trick spinner, no SVG needed. border-t-pink scopes the color to the top edge. */}
-            <div
-              className="relative animate-spin w-12 h-12 rounded-full border-[3px] border-hairline border-t-pink"
-              aria-hidden="true"
-            />
-            <div className="flex flex-col items-center gap-1.5 text-center">
-              <p className="m-0 text-[11px] uppercase tracking-[0.14em] font-medium text-pink-deep">
-                {checking ? 'Verifying with Paystack' : 'Awaiting confirmation'}
-              </p>
-              <p className="m-0 text-ink font-display italic text-[22px] leading-[1.2] tracking-[-0.01em]">
-                Hold tight — confirming your payment.
-              </p>
-              <p className="m-0 mt-1 text-[13px] text-(--graphite) max-w-sm">
-                This usually takes a second or two. You can leave this page open; we will update it
-                the moment Paystack responds.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (orderNumber) {
-                  verify.mutate(orderNumber, { onSettled: () => refetch() })
-                }
-              }}
-              disabled={verify.isPending}
-              className="text-[12px] uppercase tracking-[0.12em] font-medium text-(--ink) underline underline-offset-4 disabled:opacity-50"
-            >
-              {verify.isPending ? (
-                <>
-                  <Spinner size={14} /> Checking…
-                </>
-              ) : (
-                'Check again now'
-              )}
-            </button>
-          </div>
+          <button
+            type="button"
+            className="btn btn--ghost"
+            onClick={() => verify.mutate(orderNumber, { onSettled: () => refetch() })}
+            disabled={verify.isPending}
+          >
+            {checking ? 'Checking…' : 'Check again now'}
+          </button>
         ) : null}
-      </header>
-
-      {/* Tracking timeline only makes sense once payment has cleared. */}
-      {paid ? (
-        <div className="mb-6">
-          <FulfilmentTimeline order={order} />
+        <div className="flex flex-wrap justify-center gap-3">
+          {failed ? (
+            <Link className="btn" to="/checkout">
+              Return to checkout
+            </Link>
+          ) : null}
+          {user ? (
+            <Link className={failed ? 'btn btn--ghost' : 'btn'} to="/account/orders">
+              View all orders
+            </Link>
+          ) : null}
+          <Link className="btn btn--ghost" to="/shop">
+            Keep shopping
+          </Link>
         </div>
-      ) : null}
-
-      <OrderSummaryCard order={order} />
-
-      <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-        {failed ? (
-          <Button asChild variant="primary" size="lg">
-            <Link to="/checkout">Return to checkout</Link>
-          </Button>
-        ) : null}
-        <Button asChild variant="secondary" size="lg">
-          <Link to="/shop">Continue shopping</Link>
-        </Button>
-        {user ? (
-          <Button asChild variant="secondary" size="lg">
-            <Link to="/account/orders">View all orders</Link>
-          </Button>
-        ) : null}
       </div>
-    </div>
+
+      <div className="mx-auto mt-12 grid max-w-3xl gap-6">
+        {/* The tracking timeline only makes sense once payment has cleared. */}
+        {paid ? <FulfilmentTimeline order={order} /> : null}
+        <OrderSummaryCard order={order} />
+      </div>
+    </main>
+  )
+}
+
+/** The design's centred result frame. */
+function Shell({ children }: { children: ReactNode }) {
+  return (
+    <main className="wrap grid min-h-[60vh] place-items-center py-[clamp(4rem,10vw,8rem)]">
+      <div className="grid max-w-140 justify-items-center gap-5 text-center">{children}</div>
+    </main>
   )
 }
