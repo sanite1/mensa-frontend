@@ -1,26 +1,17 @@
-// /orders/track public tracker, email acts as a soft PIN alongside the order number.
+// /orders/track public tracker in the design system's layout, email acts as a soft PIN alongside the order number.
 // Deep linkable via ?orderNumber=…&email=…, the orderShipped email links here prefilled.
 
-import { useEffect, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { FulfilmentTimeline } from '@/modules/platform/components/FulfilmentTimeline'
+import { OrderTrackCard } from '@/modules/platform/components/orders/OrderTrackCard'
 
 import { useTrackOrder } from '@/lib/network/api/order.api'
 import { useSeo } from '@/lib/seo'
+import { cn } from '@/lib/utils'
 
 const lookupSchema = z.object({
   orderNumber: z
@@ -120,115 +111,121 @@ export function TrackOrderPage() {
 
   // useTrackOrder returns isError on 404, treated as "not found" rather than a generic failure.
   const lookupFailed = !!submitted && trackQuery.isError
-  const lookupSucceeded = !!submitted && !!order
   const lookupLoading = !!submitted && trackQuery.isFetching && !order
+  const errors = form.formState.errors
+  const numberField = form.register('orderNumber')
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 lg:py-16">
-      <header className="mb-8">
-        <p className="text-[11px] uppercase tracking-widest text-mute font-medium font-mono">
-          Track your order
-        </p>
-        <h1 className="m-0 mt-3 font-display italic font-semibold text-[clamp(32px,5vw,52px)] leading-tight tracking-tight text-ink">
-          Where is my order?
-        </h1>
-        <p className="mt-3 t-body text-graphite max-w-150">
-          Enter the order number and email you used at checkout. We will show you the latest status,
-          and this page updates itself as your order moves.
-        </p>
+    <main>
+      <header className="fhero">
+        <div className="wrap fhero__inner">
+          <div>
+            <span className="eyebrow">Order status</span>
+            <h1 className="split">
+              <span className="split-line">
+                <span>Where's my</span>
+              </span>
+              <span className="split-line">
+                <span style={{ '--d': '.1s' } as CSSProperties}>
+                  <span className="accent">order?</span>
+                </span>
+              </span>
+            </h1>
+          </div>
+          <p className="lede">
+            Enter your order number and the email you used at checkout. Your number starts with MS
+            and is in the confirmation email we sent you.
+          </p>
+        </div>
       </header>
 
-      {/* Lookup form */}
-      <div className="border border-hairline bg-paper p-6 lg:p-8 mb-8">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:items-end"
-          >
-            <FormField
-              control={form.control}
-              name="orderNumber"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel>Order number</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="MS-2026-00001"
-                      autoCapitalize="characters"
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+      <section className="wrap track">
+        <div className="track__grid">
+          <form className="track__form mform" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+            <div>
+              <h2>Find your order</h2>
+              <p>We'll show you exactly where it is, and this page updates as it moves.</p>
+            </div>
+            <label className={cn('mfield', errors.orderNumber && 'is-invalid')}>
+              <span>Order number</span>
+              <input
+                placeholder="MS-2026-00001"
+                autoCapitalize="characters"
+                autoComplete="off"
+                {...numberField}
+                onChange={(e) => {
+                  e.target.value = e.target.value.toUpperCase()
+                  numberField.onChange(e)
+                }}
+              />
+              {errors.orderNumber ? <em>{errors.orderNumber.message}</em> : null}
+            </label>
+            <label className={cn('mfield', errors.email && 'is-invalid')}>
+              <span>Email</span>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                {...form.register('email')}
+              />
+              {errors.email ? <em>{errors.email.message}</em> : null}
+            </label>
+            {lookupFailed ? (
+              <p className="mform__error" role="alert">
+                We couldn't match that order number and email. Both need to be exactly what you used
+                at checkout.
+              </p>
+            ) : null}
+            <button className="btn" type="submit" disabled={lookupLoading}>
+              {lookupLoading ? (
+                'Looking…'
+              ) : (
+                <>
+                  {order ? 'Refresh' : 'Track order'}{' '}
+                  <svg className="arrow" width="18" height="18">
+                    <use href="#i-arrow" />
+                  </svg>
+                </>
               )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      autoComplete="email"
-                      placeholder="you@example.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="sm:col-span-2 flex flex-wrap items-center gap-3">
-              <Button type="submit" variant="primary" size="lg" disabled={lookupLoading}>
-                {lookupLoading ? 'Looking up…' : lookupSucceeded ? 'Refresh' : 'Find my order'}
-              </Button>
-              {submitted ? (
-                <Button type="button" variant="ghost" size="md" onClick={onReset}>
-                  Look up a different order
-                </Button>
-              ) : null}
+            </button>
+            {submitted ? (
+              <button type="button" className="btn btn--ghost" onClick={onReset}>
+                Look up a different order
+              </button>
+            ) : null}
+            <div className="track__help">
+              <span>Can't find your number?</span>
+              <span>
+                Check the confirmation email we sent at checkout, or email{' '}
+                <a href="mailto:hi@mensaproducts.com">hi@mensaproducts.com</a> and we'll find it.
+              </span>
             </div>
           </form>
-        </Form>
-      </div>
 
-      {/* Results / states */}
-      {lookupLoading ? (
-        <div className="border border-hairline bg-paper p-6 t-body-s text-mute">
-          Looking up {submitted?.orderNumber}…
+          <div aria-live="polite">
+            {order ? (
+              <OrderTrackCard order={order} />
+            ) : (
+              <div className="track__placeholder">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 7h11v9H3zM14 10h4l3 3v3h-7" />
+                  <circle cx="7" cy="18" r="1.6" />
+                  <circle cx="17" cy="18" r="1.6" />
+                </svg>
+                <h3>{lookupLoading ? 'Checking the studio…' : 'Your order will show here'}</h3>
+                <p>Status, delivery details and everything in the parcel.</p>
+              </div>
+            )}
+          </div>
         </div>
-      ) : null}
-
-      {lookupFailed ? <NotFoundPanel /> : null}
-
-      {lookupSucceeded && order ? <FulfilmentTimeline order={order} /> : null}
-
-      {/* Help footer */}
-      {!submitted ? (
-        <p className="mt-6 t-body-s text-mute">
-          Lost the order number? Check the confirmation email we sent at checkout, or{' '}
-          <Link to="/" className="text-ink underline underline-offset-4">
-            email us
-          </Link>{' '}
-          and we will find it.
-        </p>
-      ) : null}
-    </div>
-  )
-}
-
-function NotFoundPanel() {
-  return (
-    <div className="border border-coral/50 bg-blush p-5 lg:p-6 flex flex-col gap-2">
-      <div className="t-eyebrow text-coral">Not found</div>
-      <p className="m-0 text-[14.5px] text-berry leading-relaxed">
-        We could not match that order number and email. Both fields must be exactly what you used at
-        checkout. Double check the confirmation email we sent. If it still does not work, reach us
-        at hi@mensaproducts.com and we will sort it out.
-      </p>
-    </div>
+      </section>
+    </main>
   )
 }
