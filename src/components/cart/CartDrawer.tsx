@@ -1,225 +1,164 @@
-// CartDrawer — cart panel that slides in from the right, controlled by useCartStore.isDrawerOpen, mounted once at the platform layout so it works on every route.
-import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { useCartStore, type CartLine } from '@/lib/network/stores/cart.store'
+// CartDrawer: the design system's bag panel, driven by useCartStore and
+// mounted once in the platform layout so it works on every route.
+import { useEffect, useRef } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { useCartStore } from '@/lib/network/stores/cart.store'
 import { useFormatPrice } from '@/lib/currency'
-import { Photo } from '@/components/shop/Photo'
-import { IconArrowRight, IconClose } from '@/components/chrome/icons'
 import { useScrollLock } from '@/lib/useScrollLock'
 
+const MAX_QTY = 20
+
 export function CartDrawer() {
-  const isOpen = useCartStore((s) => s.isDrawerOpen)
-  const closeDrawer = useCartStore((s) => s.closeDrawer)
+  const open = useCartStore((s) => s.isDrawerOpen)
+  const close = useCartStore((s) => s.closeDrawer)
   const lines = useCartStore((s) => s.lines)
-  const subtotalKobo = useCartStore((s) => s.subtotal())
-  const totalItems = useCartStore((s) => s.totalItems())
+  const subtotal = useCartStore((s) => s.subtotal())
+  const count = useCartStore((s) => s.totalItems())
+  const updateQty = useCartStore((s) => s.updateQty)
+  const removeItem = useCartStore((s) => s.removeItem)
+  const formatPrice = useFormatPrice()
+  const panel = useRef<HTMLDivElement>(null)
+  const { pathname } = useLocation()
 
-  useScrollLock(isOpen)
+  useScrollLock(open)
 
-  // Close on Escape.
+  // Moving to another page closes the bag.
+  useEffect(() => close(), [pathname, close])
+
   useEffect(() => {
-    if (!isOpen) return
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeDrawer()
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close()
     }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [isOpen, closeDrawer])
+    window.addEventListener('keydown', onKey)
+    panel.current?.focus()
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, close])
 
   return (
-    <>
-      {/* Overlay */}
+    <div className={`bag${open ? ' is-open' : ''}`} aria-hidden={!open}>
+      <div className="bag__scrim" onClick={close} />
       <div
-        onClick={closeDrawer}
-        aria-hidden="true"
-        className={cn(
-          'fixed inset-0 z-50 bg-black/40 transition-opacity duration-300',
-          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',
-        )}
-      />
-
-      {/* Drawer panel */}
-      <aside
+        className="bag__panel"
         role="dialog"
         aria-modal="true"
         aria-label="Your bag"
-        className={cn(
-          'fixed top-0 right-0 z-50 h-full w-full sm:max-w-110',
-          'bg-paper border-l border-hairline-soft',
-          'flex flex-col',
-          'transition-transform duration-300 ease-out',
-          isOpen ? 'translate-x-0' : 'translate-x-full',
-        )}
+        tabIndex={-1}
+        ref={panel}
       >
-        {/* Header */}
-        <div className="px-6 py-5 border-b border-hairline-soft flex items-center justify-between">
-          <div className="flex flex-col items-start gap-0.5">
-            <h2 className="m-0 text-ink font-display italic font-semibold text-[28px] leading-[1.05] tracking-[-0.02em]">
-              Your bag
-            </h2>
-            <p className="m-0 text-[11px] text-mute uppercase tracking-[0.12em] font-medium">
-              {totalItems === 0 ? 'Empty' : `${totalItems} ${totalItems === 1 ? 'item' : 'items'}`}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={closeDrawer}
-            aria-label="Close cart"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-ink hover:bg-cream"
-          >
-            <IconClose />
+        <div className="bag__head">
+          <h2>
+            Your bag <span>{count}</span>
+          </h2>
+          <button type="button" className="icon-btn" onClick={close} aria-label="Close bag">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.7}
+              strokeLinecap="round"
+            >
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
           </button>
         </div>
 
-        {/* Body */}
         {lines.length === 0 ? (
-          <EmptyState onClose={closeDrawer} />
+          <div className="bag__empty">
+            <div className="bag__empty-icon">
+              <svg>
+                <use href="#i-bag" />
+              </svg>
+            </div>
+            <h3>Your bag is empty</h3>
+            <p>
+              Most people start with a pack of 3 period pants: one on, one in the wash, one dry.
+            </p>
+            <Link className="btn" to="/shop" onClick={close}>
+              Shop everything{' '}
+              <svg className="arrow" width="18" height="18">
+                <use href="#i-arrow" />
+              </svg>
+            </Link>
+          </div>
         ) : (
-          <div className="flex-1 overflow-y-auto">
-            <ul className="m-0 p-0 list-none">
-              {lines.map((line) => (
-                <LineItem key={line.variantId} line={line} />
+          <>
+            <ul className="bag__lines">
+              {lines.map((l) => (
+                <li key={l.variantId} className="bag__line">
+                  <Link to={`/shop/${l.slug}`} className="bag__img" onClick={close}>
+                    {l.imageUrl ? (
+                      <img src={l.imageUrl} alt="" className="absolute inset-0 size-full" />
+                    ) : null}
+                  </Link>
+                  <div className="bag__info">
+                    <Link to={`/shop/${l.slug}`} onClick={close}>
+                      <b>{l.productName}</b>
+                    </Link>
+                    {l.variantLabel && l.variantLabel !== l.productName ? (
+                      <span>{l.variantLabel}</span>
+                    ) : null}
+                    <div className="qty qty--sm">
+                      <button
+                        type="button"
+                        onClick={() => updateQty(l.variantId, l.qty - 1)}
+                        aria-label={`One less ${l.productName}`}
+                      >
+                        −
+                      </button>
+                      <span aria-live="polite">{l.qty}</span>
+                      <button
+                        type="button"
+                        onClick={() => updateQty(l.variantId, l.qty + 1)}
+                        aria-label={`One more ${l.productName}`}
+                        disabled={l.qty >= MAX_QTY}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <div className="bag__price">
+                    <b>{formatPrice(l.unitPrice * l.qty)}</b>
+                    <button type="button" onClick={() => removeItem(l.variantId)}>
+                      Remove
+                    </button>
+                  </div>
+                </li>
               ))}
             </ul>
-          </div>
+            <div className="bag__foot">
+              <div className="bag__row">
+                <span>Subtotal</span>
+                <b>{formatPrice(subtotal)}</b>
+              </div>
+              <p className="bag__note">
+                Delivery and any discount code are worked out at checkout.
+              </p>
+              <Link className="btn bag__checkout" to="/checkout" onClick={close}>
+                Checkout · {formatPrice(subtotal)}{' '}
+                <svg className="arrow" width="18" height="18">
+                  <use href="#i-arrow" />
+                </svg>
+              </Link>
+              <p className="bag__secure">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  strokeLinecap="round"
+                  width="14"
+                  height="14"
+                >
+                  <rect x="5" y="11" width="14" height="9" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+                Secure payment with Paystack: card, transfer or USSD
+              </p>
+            </div>
+          </>
         )}
-
-        {/* Footer / checkout */}
-        {lines.length > 0 ? (
-          <CartFooter subtotalKobo={subtotalKobo} onContinueShopping={closeDrawer} />
-        ) : null}
-      </aside>
-    </>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────
-// ─────────────────────────────────────────────────────────────────
-function LineItem({ line }: { line: CartLine }) {
-  const updateQty = useCartStore((s) => s.updateQty)
-  const removeItem = useCartStore((s) => s.removeItem)
-  const closeDrawer = useCartStore((s) => s.closeDrawer)
-  const formatPrice = useFormatPrice()
-
-  return (
-    <li className="flex gap-4 px-6 py-5 border-b border-hairline-soft">
-      <Link
-        to={`/shop/${line.slug}`}
-        onClick={closeDrawer}
-        className="shrink-0 no-underline w-18"
-        aria-label={`View ${line.productName}`}
-      >
-        <Photo src={line.imageUrl} alt={line.productName} tone="blush" ratio="4/5" />
-      </Link>
-
-      <div className="flex flex-col flex-1 min-w-0 gap-1.5">
-        <div className="flex items-start justify-between gap-2">
-          <Link
-            to={`/shop/${line.slug}`}
-            onClick={closeDrawer}
-            className="text-ink no-underline font-display italic font-semibold text-[18px] leading-[1.05] tracking-[-0.015em]"
-          >
-            {line.productName}
-          </Link>
-          <button
-            type="button"
-            onClick={() => removeItem(line.variantId)}
-            className="text-mute hover:text-ink shrink-0"
-            aria-label={`Remove ${line.productName} from bag`}
-          >
-            <IconClose size={16} />
-          </button>
-        </div>
-
-        <div className="font-mono uppercase text-mute text-[10.5px] tracking-widest">
-          {line.variantLabel}
-        </div>
-
-        <div className="flex items-center justify-between gap-3 mt-1.5">
-          <div className="inline-flex items-center bg-paper border border-hairline rounded-sm">
-            <button
-              type="button"
-              onClick={() => updateQty(line.variantId, line.qty - 1)}
-              className="w-8 h-8 text-[15px] text-ink hover:bg-cream"
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
-            <span className="text-center text-ink min-w-7 text-[13px]">{line.qty}</span>
-            <button
-              type="button"
-              onClick={() => updateQty(line.variantId, line.qty + 1)}
-              className="w-8 h-8 text-[15px] text-ink hover:bg-cream"
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
-          </div>
-
-          <div className="font-sans text-ink font-semibold text-[15px]">
-            {formatPrice(line.unitPrice * line.qty)}
-          </div>
-        </div>
       </div>
-    </li>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────
-function EmptyState({ onClose }: { onClose: () => void }) {
-  return (
-    <div className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
-      <div className="t-eyebrow text-mute mb-3">Your bag is empty</div>
-      <h3 className="m-0 font-display italic font-semibold text-[28px] leading-[1.05] text-ink">
-        Nothing here yet.
-      </h3>
-      <p className="t-body-s mt-3 text-graphite max-w-75">
-        Once you add something to your bag, it will show up here.
-      </p>
-      <Button asChild variant="primary" size="lg" className="mt-6">
-        <Link to="/shop" onClick={onClose}>
-          Shop the collection <IconArrowRight size={16} />
-        </Link>
-      </Button>
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────
-function CartFooter({
-  subtotalKobo,
-  onContinueShopping,
-}: {
-  subtotalKobo: number
-  onContinueShopping: () => void
-}) {
-  const formatPrice = useFormatPrice()
-  return (
-    <div className="border-t border-hairline-soft px-6 py-5 bg-paper">
-      <div className="flex items-baseline justify-between mb-1">
-        <span className="text-[11px] text-mute uppercase tracking-[0.12em] font-medium">
-          Subtotal
-        </span>
-        <span className="font-sans text-ink font-semibold text-[22px]">
-          {formatPrice(subtotalKobo)}
-        </span>
-      </div>
-      <div className="t-body-s text-mute mb-4">Shipping and discounts calculated at checkout.</div>
-
-      <Button asChild variant="primary" size="lg" className="w-full">
-        <Link to="/checkout" onClick={onContinueShopping}>
-          Checkout <IconArrowRight size={16} />
-        </Link>
-      </Button>
-      <button
-        type="button"
-        onClick={onContinueShopping}
-        className="w-full mt-3 text-[14px] text-ink underline underline-offset-2"
-      >
-        Continue shopping
-      </button>
     </div>
   )
 }
