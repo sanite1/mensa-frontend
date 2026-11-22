@@ -43,12 +43,8 @@ export const useShippingRates = (input: ShippingRatesInput | undefined, enabled 
   useQuery({
     queryKey: input ? orderKeys.shippingRates(input) : [...orderKeys.all, 'shippingRates', 'idle'],
     queryFn: () => getShippingRatesFn(input as ShippingRatesInput),
-    enabled:
-      enabled &&
-      !!input &&
-      input.lines.length > 0 &&
-      !!input.destination.state &&
-      !!input.destination.city,
+    // Priced by state only, the city is not sent.
+    enabled: enabled && !!input && input.lines.length > 0 && !!input.destination.state,
     staleTime: 30_000,
   })
 
