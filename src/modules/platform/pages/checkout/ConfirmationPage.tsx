@@ -7,8 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
-import { OrderSummaryCard } from '@/modules/platform/components/OrderSummaryCard'
-import { FulfilmentTimeline } from '@/modules/platform/components/FulfilmentTimeline'
+import { OrderTrackCard } from '@/modules/platform/components/orders/OrderTrackCard'
 
 import { useAuthStore } from '@/lib/network/stores/auth.store'
 import { useCartStore } from '@/lib/network/stores/cart.store'
@@ -243,10 +242,8 @@ export function ConfirmationPage() {
         </div>
       </div>
 
-      <div className="mx-auto mt-12 grid max-w-3xl gap-6">
-        {/* The tracking timeline only makes sense once payment has cleared. */}
-        {paid ? <FulfilmentTimeline order={order} /> : null}
-        <OrderSummaryCard order={order} />
+      <div className="mx-auto mt-12 max-w-3xl">
+        <OrderTrackCard order={order} />
       </div>
     </main>
   )
