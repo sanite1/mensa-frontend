@@ -1,34 +1,23 @@
-// /find-my-starter-set — eight question quiz that recommends a starter set.
-// Logic and copy follow the starter set finder spec: two scores, six results.
-// One tap per question auto-advances, back button steps back. A lead form
-// (name + email) sits between the last question and the result, and the
-// answers + result code ride along with the submission.
-import { useMemo, useState } from 'react'
+// /find-my-starter-set: the design system's fit quiz around our own eight
+// questions and scoring. Intro, progress bar, sliding question panels with
+// number key picks, our lead step (name and email, which emails a personal
+// 10% code), then the recommendation as the design's result cards.
+
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Spinner } from '@/components/ui/spinner'
-import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
-import { IconArrowRight } from '@/components/chrome/icons'
 import { useProducts } from '@/lib/network/api/product.api'
 import { useSubmitStarterSetLead, type LeadResultCode } from '@/lib/network/api/lead.api'
+import { useCartStore } from '@/lib/network/stores/cart.store'
 import { useFormatPrice } from '@/lib/currency'
 import type { Product } from '@/lib/network/types/product.types'
 import { useSeo } from '@/lib/seo'
 import { cn } from '@/lib/utils'
+import { priceRange, variantPrice } from '@/modules/platform/components/shop/ProductCard'
 
 // ─── Questions ───────────────────────────────────────────────────
 
@@ -301,137 +290,229 @@ export function StarterSetFinderPage() {
       'Answer 8 quick questions and we will tell you which Mensa reusable period products to start with.',
   })
 
-  const [step, setStep] = useState(0)
+  // -1 is the intro, 0..7 the questions, 8 the lead step, 9 the result.
+  const [index, setIndex] = useState(-1)
+  const [dir, setDir] = useState<'fwd' | 'back'>('fwd')
   const [answers, setAnswers] = useState<Answers>({})
-  // Name and email captured before the result shows. Kept after a restart so
-  // a retake only needs one click through the form.
+  // Kept after a restart so a retake only needs one click through the form.
   const [lead, setLead] = useState<{ name: string; email: string } | null>(null)
-  const [leadDone, setLeadDone] = useState(false)
   // True once the backend accepted the lead, which is when the code email goes out.
   const [codeEmailed, setCodeEmailed] = useState(false)
+  const heading = useRef<HTMLHeadingElement>(null)
 
-  const quizDone = step >= QUESTIONS.length
-  const done = quizDone && leadDone
+  const total = QUESTIONS.length
+  const LEAD = total
+  const RESULT = total + 1
+  const result = useMemo(
+    () => (index >= LEAD ? computeResult(answers) : null),
+    [index, LEAD, answers],
+  )
 
-  const result = useMemo(() => (quizDone ? computeResult(answers) : null), [quizDone, answers])
+  // Move focus to the new heading so keyboard and screen reader users follow along.
+  useEffect(() => {
+    if (index >= 0) heading.current?.focus({ preventScroll: true })
+  }, [index])
 
+  const go = (to: number) => {
+    setDir(to < index ? 'back' : 'fwd')
+    setIndex(to)
+    if (window.scrollY > 200) window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
   const pick = (qid: QuestionId, value: string) => {
     setAnswers((prev) => ({ ...prev, [qid]: value }))
-    setStep((s) => s + 1)
+    // A beat so the chosen option shows as picked before the panel slides.
+    window.setTimeout(() => {
+      setDir('fwd')
+      setIndex((i) => Math.min(i + 1, LEAD))
+    }, 220)
   }
-
-  const back = () => setStep((s) => Math.max(0, s - 1))
   const restart = () => {
     setAnswers({})
-    setLeadDone(false)
-    setStep(0)
+    go(-1)
   }
 
-  return (
-    <div className="bg-paper min-h-[70vh]">
-      <div className="px-5 md:px-10 lg:px-16 py-10 lg:py-16 max-w-200 mx-auto">
-        {/* Head */}
-        <SectionEyebrow color="var(--coral)">Starter set</SectionEyebrow>
-        <h1 className="mt-5 font-display italic font-semibold text-[clamp(30px,5vw,52px)] leading-[1.02] tracking-tight text-ink">
-          {done
-            ? 'Your starter set.'
-            : quizDone
-              ? 'One last thing.'
-              : 'Not sure what to buy first? Answer 8 questions.'}
-        </h1>
-        {!quizDone ? (
-          <p className="mt-3 t-body text-graphite">
-            It takes less than a minute. We will tell you what to start with.
-          </p>
-        ) : null}
+  const question = index >= 0 && index < total ? QUESTIONS[index] : null
+  const progress = index >= RESULT ? 100 : index < 0 ? 0 : (index / (total + 1)) * 100
 
-        {/* Progress strip — 8 questions plus the lead step */}
-        <div className="mt-7 flex gap-1.5" aria-hidden="true">
-          {[...QUESTIONS.map((q) => q.id), 'lead'].map((id, i) => (
-            <span
-              key={id}
-              className={cn(
-                'h-1 flex-1 rounded-full transition-colors',
-                i < step || (i === QUESTIONS.length && leadDone) ? 'bg-pink' : 'bg-hairline',
-              )}
-            />
-          ))}
+  return (
+    <main className="quiz-page">
+      <div className="quiz">
+        <div className="quiz__top wrap">
+          <div
+            className="quiz__bar"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(progress)}
+            aria-label="Quiz progress"
+          >
+            <span style={{ width: `${progress}%` }} />
+          </div>
+          <div className="quiz__nav">
+            {index >= 0 && index < RESULT ? (
+              <button type="button" className="quiz__back" onClick={() => go(index - 1)}>
+                <svg width="16" height="16" className="rotate-180">
+                  <use href="#i-arrow" />
+                </svg>{' '}
+                Back
+              </button>
+            ) : (
+              <span />
+            )}
+            {question ? (
+              <span className="quiz__count">
+                {index + 1} of {total}
+              </span>
+            ) : index === LEAD ? (
+              <span className="quiz__count">Last step</span>
+            ) : null}
+            {index >= 0 ? (
+              <button type="button" className="quiz__restart" onClick={restart}>
+                Start over
+              </button>
+            ) : (
+              <span />
+            )}
+          </div>
         </div>
 
-        {/* Stage */}
-        {!quizDone ? (
-          <QuestionStage question={QUESTIONS[step]} onPick={pick} />
-        ) : !leadDone && result ? (
-          <LeadStage
-            answers={answers}
-            result={result}
-            defaults={lead}
-            onDone={(values, emailed) => {
-              setLead(values)
-              setCodeEmailed(emailed)
-              setLeadDone(true)
-            }}
-          />
-        ) : result ? (
-          <ResultStage
-            answers={answers}
-            result={result}
-            onRestart={restart}
-            codeEmailed={codeEmailed}
-          />
-        ) : null}
+        <div className="wrap quiz__stage">
+          <div key={index} className={`quiz__panel quiz__panel--${dir}`}>
+            {index < 0 ? (
+              <div className="quiz__intro">
+                <span className="eyebrow">Starter set · 1 minute</span>
+                <h1>
+                  Find your <span className="accent">starter set.</span>
+                </h1>
+                <p className="lede">
+                  Not sure what to buy first? Answer 8 quick questions about your flow and your
+                  days, and we'll tell you what to start with.
+                </p>
+                <button type="button" className="btn" onClick={() => go(0)}>
+                  Start the quiz{' '}
+                  <svg className="arrow" width="18" height="18">
+                    <use href="#i-arrow" />
+                  </svg>
+                </button>
+                <p className="quiz__fine">
+                  At the end we email you a personal code for 10% off your first order.
+                </p>
+              </div>
+            ) : null}
 
-        {/* Foot */}
-        <div className="mt-8 pt-5 border-t border-hairline-soft flex items-center justify-between">
-          {step > 0 && !done ? (
-            <button
-              type="button"
-              onClick={back}
-              className="inline-flex items-center gap-2 text-[13.5px] font-medium text-ink"
-            >
-              <ArrowLeft size={14} /> Back
-            </button>
-          ) : (
-            <span />
-          )}
-          <span className="font-mono text-[11px] tracking-widest uppercase text-mute">
-            {done ? 'Done' : quizDone ? 'Last step' : `Question ${step + 1} of ${QUESTIONS.length}`}
-          </span>
+            {question ? (
+              <QuestionStep
+                heading={heading}
+                question={question}
+                value={answers[question.id]}
+                onPick={(v) => pick(question.id, v)}
+              />
+            ) : null}
+
+            {index === LEAD && result ? (
+              <LeadStep
+                heading={heading}
+                answers={answers}
+                result={result}
+                defaults={lead}
+                onDone={(values, emailed) => {
+                  setLead(values)
+                  setCodeEmailed(emailed)
+                  go(RESULT)
+                }}
+              />
+            ) : null}
+
+            {index >= RESULT && result ? (
+              <ResultStep
+                heading={heading}
+                answers={answers}
+                result={result}
+                codeEmailed={codeEmailed}
+                onRestart={restart}
+              />
+            ) : null}
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 
-// ─── Stages ──────────────────────────────────────────────────────
+// ─── Steps ───────────────────────────────────────────────────────
 
-function QuestionStage({
+function Drops({ n }: { n: number }) {
+  return (
+    <svg viewBox="0 0 30 24" fill="currentColor" aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <path
+          key={i}
+          d={`M${5 + i * 10} 5s4 4.3 4 7.3a4 4 0 0 1-8 0c0-3 4-7.3 4-7.3Z`}
+          opacity={i < n ? 1 : 0.22}
+        />
+      ))}
+    </svg>
+  )
+}
+
+/** The flow question gets the design's drop icons. */
+const FLOW_DROPS: Record<string, number> = { light: 1, medium: 2, heavy: 3, varies: 2 }
+
+function QuestionStep({
+  heading,
   question,
+  value,
   onPick,
 }: {
+  heading: RefObject<HTMLHeadingElement | null>
   question: Question
-  onPick: (qid: QuestionId, value: string) => void
+  value?: string
+  onPick: (v: string) => void
 }) {
+  // Number keys pick an option: 1 for the first, and so on.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || (e.target as HTMLElement)?.tagName === 'INPUT')
+        return
+      const n = Number(e.key)
+      if (n >= 1 && n <= question.options.length) onPick(question.options[n - 1].value)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [question, onPick])
+
+  const n = question.options.length
   return (
-    <div className="mt-9">
-      <h2 className="m-0 font-display italic font-semibold text-[clamp(22px,3vw,30px)] leading-[1.15] tracking-tight text-ink">
+    <fieldset className="quiz__q">
+      <legend className="sr-only">{question.question}</legend>
+      <h1 ref={heading} tabIndex={-1}>
         {question.question}
-      </h2>
-      {question.help ? <p className="mt-2 t-body-s text-mute">{question.help}</p> : null}
-      <div className="mt-5 flex flex-col gap-2.5">
-        {question.options.map((opt) => (
+      </h1>
+      <p className="quiz__hint">{question.help ?? 'Pick the one that fits best.'}</p>
+      <div className={cn('quiz__opts', (n === 3 || n === 2) && 'quiz__opts--3')}>
+        {question.options.map((o, i) => (
           <button
-            key={opt.value}
+            key={o.value}
             type="button"
-            onClick={() => onPick(question.id, opt.value)}
-            className="text-left border border-hairline bg-paper px-5 py-4 hover:border-ink hover:bg-cream-soft transition-colors"
+            className={`qopt${value === o.value ? ' is-on' : ''}`}
+            aria-pressed={value === o.value}
+            onClick={() => onPick(o.value)}
+            style={{ '--i': i } as CSSProperties}
           >
-            <span className="block text-[15.5px] font-medium text-ink">{opt.label}</span>
-            {opt.note ? <span className="block mt-1 text-[13px] text-mute">{opt.note}</span> : null}
+            {question.id === 'q2' ? (
+              <span className="qopt__icon">
+                <Drops n={FLOW_DROPS[o.value] ?? 2} />
+              </span>
+            ) : null}
+            <span className="qopt__text">
+              <b>{o.label}</b>
+              {o.note ? <small>{o.note}</small> : null}
+            </span>
+            <kbd aria-hidden>{i + 1}</kbd>
           </button>
         ))}
       </div>
-    </div>
+    </fieldset>
   )
 }
 
@@ -441,12 +522,14 @@ const leadSchema = z.object({
 })
 type LeadValues = z.infer<typeof leadSchema>
 
-function LeadStage({
+function LeadStep({
+  heading,
   answers,
   result,
   defaults,
   onDone,
 }: {
+  heading: RefObject<HTMLHeadingElement | null>
   answers: Answers
   result: QuizResult
   defaults: { name: string; email: string } | null
@@ -457,10 +540,11 @@ function LeadStage({
     resolver: zodResolver(leadSchema),
     defaultValues: defaults ?? { name: '', email: '' },
   })
+  const errors = form.formState.errors
 
   const onSubmit = async (values: LeadValues) => {
-    // Best effort: if the save fails for any reason the result still shows.
-    // Lead capture must never stand between her and the recommendation.
+    // Best effort: if the save fails the result still shows. Lead capture must
+    // never stand between her and the recommendation.
     let emailed = false
     try {
       await submitLead.mutateAsync({
@@ -468,8 +552,8 @@ function LeadStage({
         email: values.email,
         answers: answers as Record<string, string>,
         resultCode: result.code as LeadResultCode,
-        // The same reasoning she is about to read, plus where to buy, so
-        // the code email can repeat the recommendation.
+        // The same reasoning she is about to read, plus where to buy, so the
+        // code email can repeat the recommendation.
         reason: buildReason(answers, result).join('\n\n'),
         shopPath: `/shop/${RESULTS[result.code].slugs[0]}`,
       })
@@ -481,162 +565,232 @@ function LeadStage({
   }
 
   return (
-    <div className="mt-9">
-      <h2 className="m-0 font-display italic font-semibold text-[clamp(22px,3vw,30px)] leading-[1.15] tracking-tight text-ink">
+    <div className="quiz__q">
+      <h1 ref={heading} tabIndex={-1}>
         Who is this starter set for?
-      </h2>
-      <p className="mt-2 t-body-s text-graphite max-w-150">
-        Tell us your name and email and your recommendation is next.
+      </h1>
+      <p className="quiz__hint">
+        Tell us your name and email and your recommendation is next, with 10% off your first order.
       </p>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-5 max-w-120">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input type="text" autoComplete="name" placeholder="Your name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mform mx-auto mt-8 w-full max-w-120 text-left"
+        noValidate
+      >
+        <label className={cn('mfield', errors.name && 'is-invalid')}>
+          <span>Name</span>
+          <input
+            type="text"
+            autoComplete="name"
+            placeholder="Your name"
+            {...form.register('name')}
           />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          {errors.name ? <em>{errors.name.message}</em> : null}
+        </label>
+        <label className={cn('mfield', errors.email && 'is-invalid')}>
+          <span>Email</span>
+          <input
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            {...form.register('email')}
           />
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            className="mt-1 self-start"
-            disabled={submitLead.isPending}
-          >
-            {submitLead.isPending ? (
-              <>
-                <Spinner size={14} /> One moment…
-              </>
-            ) : (
-              <>
-                Show my starter set <IconArrowRight size={14} />
-              </>
-            )}
-          </Button>
-
-          <p className="m-0 text-[12.5px] leading-[1.5] text-mute">
-            We will only use this to help you find the right products.
-          </p>
-        </form>
-      </Form>
+          {errors.email ? <em>{errors.email.message}</em> : null}
+        </label>
+        <button type="submit" className="btn" disabled={submitLead.isPending}>
+          {submitLead.isPending ? (
+            'One moment…'
+          ) : (
+            <>
+              Show my starter set{' '}
+              <svg className="arrow" width="18" height="18">
+                <use href="#i-arrow" />
+              </svg>
+            </>
+          )}
+        </button>
+        <p className="quiz__fine">We will only use this to help you find the right products.</p>
+      </form>
     </div>
   )
 }
 
-function ResultStage({
+function ResultStep({
+  heading,
   answers,
   result,
-  onRestart,
   codeEmailed,
+  onRestart,
 }: {
+  heading: RefObject<HTMLHeadingElement | null>
   answers: Answers
   result: QuizResult
-  onRestart: () => void
   codeEmailed: boolean
+  onRestart: () => void
 }) {
   const spec = RESULTS[result.code]
-  const reasonParagraphs = buildReason(answers, result)
-
-  // Match result slugs to live catalogue entries for image + price.
+  const reasons = buildReason(answers, result)
   const catalogue = useProducts({ pageSize: 60 })
-  const products: Product[] = catalogue.data?.data?.items ?? []
-  const matched = spec.slugs.map((slug) => products.find((p) => p.slug === slug) ?? null)
-  const formatPrice = useFormatPrice()
+  const items: Product[] = catalogue.data?.data?.items ?? []
+  const products = spec.slugs
+    .map((slug) => items.find((p) => p.slug === slug))
+    .filter((p): p is Product => !!p)
+  const wantsPants = spec.slugs.some((s) => s.includes('pants'))
 
   return (
-    <div className="mt-9">
-      <div className="font-mono text-[11px] tracking-widest uppercase text-coral font-medium">
-        We recommend
-      </div>
-      <h2 className="mt-3 m-0 font-display italic font-semibold text-[clamp(28px,4.5vw,44px)] leading-[1.05] tracking-tight text-ink">
+    <div className="results" aria-live="polite">
+      <span className="eyebrow">We recommend</span>
+      <h1 ref={heading} tabIndex={-1}>
         {spec.name}
-      </h2>
-      <p className="mt-2 t-body text-graphite">{spec.sub}</p>
-
-      <div className="mt-5 flex flex-col gap-3 text-[15px] leading-[1.6] text-graphite max-w-150">
-        {reasonParagraphs.map((p, i) => (
-          <p key={i} className="m-0">
-            {p}
-          </p>
+      </h1>
+      <p className="lede">{spec.sub}</p>
+      <div className="mx-auto grid max-w-[60ch] gap-3 text-left text-(--mute)">
+        {reasons.map((p, i) => (
+          <p key={i}>{p}</p>
         ))}
       </div>
 
       {codeEmailed ? (
-        <div className="mt-6 border border-pink/40 bg-blush px-5 py-4 max-w-150">
-          <div className="font-mono text-[11px] tracking-widest uppercase text-berry font-medium">
-            10% off your first order
+        <div className="results__note">
+          <span className="results__note-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.7}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 6h16v12H4zM4 7l8 6 8-6" />
+            </svg>
+          </span>
+          <div>
+            <b>10% off your first order</b>
+            <p>
+              We have emailed you a personal code. It works once, with this email, for the next 7
+              days.
+            </p>
           </div>
-          <p className="m-0 mt-1.5 text-[14px] leading-[1.55] text-ink">
-            We have emailed you a personal code. It works once, with this email, for the next 7
-            days.
-          </p>
         </div>
       ) : null}
 
-      {/* One card per item in the set. Pants need a size, so the buttons go
-          to the product page instead of straight into the bag. */}
-      <div className="mt-8 flex flex-col gap-3">
-        {spec.slugs.map((slug, i) => {
-          const product = matched[i]
-          return (
-            <div
-              key={slug}
-              className="flex items-center justify-between gap-4 border border-hairline bg-cream-soft px-5 py-4"
-            >
-              <div className="min-w-0">
-                <div className="text-[15.5px] font-medium text-ink">
-                  {product?.name ?? slug.replace(/-/g, ' ')}
-                </div>
-                {product ? (
-                  <div className="mt-0.5 text-[13.5px] text-graphite">
-                    {formatPrice(product.salePrice ?? product.basePriceB2C)}
-                  </div>
-                ) : null}
-              </div>
-              <Button asChild variant="primary" size="md">
-                <Link to={`/shop/${slug}`}>
-                  Buy this set <IconArrowRight size={14} />
-                </Link>
-              </Button>
-            </div>
-          )
-        })}
-      </div>
+      {catalogue.isError ? (
+        <div className="results__fallback">
+          <p>We couldn't load the products just now.</p>
+          <Link className="btn" to="/shop">
+            Browse the shop{' '}
+            <svg className="arrow" width="18" height="18">
+              <use href="#i-arrow" />
+            </svg>
+          </Link>
+        </div>
+      ) : (
+        <div className="results__grid">
+          {products.map((p, i) => (
+            <ResultCard key={p.id} product={p} primary={i === 0} />
+          ))}
+        </div>
+      )}
 
-      <button
-        type="button"
-        onClick={onRestart}
-        className="mt-7 text-[13.5px] font-medium text-ink underline underline-offset-2"
-      >
-        Answer again
-      </button>
+      {wantsPants ? (
+        <div className="results__note">
+          <span className="results__note-icon">
+            <svg>
+              <use href="#i-repeat" />
+            </svg>
+          </span>
+          <div>
+            <b>Not sure of your size?</b>
+            <p>
+              Each pant page has a size guide. Between two sizes, size up: it should feel like a
+              hug, not a squeeze.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="results__foot">
+        <button type="button" className="btn btn--ghost" onClick={onRestart}>
+          Retake the quiz
+        </button>
+        <Link className="results__link" to="/shop">
+          Or browse everything{' '}
+          <svg className="arrow" width="16" height="16">
+            <use href="#i-arrow" />
+          </svg>
+        </Link>
+      </div>
     </div>
+  )
+}
+
+/** Sized products go to their page to pick a size; single option ones add straight to the bag. */
+function ResultCard({ product: p, primary }: { product: Product; primary: boolean }) {
+  const formatPrice = useFormatPrice()
+  const addItem = useCartStore((s) => s.addItem)
+  const openCart = useCartStore((s) => s.openDrawer)
+  const [added, setAdded] = useState(false)
+  const photo = [...(p.images ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))[0]
+  const variants = (p.variants ?? []).filter((v) => v.isActive !== false)
+  const single = variants.length === 1 ? variants[0] : null
+  const inStock = !p.isSoldOut && variants.some((v) => v.stockCount > 0)
+  const { min, max } = priceRange(p)
+
+  const add = () => {
+    if (!single) return
+    addItem({
+      productId: p.id,
+      variantId: single._id,
+      productName: p.name,
+      variantLabel: p.name,
+      unitPrice: variantPrice(p, single),
+      slug: p.slug,
+      imageUrl: photo?.url,
+    })
+    setAdded(true)
+    openCart()
+    toast.success(`${p.name} added to bag.`)
+  }
+
+  return (
+    <article className={`rcard${primary ? ' rcard--primary' : ''}`}>
+      <Link to={`/shop/${p.slug}`} className="rcard__img" aria-label={p.name}>
+        {photo ? <img src={photo.url} alt={p.name} className="absolute inset-0 size-full" /> : null}
+        {primary ? <span className="pbadge pbadge--dark">Best match</span> : null}
+      </Link>
+      <div className="rcard__body">
+        <div className="rcard__row">
+          <h2>
+            <Link to={`/shop/${p.slug}`}>{p.name}</Link>
+          </h2>
+          <b className="rcard__price">
+            {min !== max ? <small>From </small> : null}
+            {formatPrice(min)}
+          </b>
+        </div>
+        {p.subheading ? <span className="rcard__variant">{p.subheading}</span> : null}
+        {p.shortDescription ? <p>{p.shortDescription}</p> : null}
+        {!inStock ? (
+          <Link className="btn btn--ghost rcard__add" to={`/shop/${p.slug}`}>
+            Sold out for now: see the page
+          </Link>
+        ) : single ? (
+          <button
+            type="button"
+            className={`btn${primary ? '' : ' btn--ghost'} rcard__add${added ? ' is-added' : ''}`}
+            onClick={add}
+          >
+            {added ? 'Added to bag ✓' : 'Add to bag'}
+          </button>
+        ) : (
+          <Link className={`btn${primary ? '' : ' btn--ghost'} rcard__add`} to={`/shop/${p.slug}`}>
+            Choose your size{' '}
+            <svg className="arrow" width="18" height="18">
+              <use href="#i-arrow" />
+            </svg>
+          </Link>
+        )}
+      </div>
+    </article>
   )
 }
