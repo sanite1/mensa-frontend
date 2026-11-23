@@ -83,7 +83,11 @@ export function ProductCard({ product: p, index = 0 }: { product: Product; index
             ) : p.metadata?.badge ? (
               <span className="pbadge">{p.metadata.badge}</span>
             ) : null}
-            {off > 0 && inStock ? <span className="pbadge pbadge--rose">Save {off}%</span> : null}
+            {off > 0 && inStock ? (
+              <span className="pbadge pbadge--rose">
+                Save {formatPrice(p.basePriceB2C - (p.salePrice ?? 0))}
+              </span>
+            ) : null}
           </span>
         </Link>
         {inStock ? (

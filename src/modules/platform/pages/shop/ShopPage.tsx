@@ -12,9 +12,9 @@ import { ProductCard, priceRange } from '@/modules/platform/components/shop/Prod
 const CATEGORIES: { slug: ProductCategory; name: string }[] = [
   { slug: 'pants', name: 'Period pants' },
   { slug: 'pads', name: 'Reusable pads' },
-  { slug: 'bundles', name: 'Starter sets' },
+  { slug: 'bundles', name: 'Bundles' },
   { slug: 'education', name: 'Education' },
-  { slug: 'advocacy', name: 'Advocacy' },
+  { slug: 'advocacy', name: 'Fashion items · Period advocacy' },
 ]
 
 const isCategory = (v: string | null): v is ProductCategory => CATEGORIES.some((c) => c.slug === v)
@@ -37,23 +37,33 @@ const sorters: Record<Sort, (a: Product, b: Product, ia: number, ib: number) => 
   new: (a, b) => b.createdAt.localeCompare(a.createdAt),
 }
 
-/** The lede under each category title. */
-const CATEGORY_LEDE: Record<ProductCategory, string> = {
-  pants:
-    'Leakproof, washable period pants for light to heavy days. Singles, packs of 3 and packs of 5.',
-  pads: 'Soft cotton pads with a super absorbent core and waterproof base. Wash, dry and use again.',
-  bundles: 'Everything you need to switch away from disposables, in one box.',
-  education:
-    'Period education that girls (and grown ups) actually enjoy: a comic book and a conversation game.',
-  advocacy: 'Stickers, pins and totes that start conversations and end the stigma.',
-}
-
-const CATEGORY_SEO: Record<ProductCategory, string> = {
-  pants: 'Reusable Mensa period pants. Designed in Abuja, made for Nigerian women.',
-  pads: 'Mensa reusable pads. Replace hundreds of disposables with one set that lasts for years.',
-  bundles: 'Everything you need to switch away from disposables, for less than months of pads.',
-  education: 'My Cycoo, the FLOW Game and more Mensa education for classrooms and homes.',
-  advocacy: 'Pins, totes and everyday pieces that turn period conversations into culture.',
+// Search titles and descriptions, word for word from the old shop page.
+const CATEGORY_SEO: Record<ProductCategory, { title: string; description: string }> = {
+  pants: {
+    title: 'Period pants',
+    description:
+      'Reusable Mensa period pants in sizes S to 2XL. Sport, single, three-pack, five-pack. Designed in Abuja, made for Nigerian women.',
+  },
+  pads: {
+    title: 'Reusable pads',
+    description:
+      'Mensa reusable pads in regular and heavy. Replace hundreds of disposables with one set that lasts five years.',
+  },
+  bundles: {
+    title: 'The starter set',
+    description:
+      'Three Mensa period pants plus five reusable pads. Everything you need to switch away from disposables, for less than four months of pads.',
+  },
+  education: {
+    title: 'Education',
+    description:
+      'My Cycoo guide, FLOW Game, and Period Conversations — Mensa education products for classrooms and homes across Nigeria.',
+  },
+  advocacy: {
+    title: 'Fashion items · Period advocacy',
+    description:
+      'Wearables that carry the message. Pins, tees, and everyday pieces that turn period conversations into culture.',
+  },
 }
 
 function Arrow({ size = 18 }: { size?: number }) {
@@ -77,11 +87,11 @@ export function ShopPage() {
 
   useSeo(
     active
-      ? { title: active.name, description: CATEGORY_SEO[active.slug] }
+      ? CATEGORY_SEO[active.slug]
       : {
-          title: 'Shop everything',
+          title: 'Shop',
           description:
-            'Reusable period pants and pads, period education and advocacy merch. Made in Nigeria, shipped from Abuja.',
+            'Reusable period pants, reusable pads, the starter set, and our education range. Nationwide delivery from our studio in Abuja.',
         },
   )
 
@@ -142,29 +152,19 @@ export function ShopPage() {
       <header className="shop-hero">
         <div className="wrap shop-hero__inner">
           <div>
-            <span className="eyebrow">{active ? 'Shop' : 'The collection'}</span>
-            <h1 className="split" key={active?.slug ?? 'all'}>
+            <span className="eyebrow">Shop</span>
+            <h1 className="split">
               <span className="split-line">
-                <span>{active ? active.name : 'Everything for'}</span>
+                <span>
+                  Shop <span className="accent">everything</span>
+                </span>
               </span>
               <span className="split-line">
-                <span style={{ '--d': '.1s' } as CSSProperties}>
-                  {active ? (
-                    <span className="accent">by Mensa.</span>
-                  ) : (
-                    <>
-                      a <span className="accent">better period.</span>
-                    </>
-                  )}
-                </span>
+                <span style={{ '--d': '.1s' } as CSSProperties}>Mensa.</span>
               </span>
             </h1>
           </div>
-          <p className="lede">
-            {active
-              ? CATEGORY_LEDE[active.slug]
-              : 'Reusable pants and pads, period education and advocacy you can wear. Made in Nigeria and shipped from Abuja.'}
-          </p>
+          <p className="lede">Find the right products here to change your period experience.</p>
         </div>
         <ul className="wrap shop-perks" aria-label="Why shop with us">
           <li>
@@ -242,13 +242,14 @@ export function ShopPage() {
           </p>
         ) : null}
         {query.isLoading ? (
-          <div className="shop-empty">
-            <h2>Loading the collection…</h2>
-          </div>
+          <div className="shop-empty" aria-busy="true" />
         ) : query.isError ? (
           <div className="shop-empty">
-            <h2>The shop is taking a breather.</h2>
-            <p>We couldn&apos;t load the products just now. Try again in a moment.</p>
+            <h2>We couldn't load the shop.</h2>
+            <p>
+              Check that the backend is running on port 4000, then try again. The browser console
+              will have more detail if the request failed.
+            </p>
             <button type="button" className="btn" onClick={() => query.refetch()}>
               Try again <Arrow />
             </button>
@@ -256,9 +257,9 @@ export function ShopPage() {
         ) : products.length === 0 ? (
           <div className="shop-empty">
             <h2>Nothing here yet.</h2>
-            <p>New things are on the sewing table. In the meantime, see everything else.</p>
+            <p>Try a different category. Everything Mensa is still close at hand.</p>
             <Link className="btn" to="/shop">
-              Shop everything <Arrow />
+              See all products <Arrow />
             </Link>
           </div>
         ) : (
@@ -268,6 +269,23 @@ export function ShopPage() {
             ))}
           </div>
         )}
+        {products.length > 0 ? (
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-6 text-(length:--fs-sm)">
+            <span className="text-(--mute)">
+              Showing {products.length} of {all.length} products
+            </span>
+            <span className="flex flex-wrap items-center gap-5">
+              <SizeGuideDialog>
+                <button type="button" className="guide__link">
+                  Read the size guide <Arrow size={16} />
+                </button>
+              </SizeGuideDialog>
+              <Link className="guide__link" to="/partnerships">
+                Wholesale &amp; schools <Arrow size={16} />
+              </Link>
+            </span>
+          </div>
+        ) : null}
       </section>
 
       {(!active || active.slug === 'pants') && pack3 ? (

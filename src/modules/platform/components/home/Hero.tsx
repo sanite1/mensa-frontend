@@ -83,30 +83,30 @@ export function Hero() {
             </span>
           </div>
           <div className="xslide__copy">
-            <span className="xslide__kicker">Designed in Abuja · Sizes S to 2XL</span>
+            <span className="xslide__kicker">Periods, but more convenient</span>
             <h1 className="xslide__title">
               <span className="xl">
-                <span>Period care</span>
-              </span>
-              <span className="xl">
-                <span>you'll actually</span>
+                <span>Your one-stop</span>
               </span>
               <span className="xl">
                 <span>
-                  <em>love.</em>
+                  <em>menstrual health</em>
                 </span>
+              </span>
+              <span className="xl">
+                <span>shop.</span>
               </span>
             </h1>
             <p className="xslide__sub">
-              Leakproof period pants and soft reusable pads. Comfortable from the first wear, made
-              to last up to two years with care.
+              Better periods start here. Discover thoughtfully designed reusable products, fun
+              menstrual health education, and fashionable advocacy that puts women and girls first.
             </p>
             <div className="xslide__ctas">
-              <Link className="btn" to="/shop">
-                Shop the collection <Arrow />
+              <Link className="btn" to="/find-my-starter-set">
+                Find my starter set <Arrow />
               </Link>
               <Link className="btn btn--ghost" to="/how-it-works">
-                How it works
+                How they work
               </Link>
             </div>
             <nav className="xshopby" aria-label="Shop by product">

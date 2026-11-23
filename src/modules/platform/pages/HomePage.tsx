@@ -36,29 +36,29 @@ function SplitHeading({ lines, className }: { lines: React.ReactNode[]; classNam
   )
 }
 
+// The trust strip from our old home page, now scrolling.
 const MARQUEE = [
-  'Comfortable',
-  'Confident',
-  'Sustainable',
-  'Periods, but more convenient',
-  'Wear the conversation',
+  'Nationwide delivery · 2 to 5 days',
+  '30 day comfort guarantee',
+  '5 year lifetime, zero monthly cost',
+  'Puts women and girls first',
 ]
 
 const REASONS = [
   {
     icon: 'i-clock',
-    title: 'Periods, but more convenient',
-    body: 'Life is busy enough already. Mensa gives you reliable protection that fits seamlessly into work, school, travel and every part of your day.',
+    title: 'More convenient.',
+    body: "Your day is already busy enough. You shouldn't have to worry about getting stained while you're at work, in school, travelling, sleeping, or simply living your life. Mensa gives you reliable protection, so your period becomes one less thing to think about.",
   },
   {
     icon: 'i-wallet',
-    title: 'More money in your pocket',
-    body: 'Buying disposable pads every month is beginning to look like an expensive subscription. Mensa is designed to last for years, so you save money every cycle.',
+    title: 'More cost-effective.',
+    body: "Buying disposable pads every month is beginning to look like an expensive subscription. Mensa's reusable period products are designed to last for years, helping you save money while reducing the amount of plastic waste you throw away.",
   },
   {
     icon: 'i-leaf',
-    title: 'Kinder to the planet',
-    body: 'A better period should not come at the expense of the planet. Our reusables are designed to reduce waste while lasting for years.',
+    title: 'More modern.',
+    body: 'Periods deserve more than outdated products and awkward conversations. Mensa combines chic reusable period care, fun and relatable menstrual health education, and bold, stylish advocacy that lets you wear the conversation with confidence.',
   },
 ]
 
@@ -96,13 +96,12 @@ export function HomePage() {
           <div className="section__head">
             <div>
               <span className="eyebrow" data-reveal>
-                Why Mensa
+                The whys
               </span>
-              <SplitHeading lines={['Three reasons', 'to switch.']} />
+              <SplitHeading
+                lines={['Three reasons to switch to Mensa', 'for all things periods.']}
+              />
             </div>
-            <p className="lede" data-reveal>
-              Periods deserve more than outdated products and awkward conversations.
-            </p>
           </div>
           <div className="reasons">
             {REASONS.map((r, i) => (
@@ -184,12 +183,12 @@ export function HomePage() {
           <div className="section__head">
             <div>
               <span className="eyebrow" data-reveal>
-                Shop
+                Shop the range
               </span>
-              <SplitHeading lines={['Take one,', 'or take all.']} />
+              <SplitHeading lines={['Shop Mensa products.', 'Take one or take all.']} />
             </div>
             <Link className="btn btn--ghost" to="/shop" data-reveal>
-              Shop everything <Arrow />
+              View the full range <Arrow />
             </Link>
           </div>
           <ProductGrid params={{ pageSize: 4, sort: 'featured' }} />
@@ -242,19 +241,28 @@ export function HomePage() {
           </div>
           <div>
             <span className="eyebrow" data-reveal>
-              Meet the mind behind Mensa
+              Our story
             </span>
             <blockquote data-reveal>
               We believe managing your period with knowledge and dignity is a human right.
             </blockquote>
             <p data-reveal>
-              Mensa was founded by Kehinde Abereoje in Abuja, a public health advocate who turned a
-              visit to a displaced persons camp at fourteen into a workshop, a brand, and an answer
-              to period poverty in Nigeria.
+              At 16, Kehinde realised that too many girls could not afford pads and knew very little
+              about their periods. She believed that something as natural as menstruation should
+              never determine a girl's confidence, education, or opportunities. So she started
+              supporting girls through her nonprofit, one conversation and one community at a time.
             </p>
-            <cite data-reveal>
-              <b>Kehinde Abereoje</b> · Founder, Mensa Period Products
-            </cite>
+            <p data-reveal className="mt-4">
+              A decade later, she realised that charity alone could never solve period poverty.
+              Every girl deserves access to products that are comfortable, sustainable, and made for
+              everyday life, not only when she is rich or fortunate enough to meet an NGO or receive
+              a donation.
+            </p>
+            <p data-reveal className="mt-4">
+              That's why Mensa was created: to make better period care accessible, make
+              conversations around periods fun, and give women products they can genuinely love
+              using.
+            </p>
             <div className="mt-[2.2rem]" data-reveal>
               <Link className="btn btn--ghost" to="/about">
                 Read our story <Arrow />
@@ -350,12 +358,10 @@ function EducationSection() {
             <span className="eyebrow" data-reveal>
               Education
             </span>
-            <SplitHeading lines={['We also make space', 'for the conversation.']} />
+            <SplitHeading
+              lines={['We make products.', 'We also make space for the conversation.']}
+            />
           </div>
-          <p className="lede" data-reveal>
-            Comics, games and guides that make learning about periods fun, in the languages girls
-            speak at home.
-          </p>
         </div>
         <ProductGrid params={{ category: 'education', pageSize: 4, sort: 'featured' }} />
       </div>
