@@ -1,7 +1,8 @@
-// LegalLayout, shared shell for /privacy and /terms, includes a draft notice pending counsel review.
+// LegalLayout: shared shell for /privacy and /terms, in the design system's
+// InfoPage layout. Our extra: an "On this page" list above the help card.
 
 import type { ReactNode } from 'react'
-import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
+import { HelpCard, InfoPage } from '@/components/design/InfoPage'
 
 export interface LegalSection {
   heading: string
@@ -19,72 +20,38 @@ interface LegalLayoutProps {
 
 export function LegalLayout({ eyebrow, title, lastUpdated, intro, sections }: LegalLayoutProps) {
   return (
-    <div className="bg-paper">
-      <section className="bg-paper">
-        <div className="px-5 md:px-10 lg:px-16 pt-10 lg:pt-16 pb-3 flex flex-wrap items-center justify-between gap-4">
-          <div className="inline-flex items-center gap-3 text-coral">
-            <span aria-hidden className="w-7 h-px bg-current opacity-60" />
-            <span className="font-mono text-[11px] tracking-widest uppercase font-medium">
-              {eyebrow}
-            </span>
-          </div>
-          <span className="font-mono text-[10.5px] tracking-widest uppercase text-mute">
-            Last updated · {lastUpdated}
-          </span>
-        </div>
-
-        <div className="px-5 md:px-10 lg:px-16 py-10 lg:py-16">
-          <h1 className="m-0 font-display italic font-semibold text-[clamp(40px,7vw,112px)] leading-[0.95] tracking-tighter text-ink">
-            {title}
-          </h1>
-          <div className="mt-8 lg:mt-12 pt-5 border-t border-hairline max-w-160 t-body-l text-graphite leading-relaxed">
-            {intro}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-5 md:px-10 lg:px-16 py-16 lg:py-24 bg-cream">
-        <div className="max-w-180 mx-auto">
-          {/* Mini table of contents */}
-          <nav aria-label="On this page" className="mb-12">
-            <SectionEyebrow color="var(--berry)">On this page</SectionEyebrow>
-            <ol className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 list-none m-0 p-0">
-              {sections.map((s, i) => (
+    <InfoPage
+      eyebrow={eyebrow}
+      title={title}
+      lede={intro}
+      updated={
+        lastUpdated === 'Draft' ? 'Draft, pending legal review' : `Last updated ${lastUpdated}`
+      }
+      aside={
+        <div className="grid gap-6">
+          <nav aria-label="On this page">
+            <span className="eyebrow">On this page</span>
+            <ol className="mt-3 grid gap-2 text-(length:--fs-sm)">
+              {sections.map((s) => (
                 <li key={s.heading}>
-                  <a
-                    href={`#${slugify(s.heading)}`}
-                    className="block text-[14px] text-ink hover:text-pink-deep no-underline border-b border-hairline pb-1.5"
-                  >
-                    <span className="font-mono text-mute mr-2 text-[12px]">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
+                  <a href={`#${slugify(s.heading)}`} className="text-(--mute) hover:text-(--ink)">
                     {s.heading}
                   </a>
                 </li>
               ))}
             </ol>
           </nav>
-
-          <div className="flex flex-col gap-12 lg:gap-16">
-            {sections.map((s, i) => (
-              <section key={s.heading} id={slugify(s.heading)} className="scroll-mt-24">
-                <div className="flex items-baseline gap-3 mb-4">
-                  <span className="font-mono text-[12px] uppercase tracking-widest text-mute">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <h2 className="m-0 font-display italic font-semibold text-[clamp(24px,3vw,36px)] leading-tight tracking-tight text-ink">
-                    {s.heading}
-                  </h2>
-                </div>
-                <div className="t-body text-graphite leading-relaxed flex flex-col gap-4">
-                  {s.body}
-                </div>
-              </section>
-            ))}
-          </div>
+          <HelpCard />
         </div>
-      </section>
-    </div>
+      }
+    >
+      {sections.map((s) => (
+        <section key={s.heading} id={slugify(s.heading)} className="scroll-mt-24 space-y-4">
+          <h2>{s.heading}</h2>
+          {s.body}
+        </section>
+      ))}
+    </InfoPage>
   )
 }
 

@@ -9,11 +9,11 @@ const SECTIONS: LegalSection[] = [
     heading: 'Using this site',
     body: (
       <>
-        <p className="m-0">
+        <p>
           By browsing, buying, or signing up on mensaproducts.com you agree to these terms. If you
           do not agree, please stop using the site.
         </p>
-        <p className="m-0">
+        <p>
           We may update these terms from time to time. The "last updated" date at the top of this
           page is always the current version.
         </p>
@@ -24,14 +24,11 @@ const SECTIONS: LegalSection[] = [
     heading: 'Your account',
     body: (
       <>
-        <p className="m-0">
+        <p>
           You do not need an account to shop, but you need one to track orders from your dashboard,
           save addresses, or earn partner commission. You are responsible for keeping your password
-          safe. Tell us at{' '}
-          <a href="mailto:hi@mensaproducts.com" className="text-ink underline underline-offset-2">
-            hi@mensaproducts.com
-          </a>{' '}
-          if you think your account has been used without permission.
+          safe. Tell us at <a href="mailto:hi@mensaproducts.com">hi@mensaproducts.com</a> if you
+          think your account has been used without permission.
         </p>
       </>
     ),
@@ -40,12 +37,12 @@ const SECTIONS: LegalSection[] = [
     heading: 'Orders and payment',
     body: (
       <>
-        <p className="m-0">
+        <p>
           All prices are in Nigerian Naira. If you have selected a different display currency, you
-          are seeing an indicative conversion — your card is still charged in NGN by Paystack. Your
+          are seeing an indicative conversion, your card is still charged in NGN by Paystack. Your
           bank may apply a foreign-exchange fee.
         </p>
-        <p className="m-0">
+        <p>
           We accept orders subject to availability. Stock is decremented when you start the
           checkout, and restored automatically if your payment does not complete within ten minutes.
           We reserve the right to refuse or cancel any order for legitimate reasons (suspected
@@ -58,12 +55,12 @@ const SECTIONS: LegalSection[] = [
     heading: 'Shipping and delivery',
     body: (
       <>
-        <p className="m-0">
+        <p>
           We ship nationwide via Sendbox and offer an in-house rider in FCT (Abuja) and Lagos.
-          Delivery windows are estimates, not guarantees — most orders arrive within 1 to 5 working
+          Delivery windows are estimates, not guarantees, most orders arrive within 1 to 5 working
           days from dispatch.
         </p>
-        <p className="m-0">
+        <p>
           You will receive a shipping email with a tracking number when your order leaves our
           studio. If a parcel does not arrive within ten working days, please reach us.
         </p>
@@ -74,15 +71,11 @@ const SECTIONS: LegalSection[] = [
     heading: 'Returns and exchanges',
     body: (
       <>
-        <p className="m-0">
+        <p>
           Period products are personal and intimate, so the rules are different from most online
-          shopping. The full policy lives on its own page:{' '}
-          <Link to="/returns" className="text-ink underline underline-offset-2">
-            Returns
-          </Link>
-          .
+          shopping. The full policy lives on its own page: <Link to="/returns">Returns</Link>.
         </p>
-        <p className="m-0">
+        <p>
           The short version: no general returns or exchanges; report wrong / damaged / wrong- size
           items within three days of delivery and we will make it right.
         </p>
@@ -93,13 +86,13 @@ const SECTIONS: LegalSection[] = [
     heading: 'Partner programme',
     body: (
       <>
-        <p className="m-0">
+        <p>
           Individuals and organisations can apply to partner with Mensa. Approved individual
           partners earn a commission on every paid order placed through their referral link.
           Commission becomes cashable once the order is delivered. Commissions for orders that are
           later cancelled or refunded are reversed.
         </p>
-        <p className="m-0">
+        <p>
           Partners must not impersonate Mensa, make claims we have not approved, or use the referral
           link for spam. We may suspend or remove partners who breach these rules and any commission
           balance at the time of suspension may be withheld.
@@ -111,8 +104,8 @@ const SECTIONS: LegalSection[] = [
     heading: 'Acceptable use',
     body: (
       <>
-        <p className="m-0">You agree not to use this site to:</p>
-        <ul className="m-0 pl-5 flex flex-col gap-1.5">
+        <p>You agree not to use this site to:</p>
+        <ul>
           <li>Submit false, fraudulent, or impersonated orders or contact-form messages.</li>
           <li>Attempt to circumvent rate limits, paywalls, or other technical controls.</li>
           <li>
@@ -126,7 +119,7 @@ const SECTIONS: LegalSection[] = [
   {
     heading: 'Intellectual property',
     body: (
-      <p className="m-0">
+      <p>
         The Mensa name, wordmark, product photography, editorial copy, and packaging design are all
         our work and remain ours. You may share links to our pages freely. Republishing substantial
         portions of our content requires written permission.
@@ -136,7 +129,7 @@ const SECTIONS: LegalSection[] = [
   {
     heading: 'Liability',
     body: (
-      <p className="m-0">
+      <p>
         Mensa products are designed to be safe and effective for menstrual use. They are not medical
         devices and are not a substitute for medical advice. If you experience discomfort,
         irritation, or any health concern related to your period, please consult a qualified
@@ -148,7 +141,7 @@ const SECTIONS: LegalSection[] = [
   {
     heading: 'Governing law',
     body: (
-      <p className="m-0">
+      <p>
         These terms are governed by the laws of the Federal Republic of Nigeria. Any disputes we
         cannot resolve directly will go before the courts of the Federal Capital Territory, Abuja.
       </p>
@@ -157,12 +150,9 @@ const SECTIONS: LegalSection[] = [
   {
     heading: 'Contact',
     body: (
-      <p className="m-0">
+      <p>
         Questions about these terms? Reach us at{' '}
-        <a href="mailto:hi@mensaproducts.com" className="text-ink underline underline-offset-2">
-          hi@mensaproducts.com
-        </a>
-        .
+        <a href="mailto:hi@mensaproducts.com">hi@mensaproducts.com</a>.
       </p>
     ),
   },
@@ -172,7 +162,7 @@ export function TermsPage() {
   useSeo({
     title: 'Terms of service',
     description:
-      'The rules of using mensaproducts.com. Plain English, no surprises — covering accounts, orders, shipping, the partner programme, and acceptable use.',
+      'The rules of using mensaproducts.com. Plain English, no surprises, covering accounts, orders, shipping, the partner programme, and acceptable use.',
   })
   return (
     <LegalLayout

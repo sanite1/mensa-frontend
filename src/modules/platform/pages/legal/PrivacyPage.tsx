@@ -8,17 +8,15 @@ const SECTIONS: LegalSection[] = [
     heading: 'What we collect',
     body: (
       <>
-        <p className="m-0">
-          When you shop or sign up to a Mensa surface we collect the information you give us:
-        </p>
-        <ul className="m-0 pl-5 flex flex-col gap-1.5">
+        <p>When you shop or sign up to a Mensa surface we collect the information you give us:</p>
+        <ul>
           <li>Your name, email address and phone number.</li>
           <li>Your delivery address.</li>
           <li>The contents of any order you place.</li>
           <li>Messages you send us via the contact form or email.</li>
           <li>If you become a partner, your social handle and bank account details.</li>
         </ul>
-        <p className="m-0">
+        <p>
           We never see or store your full card number. Payments are processed by Paystack on their
           own infrastructure and they hand us back only a payment reference.
         </p>
@@ -29,7 +27,7 @@ const SECTIONS: LegalSection[] = [
     heading: 'Why we collect it',
     body: (
       <>
-        <ul className="m-0 pl-5 flex flex-col gap-1.5">
+        <ul>
           <li>To fulfil and ship the orders you place.</li>
           <li>
             To send order, shipping, and account emails (these are transactional, not marketing).
@@ -45,27 +43,25 @@ const SECTIONS: LegalSection[] = [
     heading: 'Who we share it with',
     body: (
       <>
-        <p className="m-0">
-          We share only the minimum data needed with the services that help us run Mensa:
-        </p>
-        <ul className="m-0 pl-5 flex flex-col gap-1.5">
+        <p>We share only the minimum data needed with the services that help us run Mensa:</p>
+        <ul>
           <li>
-            <span className="text-ink">Paystack</span> — payment processing.
+            <span>Paystack</span>: payment processing.
           </li>
           <li>
-            <span className="text-ink">Sendbox</span> — nationwide shipping (your name, address,
-            phone, and parcel weight).
+            <span>Sendbox</span>: nationwide shipping (your name, address, phone, and parcel
+            weight).
           </li>
           <li>
-            <span className="text-ink">Mailerlite</span> — newsletter delivery, if you have
-            subscribed. We share only your email and your subscribe source.
+            <span>Mailerlite</span>: newsletter delivery, if you have subscribed. We share only your
+            email and your subscribe source.
           </li>
           <li>
-            <span className="text-ink">Cloudinary</span> — image hosting (product photography and
-            any cover images you upload).
+            <span>Cloudinary</span>: image hosting (product photography and any cover images you
+            upload).
           </li>
         </ul>
-        <p className="m-0">
+        <p>
           We do not sell your data to anyone, for any reason. We do not run third-party advertising
           trackers on this site.
         </p>
@@ -76,16 +72,11 @@ const SECTIONS: LegalSection[] = [
     heading: 'Cookies and analytics',
     body: (
       <>
-        <p className="m-0">
+        <p>
           We use a small number of first-party cookies and browser storage entries to keep your cart
           working, remember your selected display currency, and track partner referral attribution.
           We use{' '}
-          <a
-            href="https://plausible.io"
-            target="_blank"
-            rel="noreferrer"
-            className="text-ink underline underline-offset-2"
-          >
+          <a href="https://plausible.io" target="_blank" rel="noreferrer">
             Plausible
           </a>{' '}
           for privacy-friendly, cookie-less aggregate analytics.
@@ -97,7 +88,7 @@ const SECTIONS: LegalSection[] = [
     heading: 'How long we keep it',
     body: (
       <>
-        <p className="m-0">
+        <p>
           Orders and the data attached to them are kept indefinitely for accounting and
           customer-service reasons. Newsletter subscribers can unsubscribe and ask to be removed at
           any time. Contact-form submissions live in our support inbox and are deleted on request.
@@ -109,19 +100,16 @@ const SECTIONS: LegalSection[] = [
     heading: 'Your rights under NDPR',
     body: (
       <>
-        <p className="m-0">The Nigeria Data Protection Regulation gives you the right to:</p>
-        <ul className="m-0 pl-5 flex flex-col gap-1.5">
+        <p>The Nigeria Data Protection Regulation gives you the right to:</p>
+        <ul>
           <li>Ask what we hold about you.</li>
           <li>Correct anything that is wrong.</li>
           <li>Delete your account and the personal data attached to it.</li>
           <li>Withdraw consent for the newsletter or any other optional use.</li>
         </ul>
-        <p className="m-0">
-          Email{' '}
-          <a href="mailto:hi@mensaproducts.com" className="text-ink underline underline-offset-2">
-            hi@mensaproducts.com
-          </a>{' '}
-          to make any of these requests. We will reply within 30 days.
+        <p>
+          Email <a href="mailto:hi@mensaproducts.com">hi@mensaproducts.com</a> to make any of these
+          requests. We will reply within 30 days.
         </p>
       </>
     ),
@@ -129,7 +117,7 @@ const SECTIONS: LegalSection[] = [
   {
     heading: 'Children',
     body: (
-      <p className="m-0">
+      <p>
         Our products are for menstruators of any age. If you are under 18, please ask a parent or
         guardian to place orders on your behalf. We do not knowingly create accounts for users under
         13.
@@ -139,7 +127,7 @@ const SECTIONS: LegalSection[] = [
   {
     heading: 'Changes to this policy',
     body: (
-      <p className="m-0">
+      <p>
         We will update this page when our practices change. The "last updated" date at the top
         always reflects the current version. Material changes that affect existing customers will
         also be sent to subscribed email addresses.
@@ -149,12 +137,9 @@ const SECTIONS: LegalSection[] = [
   {
     heading: 'Contact',
     body: (
-      <p className="m-0">
+      <p>
         Questions about how we handle your data? Reach us at{' '}
-        <a href="mailto:hi@mensaproducts.com" className="text-ink underline underline-offset-2">
-          hi@mensaproducts.com
-        </a>{' '}
-        and we will get back to you.
+        <a href="mailto:hi@mensaproducts.com">hi@mensaproducts.com</a> and we will get back to you.
       </p>
     ),
   },
