@@ -9,7 +9,7 @@ import { useEffect, useMemo, useRef, useState, type InputHTMLAttributes } from '
 import { useForm, type FieldError } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { addressSchema } from '@/modules/platform/components/AddressForm'
@@ -52,6 +52,7 @@ const optionState = (on: boolean) =>
 
 export function CheckoutPage() {
   useSeo({ title: 'Checkout', noindex: true })
+  const navigate = useNavigate()
   const lines = useCartStore((s) => s.lines)
   const subtotalKobo = useCartStore((s) => s.subtotal())
   const user = useAuthStore((s) => s.user)
@@ -61,6 +62,14 @@ export function CheckoutPage() {
   const [paying, setPaying] = useState(false)
   const initialize = useInitializeCheckout()
   const formatPrice = useFormatPrice()
+
+  // Redirect an empty bag back to the shop.
+  useEffect(() => {
+    if (lines.length === 0) {
+      toast.message('Your bag is empty. Pick something to get started.')
+      navigate('/shop', { replace: true })
+    }
+  }, [lines.length, navigate])
   const displayCurrency = useCurrencyStore((s) => s.currency)
   // Paystack always charges in NGN, warn visitors viewing another currency.
   const showCurrencyNote = displayCurrency !== 'NGN'
@@ -248,20 +257,7 @@ export function CheckoutPage() {
     )
   }
 
-  if (lines.length === 0)
-    return (
-      <main className="wrap checkout-empty">
-        <span className="eyebrow">Checkout</span>
-        <h1>Your bag is empty.</h1>
-        <p className="lede">Add something you love and come back here to pay.</p>
-        <Link className="btn" to="/shop">
-          Shop everything{' '}
-          <svg className="arrow" width="18" height="18">
-            <use href="#i-arrow" />
-          </svg>
-        </Link>
-      </main>
-    )
+  if (lines.length === 0) return null
 
   const showAddressFields =
     !isAuthenticated || savedAddresses.length === 0 || selectedAddressId === 'new'
@@ -281,7 +277,8 @@ export function CheckoutPage() {
             onSubmit={form.handleSubmit(onSubmit, onInvalid)}
             noValidate
           >
-            <h1>Checkout</h1>
+            <span className="eyebrow">Checkout</span>
+            <h1>Almost yours.</h1>
 
             <section>
               <h2>
@@ -293,7 +290,6 @@ export function CheckoutPage() {
                   type="email"
                   autoComplete="email"
                   placeholder="you@example.com"
-                  hint="For your receipt and delivery updates."
                   error={errors.customerEmail}
                   {...register('customerEmail')}
                 />
@@ -301,22 +297,21 @@ export function CheckoutPage() {
                   label="Phone"
                   type="tel"
                   autoComplete="tel"
-                  placeholder="0803 000 0000"
-                  hint="The rider calls this number."
+                  placeholder="0801 234 5678"
                   error={errors.customerPhone}
                   {...register('customerPhone')}
                 />
               </div>
               {!isAuthenticated ? (
                 <p className="checkout__fine mt-3 text-left">
-                  Have an account? <Link to="/login">Sign in</Link> to fill this in for you.
+                  Have an account? <Link to="/login">Sign in</Link> to autofill your details.
                 </p>
               ) : null}
             </section>
 
             <section>
               <h2>
-                <span>2</span>Delivery
+                <span>2</span>Delivery address
               </h2>
 
               {isAuthenticated && savedAddresses.length > 0 ? (
@@ -361,11 +356,12 @@ export function CheckoutPage() {
                   <Fld
                     label="Full name"
                     autoComplete="name"
+                    placeholder="Adaeze Okoro"
                     error={errors.address?.fullName}
                     {...register('address.fullName')}
                   />
                   <Fld
-                    label="Recipient phone"
+                    label="Phone"
                     type="tel"
                     autoComplete="tel"
                     placeholder="0801 234 5678"
@@ -381,23 +377,27 @@ export function CheckoutPage() {
                     {...register('address.line1')}
                   />
                   <Fld
-                    label="Flat, landmark or gate code"
+                    label="Apartment, suite, etc."
                     optional
                     wide
                     autoComplete="address-line2"
+                    placeholder="Flat 4B"
                     error={errors.address?.line2}
                     {...register('address.line2')}
                   />
                   <Fld
-                    label="City or town"
+                    label="City"
                     autoComplete="address-level2"
+                    placeholder="Abuja"
                     error={errors.address?.city}
                     {...register('address.city')}
                   />
                   <label className={cn('fld', errors.address?.state && 'is-invalid')}>
                     <span>State</span>
                     <select autoComplete="address-level1" {...register('address.state')}>
-                      <option value="">Choose…</option>
+                      <option value="" disabled>
+                        Pick a state
+                      </option>
                       {NG_STATES.map((s) => (
                         <option key={s} value={s}>
                           {s}
@@ -407,9 +407,10 @@ export function CheckoutPage() {
                     {errors.address?.state ? <em>{errors.address.state.message}</em> : null}
                   </label>
                   <Fld
-                    label="Postcode"
+                    label="Postal code"
                     optional
                     autoComplete="postal-code"
+                    placeholder="900288"
                     error={errors.address?.postal}
                     {...register('address.postal')}
                   />
@@ -422,21 +423,26 @@ export function CheckoutPage() {
                   <span>Save this address to my account for next time.</span>
                 </label>
               ) : null}
+            </section>
 
-              <div className="mt-6 grid gap-2">
-                {!watchedState || !cityReady ? (
+            <section>
+              <h2>
+                <span>3</span>Shipping
+              </h2>
+              <div className="grid gap-2">
+                {!watchedState || !watchedCity ? (
                   <p className="checkout__eta">
-                    Enter your city and state to see delivery options.
+                    Enter your delivery address to see shipping options.
                   </p>
                 ) : ratesQuery.isLoading ? (
-                  <p className="checkout__eta">Looking up delivery to {watchedState}…</p>
+                  <p className="checkout__eta">Looking up rates for {watchedState}…</p>
                 ) : ratesQuery.isError ? (
                   <p className="checkout__error" role="alert">
-                    We could not load delivery options. Try another state or refresh.
+                    Could not load shipping rates. Try a different state or refresh.
                   </p>
                 ) : rateOptions.length === 0 ? (
                   <p className="checkout__error" role="alert">
-                    We do not deliver to {watchedState} yet. Write to support@mensaproducts.com and
+                    We do not deliver to that state yet. Reach us at support@mensaproducts.com and
                     we will see what we can do.
                   </p>
                 ) : (
@@ -453,11 +459,11 @@ export function CheckoutPage() {
                     >
                       <span>
                         <b className="block font-medium text-(--ink)">{opt.name}</b>
-                        <span className="text-[13px] text-(--mute)">Arrives in {opt.eta}</span>
+                        <span className="text-[12px] uppercase tracking-widest text-(--mute)">
+                          {opt.eta}
+                        </span>
                       </span>
-                      <b className="font-semibold text-(--ink)">
-                        {opt.amount === 0 ? 'Free' : formatPrice(opt.amount)}
-                      </b>
+                      <b className="font-semibold text-(--ink)">{formatPrice(opt.amount)}</b>
                     </button>
                   ))
                 )}
@@ -466,7 +472,7 @@ export function CheckoutPage() {
 
             <section>
               <h2>
-                <span>3</span>Payment
+                <span>4</span>Payment
               </h2>
               <div className="paybox">
                 <div>
@@ -484,9 +490,9 @@ export function CheckoutPage() {
               </div>
               {showCurrencyNote ? (
                 <p className="checkout__fine mt-3 text-left">
-                  Prices are shown in {displayCurrency}. Paystack charges{' '}
-                  <b>₦{(totalKobo / 100).toLocaleString('en-NG')}</b> in naira, and your bank may
-                  add a foreign exchange fee.
+                  Prices shown in {displayCurrency}. Your card will be charged{' '}
+                  <b>₦{(totalKobo / 100).toLocaleString('en-NG')}</b> in NGN by Paystack. Your bank
+                  may apply a foreign-exchange fee.
                 </p>
               ) : null}
             </section>
@@ -503,9 +509,7 @@ export function CheckoutPage() {
                 </>
               )}
             </button>
-            <p className="checkout__fine">
-              Your items are held for you while you pay. We never store your card.
-            </p>
+            <p className="checkout__fine">Secure payment by Paystack. We never store your card.</p>
           </form>
 
           <aside className="summary">
@@ -521,9 +525,9 @@ export function CheckoutPage() {
                   </span>
                   <span className="summary__name">
                     <b>{l.productName}</b>
-                    {l.variantLabel && l.variantLabel !== l.productName ? (
-                      <small>{l.variantLabel}</small>
-                    ) : null}
+                    <small>
+                      {l.variantLabel} · Qty {l.qty}
+                    </small>
                   </span>
                   <span className="summary__price">{formatPrice(l.unitPrice * l.qty)}</span>
                 </li>
@@ -547,22 +551,12 @@ export function CheckoutPage() {
             <dl>
               <dt>Subtotal</dt>
               <dd>{formatPrice(subtotalKobo)}</dd>
-              <dt>Delivery</dt>
-              <dd>
-                {selectedRate ? (
-                  shippingKobo === 0 ? (
-                    'Free'
-                  ) : (
-                    formatPrice(shippingKobo)
-                  )
-                ) : (
-                  <small>Enter your address</small>
-                )}
-              </dd>
+              <dt>Shipping</dt>
+              <dd>{selectedRate ? formatPrice(shippingKobo) : '—'}</dd>
               {discountKobo > 0 ? (
                 <>
                   <dt>Discount ({applied?.code})</dt>
-                  <dd className="text-(--berry)">−{formatPrice(discountKobo)}</dd>
+                  <dd className="text-(--berry)">− {formatPrice(discountKobo)}</dd>
                 </>
               ) : null}
               <dt className="summary__total">Total</dt>
@@ -626,6 +620,9 @@ function DiscountEntry({
     return (
       <div className="flex items-center justify-between gap-3 border-t border-(--line) py-4 text-[14px]">
         <span className="min-w-0 truncate">
+          <small className="block text-[11px] uppercase tracking-widest text-(--mute)">
+            Code applied
+          </small>
           <b className="font-medium">{applied.code}</b>{' '}
           <span className="text-(--mute)">· {applied.description}</span>
         </span>

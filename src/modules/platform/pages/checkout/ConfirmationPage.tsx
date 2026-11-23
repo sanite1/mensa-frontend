@@ -129,7 +129,7 @@ export function ConfirmationPage() {
     return (
       <Shell>
         <span className="eyebrow">Order {orderNumber}</span>
-        <h1 className="text-(length:--fs-h3)">Confirm your email</h1>
+        <h1 className="text-(length:--fs-h3)">Confirm the email.</h1>
         <p className="lede max-w-[40ch]">
           Enter the email you used at checkout so we can pull up your order.
         </p>
@@ -160,8 +160,7 @@ export function ConfirmationPage() {
   if (trackQuery.isLoading) {
     return (
       <Shell>
-        <span className="eyebrow">Order {orderNumber}</span>
-        <h1 className="text-(length:--fs-h3)">Looking up your order…</h1>
+        <h1 className="text-(length:--fs-h3)">Looking up order {orderNumber}…</h1>
       </Shell>
     )
   }
@@ -170,10 +169,10 @@ export function ConfirmationPage() {
     return (
       <Shell>
         <span className="eyebrow">Order {orderNumber}</span>
-        <h1 className="text-(length:--fs-h3)">We couldn't find that order</h1>
+        <h1 className="text-(length:--fs-h3)">We could not find that order.</h1>
         <p className="lede max-w-[40ch]">
-          Check the email you used at checkout, or open the link in the confirmation email we sent
-          you.
+          Double check the email you used at checkout, or paste the link from the confirmation we
+          sent you.
         </p>
         <button
           type="button"
@@ -197,33 +196,40 @@ export function ConfirmationPage() {
   return (
     <main className="wrap py-[clamp(4rem,10vw,7rem)]">
       <div className="mx-auto grid max-w-140 justify-items-center gap-5 text-center">
-        <span className="eyebrow">
-          {paid ? 'Payment received' : failed ? 'Not paid' : 'Checking with Paystack'}
-        </span>
+        <span className="eyebrow">Order {order.orderNumber}</span>
         <h1 className="text-(length:--fs-h2)">
           {paid
-            ? `Thank you, ${firstName}!`
+            ? `Thank you, ${firstName}.`
             : failed
-              ? "Your payment didn't go through"
-              : 'Confirming your payment…'}
+              ? 'Payment did not go through.'
+              : 'Almost there…'}
         </h1>
-        <p className="font-medium">Order {order.orderNumber}</p>
         <p className="lede max-w-[40ch]">
           {paid
-            ? "Your order is paid and we're getting it ready in the studio. We'll email a tracking link the moment it leaves."
+            ? 'Your order is confirmed. We are getting it ready and will email a tracking link the moment it leaves our studio.'
             : failed
-              ? 'No money has left your account. You can try again whenever you are ready.'
-              : 'This usually takes a few seconds. Leave this page open and it updates the moment Paystack responds.'}
+              ? 'We were not able to confirm your payment. Nothing was charged. You can try again whenever you are ready.'
+              : 'We are checking with Paystack to confirm your payment. This usually takes a few seconds.'}
         </p>
         {!paid && !failed ? (
-          <button
-            type="button"
-            className="btn btn--ghost"
-            onClick={() => verify.mutate(orderNumber, { onSettled: () => refetch() })}
-            disabled={verify.isPending}
-          >
-            {checking ? 'Checking…' : 'Check again now'}
-          </button>
+          <div className="grid justify-items-center gap-2 rounded-(--r-md) bg-(--blush) px-6 py-6">
+            <span className="eyebrow">
+              {checking ? 'Verifying with Paystack' : 'Awaiting confirmation'}
+            </span>
+            <b className="text-(length:--fs-lg)">Hold tight — confirming your payment.</b>
+            <p className="max-w-[40ch] text-(length:--fs-sm) text-(--mute)">
+              This usually takes a second or two. You can leave this page open; we will update it
+              the moment Paystack responds.
+            </p>
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={() => verify.mutate(orderNumber, { onSettled: () => refetch() })}
+              disabled={verify.isPending}
+            >
+              {verify.isPending ? 'Checking…' : 'Check again now'}
+            </button>
+          </div>
         ) : null}
         <div className="flex flex-wrap justify-center gap-3">
           {failed ? (
@@ -237,7 +243,7 @@ export function ConfirmationPage() {
             </Link>
           ) : null}
           <Link className="btn btn--ghost" to="/shop">
-            Keep shopping
+            Continue shopping
           </Link>
         </div>
       </div>

@@ -70,12 +70,11 @@ export function CartDrawer() {
                 <use href="#i-bag" />
               </svg>
             </div>
-            <h3>Your bag is empty</h3>
-            <p>
-              Most people start with a pack of 3 period pants: one on, one in the wash, one dry.
-            </p>
+            <span className="eyebrow">Your bag is empty</span>
+            <h3>Nothing here yet.</h3>
+            <p>Once you add something to your bag, it will show up here.</p>
             <Link className="btn" to="/shop" onClick={close}>
-              Shop everything{' '}
+              Shop the collection{' '}
               <svg className="arrow" width="18" height="18">
                 <use href="#i-arrow" />
               </svg>
@@ -131,30 +130,16 @@ export function CartDrawer() {
                 <span>Subtotal</span>
                 <b>{formatPrice(subtotal)}</b>
               </div>
-              <p className="bag__note">
-                Delivery and any discount code are worked out at checkout.
-              </p>
+              <p className="bag__note">Shipping and discounts calculated at checkout.</p>
               <Link className="btn bag__checkout" to="/checkout" onClick={close}>
-                Checkout · {formatPrice(subtotal)}{' '}
+                Checkout{' '}
                 <svg className="arrow" width="18" height="18">
                   <use href="#i-arrow" />
                 </svg>
               </Link>
-              <p className="bag__secure">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.8}
-                  strokeLinecap="round"
-                  width="14"
-                  height="14"
-                >
-                  <rect x="5" y="11" width="14" height="9" rx="2" />
-                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-                </svg>
-                Secure payment with Paystack: card, transfer or USSD
-              </p>
+              <button type="button" className="bag__secure w-full underline" onClick={close}>
+                Continue shopping
+              </button>
             </div>
           </>
         )}

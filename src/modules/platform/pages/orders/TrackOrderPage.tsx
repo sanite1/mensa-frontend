@@ -120,10 +120,10 @@ export function TrackOrderPage() {
       <header className="fhero">
         <div className="wrap fhero__inner">
           <div>
-            <span className="eyebrow">Order status</span>
+            <span className="eyebrow">Track your order</span>
             <h1 className="split">
               <span className="split-line">
-                <span>Where's my</span>
+                <span>Where is my</span>
               </span>
               <span className="split-line">
                 <span style={{ '--d': '.1s' } as CSSProperties}>
@@ -133,8 +133,8 @@ export function TrackOrderPage() {
             </h1>
           </div>
           <p className="lede">
-            Enter your order number and the email you used at checkout. Your number starts with MS
-            and is in the confirmation email we sent you.
+            Enter the order number and email you used at checkout. We will show you the latest
+            status, and this page updates itself as your order moves.
           </p>
         </div>
       </header>
@@ -142,10 +142,6 @@ export function TrackOrderPage() {
       <section className="wrap track">
         <div className="track__grid">
           <form className="track__form mform" onSubmit={form.handleSubmit(onSubmit)} noValidate>
-            <div>
-              <h2>Find your order</h2>
-              <p>We'll show you exactly where it is, and this page updates as it moves.</p>
-            </div>
             <label className={cn('mfield', errors.orderNumber && 'is-invalid')}>
               <span>Order number</span>
               <input
@@ -171,17 +167,21 @@ export function TrackOrderPage() {
               {errors.email ? <em>{errors.email.message}</em> : null}
             </label>
             {lookupFailed ? (
-              <p className="mform__error" role="alert">
-                We couldn't match that order number and email. Both need to be exactly what you used
-                at checkout.
-              </p>
+              <div className="mform__error" role="alert">
+                <b>Not found</b>
+                <p>
+                  We could not match that order number and email. Both fields must be exactly what
+                  you used at checkout. Double check the confirmation email we sent. If it still
+                  does not work, reach us at hi@mensaproducts.com and we will sort it out.
+                </p>
+              </div>
             ) : null}
             <button className="btn" type="submit" disabled={lookupLoading}>
               {lookupLoading ? (
-                'Looking…'
+                'Looking up…'
               ) : (
                 <>
-                  {order ? 'Refresh' : 'Track order'}{' '}
+                  {order ? 'Refresh' : 'Find my order'}{' '}
                   <svg className="arrow" width="18" height="18">
                     <use href="#i-arrow" />
                   </svg>
@@ -193,13 +193,14 @@ export function TrackOrderPage() {
                 Look up a different order
               </button>
             ) : null}
-            <div className="track__help">
-              <span>Can't find your number?</span>
-              <span>
-                Check the confirmation email we sent at checkout, or email{' '}
-                <a href="mailto:hi@mensaproducts.com">hi@mensaproducts.com</a> and we'll find it.
-              </span>
-            </div>
+            {!submitted ? (
+              <div className="track__help">
+                <span>
+                  Lost the order number? Check the confirmation email we sent at checkout, or{' '}
+                  <a href="mailto:hi@mensaproducts.com">email us</a> and we will find it.
+                </span>
+              </div>
+            ) : null}
           </form>
 
           <div aria-live="polite">
@@ -219,8 +220,7 @@ export function TrackOrderPage() {
                   <circle cx="7" cy="18" r="1.6" />
                   <circle cx="17" cy="18" r="1.6" />
                 </svg>
-                <h3>{lookupLoading ? 'Checking the studio…' : 'Your order will show here'}</h3>
-                <p>Status, delivery details and everything in the parcel.</p>
+                {lookupLoading ? <h3>Looking up {submitted?.orderNumber}…</h3> : null}
               </div>
             )}
           </div>

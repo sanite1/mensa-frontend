@@ -20,10 +20,8 @@ const CATEGORY_LABEL: Record<Product['category'], string> = {
   pads: 'Reusable pads',
   bundles: 'Bundles',
   education: 'Education',
-  advocacy: 'Advocacy',
+  advocacy: 'Fashion · Advocacy',
 }
-
-const WEARABLE: Product['category'][] = ['pants', 'pads', 'bundles']
 
 const ICONS: Record<TrustIcon, ReactNode> = {
   truck: (
@@ -82,7 +80,7 @@ function ProductView({ product: p }: { product: Product }) {
   const inStock = (v?: ProductVariant | null) => !p.isSoldOut && !!v && v.stockCount > 0
 
   const description =
-    p.shortDescription || p.subheading || `${p.name}, reusable period products made in Abuja.`
+    p.shortDescription || p.subheading || `${p.name} — reusable period products designed in Abuja.`
   useSeo({
     title: p.name,
     description,
@@ -137,9 +135,8 @@ function ProductView({ product: p }: { product: Product }) {
   const price = variantPrice(p, variant ?? undefined)
   const onSale = p.salePrice != null && p.salePrice < p.basePriceB2C
   const compareAt = onSale && variant?.b2cPriceOverride == null ? p.basePriceB2C : null
-  const off = compareAt ? Math.round((1 - price / compareAt) * 100) : 0
   const available = inStock(variant)
-  const fewLeft = available && variant!.stockCount <= (variant!.lowStockThreshold || 5)
+  const fewLeft = available && variant!.stockCount <= 5
   const label = variant
     ? optionTypes
         .map((t) => variant.options?.[t])
@@ -173,36 +170,21 @@ function ProductView({ product: p }: { product: Product }) {
     toast.success(`${p.name} added to bag.`)
   }
 
-  const buttonText = !variant
-    ? 'Choose an option'
-    : !available
-      ? 'Sold out'
-      : added
-        ? 'Added to bag ✓'
-        : `Add to bag · ${formatPrice(price * qty)}`
+  const buttonText = !available
+    ? 'Out of stock'
+    : added
+      ? 'Added to bag ✓'
+      : `Add to bag · ${formatPrice(price * qty)}`
 
   const accordions = (p.accordions ?? []).filter((a) => a.heading && a.body)
-  const hasCare = accordions.some((a) => /care|wash/i.test(a.heading))
-  const hasShipping = accordions.some((a) => /ship|deliver|return/i.test(a.heading))
-  const trust = p.trustLines?.length
-    ? p.trustLines
-    : [
-        {
-          _id: 'd',
-          icon: 'truck' as const,
-          text: 'Delivery across Nigeria from our studio in Abuja.',
-        },
-        {
-          _id: 'p',
-          icon: 'shield' as const,
-          text: 'Secure checkout with Paystack: card, bank transfer or USSD.',
-        },
-      ]
+  const trust = p.trustLines ?? []
 
   return (
     <main className="pdp pb-24 md:pb-8">
       <div className="wrap">
         <nav className="crumbs" aria-label="Breadcrumb">
+          <Link to="/">Mensa</Link>
+          <span aria-hidden>/</span>
           <Link to="/shop">Shop</Link>
           <span aria-hidden>/</span>
           <Link to={`/shop?category=${p.category}`}>{CATEGORY_LABEL[p.category]}</Link>
@@ -220,7 +202,10 @@ function ProductView({ product: p }: { product: Product }) {
           </div>
 
           <div className="pdp__info">
-            <span className="eyebrow">{CATEGORY_LABEL[p.category]}</span>
+            <span className="eyebrow">
+              {CATEGORY_LABEL[p.category]}
+              {metadata.badge ? <> · {metadata.badge}</> : null}
+            </span>
             <div className="pdp__title">
               <h1>{p.name}</h1>
               {p.subheading ? <p className="pdp__sub">{p.subheading}</p> : null}
@@ -242,7 +227,9 @@ function ProductView({ product: p }: { product: Product }) {
                 {compareAt ? (
                   <>
                     <s>{formatPrice(compareAt)}</s>
-                    <span className="pbadge pbadge--rose">Save {off}%</span>
+                    <span className="pbadge pbadge--rose">
+                      Save {formatPrice(compareAt - price)}
+                    </span>
                   </>
                 ) : null}
               </div>
@@ -271,7 +258,7 @@ function ProductView({ product: p }: { product: Product }) {
                               <rect x="2" y="8" width="20" height="8" rx="2" />
                               <path d="M6 8v3M10 8v4M14 8v3M18 8v4" />
                             </svg>
-                            Size guide
+                            Size guide →
                           </button>
                         </SizeGuideDialog>
                       ) : null}
@@ -293,11 +280,6 @@ function ProductView({ product: p }: { product: Product }) {
                         )
                       })}
                     </div>
-                    {isSize ? (
-                      <p className="opt__hint">
-                        Between two sizes? Size up: it should feel like a hug, not a squeeze.
-                      </p>
-                    ) : null}
                   </fieldset>
                 )
               })}
@@ -331,32 +313,38 @@ function ProductView({ product: p }: { product: Product }) {
                   {buttonText}
                 </button>
               </div>
-              {fewLeft ? (
-                <p className="buy__few">
-                  <span /> Only {variant!.stockCount} left{label ? ` in ${label}` : ''}
-                </p>
-              ) : null}
-              {variant && !available ? (
+              {!available ? (
                 <p className="buy__few buy__few--out">
-                  This one is sold out. We restock every few weeks, so try another option or{' '}
-                  <Link to="/contact">ask us</Link> to hear first.
+                  {optionTypes.length
+                    ? 'Out of stock. Try another option or come back soon.'
+                    : 'Out of stock.'}
                 </p>
-              ) : null}
+              ) : fewLeft && optionTypes.length ? (
+                <p className="buy__few">
+                  <span /> Only {variant!.stockCount} left.
+                </p>
+              ) : (
+                <p className="buy__few text-(--ok) [&>span]:bg-(--ok)">
+                  <span /> In stock. Ships in 2 to 3 days.
+                </p>
+              )}
             </div>
 
-            <ul className="pdp__trust">
-              {trust.map((t) => (
-                <li key={t._id}>
-                  <Icon name={t.icon} />
-                  <span>{t.text}</span>
-                </li>
-              ))}
-            </ul>
+            {trust.length ? (
+              <ul className="pdp__trust">
+                {trust.map((t) => (
+                  <li key={t._id}>
+                    <Icon name={t.icon} />
+                    <span>{t.text}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
 
             <div className="pdp__acc">
               {p.description?.trim() ? (
                 <details open>
-                  <summary>Description</summary>
+                  <summary>Product details</summary>
                   <div className="whitespace-pre-line">{p.description}</div>
                 </details>
               ) : null}
@@ -366,31 +354,6 @@ function ProductView({ product: p }: { product: Product }) {
                   <div className="whitespace-pre-line">{a.body}</div>
                 </details>
               ))}
-              {!hasCare && WEARABLE.includes(p.category) ? (
-                <details>
-                  <summary>Care</summary>
-                  <div>
-                    <ol className="pdp__care">
-                      <li>Rinse in cold water straight after wearing.</li>
-                      <li>Wash cold, or by hand with a neutral detergent.</li>
-                      <li>Hang to dry.</li>
-                    </ol>
-                    <p>No bleach or fabric softener.</p>
-                  </div>
-                </details>
-              ) : null}
-              {!hasShipping ? (
-                <details>
-                  <summary>Delivery and returns</summary>
-                  <div>
-                    <p>
-                      We deliver across Nigeria from Abuja. Delivery options and fees show at
-                      checkout once you enter your address. Something not right when it arrives?{' '}
-                      <Link to="/returns">See delivery and returns</Link>.
-                    </p>
-                  </div>
-                </details>
-              ) : null}
             </div>
           </div>
         </div>
@@ -408,7 +371,7 @@ function ProductView({ product: p }: { product: Product }) {
           <span className="text-[15px] font-semibold text-(--ink)">{formatPrice(price)}</span>
         </div>
         <button type="button" className="btn" onClick={addToBag} disabled={!available}>
-          {!variant ? 'Choose an option' : available ? 'Add to bag' : 'Sold out'}
+          {available ? 'Add to bag' : 'Out of stock'}
         </button>
       </div>
     </main>
@@ -475,11 +438,11 @@ function NotFoundState() {
     <main className="pdp">
       <div className="wrap">
         <div className="shop-empty">
-          <span className="eyebrow">Not found</span>
+          <span className="eyebrow">404</span>
           <h2>We can't find that one.</h2>
           <p>It may have been archived or moved. Everything else is still in the shop.</p>
           <Link className="btn" to="/shop">
-            Back to the shop
+            Back to shop
           </Link>
         </div>
       </div>

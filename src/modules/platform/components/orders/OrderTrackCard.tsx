@@ -4,7 +4,7 @@
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { useFormatPrice } from '@/lib/currency'
-import { estimatedDelivery, shippingLabel } from '@/lib/tracking'
+import { estimatedDelivery, shippingLabel, shippingLeadDays } from '@/lib/tracking'
 import type { Order } from '@/lib/network/types/order.types'
 
 const day = (iso?: string | null) =>
@@ -29,41 +29,51 @@ function stageOf(o: Order): Stage {
   return 'paid'
 }
 
-const HEADLINE: Record<Stage, { label: string; title: string; body: string }> = {
+// Paid through cancelled use the wording from our original delivery timeline.
+// Pending and refunded had no wording before, so they keep the design's.
+const HEADLINE: Record<Stage, { label: string; title: string; body: (o: Order) => string }> = {
   pending: {
     label: 'Awaiting payment',
     title: 'Waiting for payment',
-    body: "We've saved your order. It ships as soon as payment comes through.",
+    body: () => "We've saved your order. It ships as soon as payment comes through.",
   },
   paid: {
     label: 'Paid',
-    title: 'Payment received',
-    body: 'Thank you. Our studio team will start packing your order shortly.',
+    title: 'Payment received.',
+    body: () =>
+      'Thanks. We have your payment. Our studio team will start packing your order shortly.',
   },
   packing: {
     label: 'Preparing',
-    title: 'Being packed',
-    body: "We're checking and packing your order in the studio in Abuja. You'll get an email the moment it ships.",
+    title: 'We are packing your order.',
+    body: () =>
+      'Your items are being checked and packed in our Abuja studio. You will get an email the moment it ships.',
   },
   shipped: {
     label: 'Shipped',
-    title: 'On its way',
-    body: 'Your order has left the studio. The rider will call before delivery.',
+    title: 'Your order is on the way.',
+    body: (o) => {
+      const lead = shippingLeadDays(o)
+      const window = lead.max <= 1 ? 'today or tomorrow' : `within ${lead.max} working days`
+      return `Your order has left our studio via ${shippingLabel(o)}. It should reach you ${window}.`
+    },
   },
   delivered: {
     label: 'Delivered',
-    title: 'Delivered',
-    body: "Enjoy! Rinse cold, wash cool and line dry, and they'll last for years.",
+    title: 'Delivered.',
+    body: () =>
+      'Your order arrived. We hope you love it. Reach us at hi@mensaproducts.com if anything is off.',
   },
   cancelled: {
     label: 'Cancelled',
-    title: 'Cancelled',
-    body: 'This order was cancelled. If you were charged, the refund lands on the same card within 5 to 10 working days.',
+    title: 'This order was cancelled.',
+    body: () =>
+      'If you were charged, the refund will land on the same card within 5 to 10 business days. Reach us at hi@mensaproducts.com with any questions.',
   },
   refunded: {
     label: 'Refunded',
     title: 'Refunded',
-    body: "We've refunded this order. Banks can take a few working days to show it.",
+    body: () => "We've refunded this order. Banks can take a few working days to show it.",
   },
 }
 
@@ -87,9 +97,10 @@ export function OrderTrackCard({ order: o }: { order: Order }) {
   const stopped = stage === 'cancelled' || stage === 'refunded'
   const paid = o.payment.status === 'paid'
   const shipped = stage === 'shipped' || stage === 'delivered'
+  // The four stages of our original delivery timeline.
   const steps = [
-    { label: 'Placed', at: o.createdAt, done: true },
     { label: 'Paid', at: o.payment.paidAt, done: paid },
+    { label: 'Preparing', at: undefined, done: paid && stage !== 'paid' },
     { label: 'Shipped', at: o.fulfilment.shippedAt, done: shipped },
     { label: 'Delivered', at: o.fulfilment.deliveredAt, done: stage === 'delivered' },
   ]
@@ -104,7 +115,7 @@ export function OrderTrackCard({ order: o }: { order: Order }) {
         <div>
           <span className="eyebrow">{head.label}</span>
           <h2>{head.title}</h2>
-          <p>{head.body}</p>
+          <p>{head.body(o)}</p>
         </div>
         <div className="tcard__ref">
           Order
@@ -116,7 +127,7 @@ export function OrderTrackCard({ order: o }: { order: Order }) {
         {!stopped ? (
           <ol
             className="steps"
-            style={{ '--progress': (reached - 1) / 3 } as CSSProperties}
+            style={{ '--progress': Math.max(0, reached - 1) / 3 } as CSSProperties}
             aria-label="Order progress"
           >
             {steps.map((s, i) => (
@@ -239,11 +250,11 @@ export function OrderTrackCard({ order: o }: { order: Order }) {
           <dl className="ttotals mt-4">
             <dt>Subtotal</dt>
             <dd>{formatPrice(o.totals.subtotal)}</dd>
-            <dt>Delivery</dt>
+            <dt>Shipping</dt>
             <dd>{o.totals.shipping ? formatPrice(o.totals.shipping) : 'Free'}</dd>
             {o.totals.discount > 0 ? (
               <>
-                <dt>Discount{o.discountCode ? ` (${o.discountCode})` : ''}</dt>
+                <dt>Discount</dt>
                 <dd>−{formatPrice(o.totals.discount)}</dd>
               </>
             ) : null}
