@@ -4,20 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useSearchParams } from 'react-router-dom'
 
-import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { MField } from '@/components/design/MField'
 import { useResetPassword } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
 import { useSeo } from '@/lib/seo'
-import { Spinner } from '@/components/ui/spinner'
 
 const resetSchema = z
   .object({
@@ -45,6 +36,7 @@ export function ResetPasswordPage() {
     resolver: zodResolver(resetSchema),
     defaultValues: { password: '', confirmPassword: '' },
   })
+  const errors = form.formState.errors
 
   // ── No token → invalid link ──
   if (!token) {
@@ -54,9 +46,9 @@ export function ResetPasswordPage() {
         title={<>This link isn't valid.</>}
         subtitle="The reset link is missing or malformed. Request a new one."
       >
-        <Button asChild variant="primary" size="lg" className="w-full">
-          <Link to="/forgot-password">Request a new link</Link>
-        </Button>
+        <Link className="btn w-full" to="/forgot-password">
+          Request a new link
+        </Link>
       </AuthShell>
     )
   }
@@ -70,67 +62,31 @@ export function ResetPasswordPage() {
       subtitle="Pick something strong. You'll be signed out of other devices."
       footer={
         <>
-          Remembered it?{' '}
-          <Link to="/login" className="text-(--ink) underline underline-offset-2">
-            Back to sign in
-          </Link>
+          Remembered it? <Link to="/login">Back to sign in</Link>
         </>
       }
     >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>New password</FormLabel>
-                <FormControl>
-                  <PasswordField
-                    autoComplete="new-password"
-                    placeholder="At least 8 characters"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      <form className="mform" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+        <MField label="New password" error={errors.password}>
+          <PasswordField
+            design
+            autoComplete="new-password"
+            placeholder="At least 8 characters"
+            {...form.register('password')}
           />
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Confirm password</FormLabel>
-                <FormControl>
-                  <PasswordField
-                    autoComplete="new-password"
-                    placeholder="Type it again"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+        </MField>
+        <MField label="Confirm password" error={errors.confirmPassword}>
+          <PasswordField
+            design
+            autoComplete="new-password"
+            placeholder="Type it again"
+            {...form.register('confirmPassword')}
           />
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            className="w-full mt-2"
-            disabled={reset.isPending}
-          >
-            {reset.isPending ? (
-              <>
-                <Spinner size={14} /> Updating…
-              </>
-            ) : (
-              'Update password'
-            )}
-          </Button>
-        </form>
-      </Form>
+        </MField>
+        <button type="submit" className="btn mt-2 w-full" disabled={reset.isPending}>
+          {reset.isPending ? 'Updating…' : 'Update password'}
+        </button>
+      </form>
     </AuthShell>
   )
 }

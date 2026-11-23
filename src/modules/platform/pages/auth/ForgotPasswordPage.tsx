@@ -1,23 +1,14 @@
-// /forgot-password page. Backend is silent on unknown emails (no enumeration leak), so we always show the confirmation state.
+// /forgot-password page. Always shows the same success state, whether or not
+// the email exists, so the form can't be used to discover accounts.
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link } from 'react-router-dom'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { MField } from '@/components/design/MField'
 import { useForgotPassword } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { useSeo } from '@/lib/seo'
-import { Spinner } from '@/components/ui/spinner'
 
 const forgotSchema = z.object({
   email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
@@ -51,16 +42,16 @@ export function ForgotPasswordPage() {
                 forgot.reset()
                 form.reset()
               }}
-              className="text-(--ink) underline underline-offset-2"
+              className="underline"
             >
               Try again
             </button>
           </>
         }
       >
-        <Button asChild variant="secondary" size="lg" className="w-full">
-          <Link to="/login">Back to sign in</Link>
-        </Button>
+        <Link className="btn btn--ghost w-full" to="/login">
+          Back to sign in
+        </Link>
       </AuthShell>
     )
   }
@@ -73,51 +64,23 @@ export function ForgotPasswordPage() {
       subtitle="Tell us your email and we'll send a reset link."
       footer={
         <>
-          Remembered it?{' '}
-          <Link to="/login" className="text-(--ink) underline underline-offset-2">
-            Back to sign in
-          </Link>
+          Remembered it? <Link to="/login">Back to sign in</Link>
         </>
       }
     >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      <form className="mform" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+        <MField label="Email" error={form.formState.errors.email}>
+          <input
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            {...form.register('email')}
           />
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            className="w-full mt-2"
-            disabled={forgot.isPending}
-          >
-            {forgot.isPending ? (
-              <>
-                <Spinner size={14} /> Sending link…
-              </>
-            ) : (
-              'Send reset link'
-            )}
-          </Button>
-        </form>
-      </Form>
+        </MField>
+        <button type="submit" className="btn mt-2 w-full" disabled={forgot.isPending}>
+          {forgot.isPending ? 'Sending link…' : 'Send reset link'}
+        </button>
+      </form>
     </AuthShell>
   )
 }

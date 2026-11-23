@@ -5,10 +5,12 @@ import { cn } from '@/lib/utils'
 
 interface PasswordFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   className?: string
+  /** Inside a design system .mfield: leave the input styling to the design CSS. */
+  design?: boolean
 }
 
 export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, design, ...props }, ref) => {
     const [visible, setVisible] = useState(false)
     return (
       <div className="relative">
@@ -16,7 +18,9 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
           ref={ref}
           type={visible ? 'text' : 'password'}
           className={cn(
-            'flex h-11 w-full border border-(--hairline) bg-(--paper) pl-3.5 pr-11 py-2 text-[15px] text-(--ink) placeholder:text-(--mute) focus-visible:outline-none focus-visible:border-(--ink) disabled:cursor-not-allowed disabled:opacity-50',
+            design
+              ? 'pr-12!'
+              : 'flex h-11 w-full border border-(--hairline) bg-(--paper) pl-3.5 pr-11 py-2 text-[15px] text-(--ink) placeholder:text-(--mute) focus-visible:outline-none focus-visible:border-(--ink) disabled:cursor-not-allowed disabled:opacity-50',
             className,
           )}
           {...props}

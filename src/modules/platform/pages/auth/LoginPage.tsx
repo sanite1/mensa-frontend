@@ -4,21 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link } from 'react-router-dom'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { MField } from '@/components/design/MField'
 import { useLogin } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
 import { useSeo } from '@/lib/seo'
-import { Spinner } from '@/components/ui/spinner'
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
@@ -34,6 +24,7 @@ export function LoginPage() {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   })
+  const errors = form.formState.errors
 
   const onSubmit = (values: LoginValues) => login.mutate(values)
 
@@ -44,76 +35,42 @@ export function LoginPage() {
       subtitle="Pick up where you left off. Orders, addresses, and your switch."
       footer={
         <>
-          New to Mensa?{' '}
-          <Link to="/register" className="text-(--ink) underline underline-offset-2">
-            Create an account
-          </Link>
+          New to Mensa? <Link to="/register">Create an account</Link>
         </>
       }
     >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      <form className="mform" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+        <MField label="Email" error={errors.email}>
+          <input
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            {...form.register('email')}
           />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <div className="flex items-baseline justify-between">
-                  <FormLabel>Password</FormLabel>
-                  <Link
-                    to="/forgot-password"
-                    className="text-[11px] uppercase tracking-[0.12em] font-medium text-(--mute) hover:text-(--ink)"
-                  >
-                    Forgot?
-                  </Link>
-                </div>
-                <FormControl>
-                  <PasswordField
-                    autoComplete="current-password"
-                    placeholder="••••••••"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+        </MField>
+        <MField
+          label="Password"
+          error={errors.password}
+          aside={
+            <Link
+              to="/forgot-password"
+              className="text-[11px] font-medium uppercase tracking-[0.12em] text-(--mute) hover:text-(--ink)"
+            >
+              Forgot?
+            </Link>
+          }
+        >
+          <PasswordField
+            design
+            autoComplete="current-password"
+            placeholder="••••••••"
+            {...form.register('password')}
           />
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            className="w-full mt-2"
-            disabled={login.isPending}
-          >
-            {login.isPending ? (
-              <>
-                <Spinner size={14} /> Signing in…
-              </>
-            ) : (
-              'Sign in'
-            )}
-          </Button>
-        </form>
-      </Form>
+        </MField>
+        <button type="submit" className="btn mt-2 w-full" disabled={login.isPending}>
+          {login.isPending ? 'Signing in…' : 'Sign in'}
+        </button>
+      </form>
     </AuthShell>
   )
 }

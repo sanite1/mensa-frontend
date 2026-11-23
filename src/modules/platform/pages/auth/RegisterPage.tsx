@@ -1,24 +1,14 @@
-// /register page. Backend auto logs the user in, useRegister handles store and navigation.
+// /register page. Side effects (toast, store, navigate) live inside useRegister.
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link } from 'react-router-dom'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { MField } from '@/components/design/MField'
 import { useRegister } from '@/lib/network/api/auth.api'
 import { AuthShell } from '@/modules/platform/components/AuthShell'
 import { PasswordField } from '@/modules/platform/components/PasswordField'
 import { useSeo } from '@/lib/seo'
-import { Spinner } from '@/components/ui/spinner'
 
 const registerSchema = z.object({
   name: z
@@ -43,6 +33,7 @@ export function RegisterPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: { name: '', email: '', phone: '', password: '' },
   })
+  const errors = form.formState.errors
 
   const onSubmit = (values: RegisterValues) => register.mutate(values)
 
@@ -53,106 +44,48 @@ export function RegisterPage() {
       subtitle="Switch once. Wear for five years. Let's get you set up."
       footer={
         <>
-          Already have an account?{' '}
-          <Link to="/login" className="text-(--ink) underline underline-offset-2">
-            Sign in
-          </Link>
+          Already have an account? <Link to="/login">Sign in</Link>
         </>
       }
     >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Full name</FormLabel>
-                <FormControl>
-                  <Input autoComplete="name" placeholder="Ada Eze" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      <form className="mform" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+        <MField label="Full name" error={errors.name}>
+          <input autoComplete="name" placeholder="Ada Eze" {...form.register('name')} />
+        </MField>
+        <MField label="Email" error={errors.email}>
+          <input
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            {...form.register('email')}
           />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+        </MField>
+        <MField label="Phone" error={errors.phone}>
+          <input
+            type="tel"
+            autoComplete="tel"
+            placeholder="+234 801 234 5678"
+            {...form.register('phone')}
           />
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <Input type="tel" autoComplete="tel" placeholder="+234 801 234 5678" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+        </MField>
+        <MField label="Password" error={errors.password}>
+          <PasswordField
+            design
+            autoComplete="new-password"
+            placeholder="At least 8 characters"
+            {...form.register('password')}
           />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <PasswordField
-                    autoComplete="new-password"
-                    placeholder="At least 8 characters"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        </MField>
 
-          <p className="t-body-s text-(--mute) -mt-1">
-            By creating an account you agree to our{' '}
-            <Link to="/terms" className="text-(--ink) underline underline-offset-2">
-              terms
-            </Link>{' '}
-            and{' '}
-            <Link to="/privacy" className="text-(--ink) underline underline-offset-2">
-              privacy policy
-            </Link>
-            .
-          </p>
+        <p className="text-(length:--fs-sm) text-(--mute) [&_a]:text-(--berry) [&_a]:underline">
+          By creating an account you agree to our <Link to="/terms">terms</Link> and{' '}
+          <Link to="/privacy">privacy policy</Link>.
+        </p>
 
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            className="w-full mt-1"
-            disabled={register.isPending}
-          >
-            {register.isPending ? (
-              <>
-                <Spinner size={14} /> Creating account…
-              </>
-            ) : (
-              'Create account'
-            )}
-          </Button>
-        </form>
-      </Form>
+        <button type="submit" className="btn w-full" disabled={register.isPending}>
+          {register.isPending ? 'Creating account…' : 'Create account'}
+        </button>
+      </form>
     </AuthShell>
   )
 }
