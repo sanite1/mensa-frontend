@@ -66,20 +66,24 @@ const WHO = [
 // Describe what partners get, not partner counts: any number printed here would be made up.
 const OFFER = [
   {
+    kind: 'Pricing',
     title: 'Discounts on Mensa products',
     body: 'Eligible organisations receive discounted pricing on reusable period products, books and educational materials.',
   },
   {
-    title: 'School and community programmes',
-    body: 'Menstrual health workshops, educator sessions and community outreach tailored to your audience.',
+    kind: 'Programmes',
+    title: 'School & community programmes',
+    body: 'We deliver engaging menstrual health workshops, educator sessions and community outreach programmes tailored to your audience.',
   },
   {
+    kind: 'Resources',
     title: 'Free educational resources',
-    body: "Depending on the size of your order, you'll receive complimentary guides, activity materials and classroom resources.",
+    body: "Depending on the size of your order, you'll receive complimentary guides, activity materials and classroom resources to support lasting impact.",
   },
   {
+    kind: 'Bespoke',
     title: 'Custom partnership support',
-    body: 'Need something different? We create bespoke programmes for schools, NGOs, governments and community initiatives.',
+    body: 'Need something different? We work with partners to create bespoke programmes for schools, NGOs, governments and community initiatives.',
   },
 ]
 
@@ -107,14 +111,17 @@ export function PartnershipsPage() {
       <header className="fhero">
         <div className="wrap fhero__inner">
           <div>
-            <span className="eyebrow">Partnerships</span>
+            <span className="eyebrow">Partnerships · For orgs and individuals</span>
             <h1 className="split">
               <span className="split-line">
-                <span>Partnering to end</span>
+                <span>Help us make</span>
               </span>
               <span className="split-line">
-                <span style={delay('.1s')}>
-                  <span className="accent">period poverty.</span>
+                <span style={delay('.1s')}>period products more</span>
+              </span>
+              <span className="split-line">
+                <span style={delay('.2s')}>
+                  accessible <span className="accent">to women.</span>
                 </span>
               </span>
             </h1>
@@ -122,8 +129,8 @@ export function PartnershipsPage() {
           <div className="grid justify-items-start gap-6">
             <p className="lede">
               Whether you run a school, an NGO, a government programme, or simply want to support
-              girls in your community, we have a partnership for you. Apply below and we'll get back
-              to you within five working days.
+              girls in your community, we have a partnership for you. Apply below and our team will
+              get back to you within five working days.
             </p>
             <a className="btn" href="#apply">
               Start an application{' '}
@@ -167,13 +174,13 @@ export function PartnershipsPage() {
               <span className="eyebrow" data-reveal>
                 What we offer
               </span>
-              <SplitHeading lines={['Products, knowledge', 'and support.']} />
+              <SplitHeading lines={['Partnering to end', 'period poverty.']} />
             </div>
           </div>
           <div className="ptn-offer lg:grid-cols-4">
             {OFFER.map((o, i) => (
               <article key={o.title} data-reveal style={delay(`${i * 0.08}s`)}>
-                <span>{String(i + 1).padStart(2, '0')}</span>
+                <span>{o.kind}</span>
                 <h3>{o.title}</h3>
                 <p>{o.body}</p>
               </article>
@@ -188,59 +195,40 @@ export function PartnershipsPage() {
             <span className="eyebrow" data-reveal>
               Apply
             </span>
-            <h2 data-reveal>Tell us how you'd like to partner.</h2>
-            {mode === 'org' ? (
+            <h2 data-reveal>Tell us how you would like to partner.</h2>
+            {mode === 'individual' ? (
               <>
-                <p className="lede mt-5" data-reveal>
-                  Tell us a little about your organisation. A partnerships lead will come back to
-                  you with what a partnership could look like.
-                </p>
+                <span className="eyebrow mt-8" data-reveal>
+                  How it works
+                </span>
                 <ol className="ptn-steps" data-reveal>
                   <li>
-                    <b>Tell us who you want to reach</b>
-                    <span>The girls, the place and roughly how many.</span>
-                  </li>
-                  <li>
-                    <b>We shape a plan with you</b>
-                    <span>Products, guides and workshops to fit your budget.</span>
-                  </li>
-                  <li>
-                    <b>We deliver and follow up</b>
-                    <span>From our studio in Abuja to your community.</span>
-                  </li>
-                </ol>
-              </>
-            ) : (
-              <>
-                <p className="lede mt-5" data-reveal>
-                  Share Mensa with the people you reach and earn a commission on every paid order
-                  through your link.
-                </p>
-                <ol className="ptn-steps" data-reveal>
-                  <li>
-                    <b>Apply with your details</b>
                     <span>
-                      We review within five working days. If you create content or have an audience
-                      that fits, mention it in the notes.
+                      Apply with your details. We review within five working days. If you create
+                      content or have an audience that fits, mention it in the notes.
                     </span>
                   </li>
                   <li>
-                    <b>Set up your account</b>
                     <span>
-                      On approval we email you a one time link to set your password, bank details
+                      On approval we email you a one-time link to set your password, bank details,
                       and the referral code you want to use.
                     </span>
                   </li>
                   <li>
-                    <b>Share your link and earn</b>
+                    <span>
+                      Share your unique link. You earn a commission on every paid order placed
+                      through it.
+                    </span>
+                  </li>
+                  <li>
                     <span>
                       Commissions become cashable once the customer receives their order. Request a
-                      payout anytime and we settle it within five working days.
+                      payout anytime and we settle it manually within five working days.
                     </span>
                   </li>
                 </ol>
               </>
-            )}
+            ) : null}
             <div
               className="relative mt-8 aspect-16/10 overflow-hidden rounded-(--r-md)"
               data-reveal
@@ -382,11 +370,15 @@ const orgSchema = z.object({
 })
 type OrgValues = z.infer<typeof orgSchema>
 
-const ORG_TYPES: { value: B2BOrgType; label: string }[] = [
-  { value: 'school', label: 'School' },
-  { value: 'ngo', label: 'NGO' },
-  { value: 'council', label: 'Government or council' },
-  { value: 'other', label: 'Company, religious body or community group' },
+const ORG_TYPES: { value: B2BOrgType; label: string; description: string }[] = [
+  { value: 'school', label: 'School', description: 'Public or private, primary through tertiary.' },
+  { value: 'ngo', label: 'NGO', description: 'Non-profits working on health, gender, education.' },
+  { value: 'council', label: 'Council', description: 'Local, state, or federal government.' },
+  {
+    value: 'other',
+    label: 'Other',
+    description: 'Corporates, religious bodies, community groups.',
+  },
 ]
 
 function OrgApplicationForm() {
@@ -439,7 +431,11 @@ function OrgApplicationForm() {
             {...register('name')}
           />
         </Field>
-        <Field label="You are" error={errors.type}>
+        <Field
+          label="Type"
+          hint={ORG_TYPES.find((t) => t.value === form.watch('type'))?.description}
+          error={errors.type}
+        >
           <select {...register('type')}>
             {ORG_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -451,11 +447,13 @@ function OrgApplicationForm() {
       </div>
       <Field
         label="Registration number"
-        optional
-        hint="CAC RC number, ministry code or equivalent. It speeds up verification."
+        hint="Optional, but it speeds up verification."
         error={errors.registrationNumber}
       >
-        <Input {...register('registrationNumber')} />
+        <Input
+          placeholder="CAC RC number, ministry code, or equivalent"
+          {...register('registrationNumber')}
+        />
       </Field>
       <div className="mform__row">
         <Field label="Contact name" error={errors.contactName}>
@@ -478,10 +476,10 @@ function OrgApplicationForm() {
           {...register('contactEmail')}
         />
       </Field>
-      <Field label="What would you like to do?" optional error={errors.notes}>
+      <Field label="What would you like to do?" error={errors.notes}>
         <textarea
           rows={5}
-          placeholder="Number of students, timeline, region, anything else we should know."
+          placeholder="A few sentences on the scope: number of students, timeline, region, anything else we should know."
           {...register('notes')}
         />
       </Field>
@@ -568,18 +566,15 @@ function IndividualApplicationForm() {
       <Field
         label="Where do you share?"
         optional
-        hint="Helps us understand your audience. A blog, podcast or WhatsApp group works too."
+        hint="Helps us understand your audience. A blog, podcast, or whatsapp group works too."
         error={errors.socialHandle}
       >
-        <Input
-          placeholder="@yourhandle on Instagram, TikTok and so on"
-          {...register('socialHandle')}
-        />
+        <Input placeholder="@yourhandle on Instagram, TikTok, etc." {...register('socialHandle')} />
       </Field>
-      <Field label="Tell us about you" optional error={errors.notes}>
+      <Field label="Tell us about you" error={errors.notes}>
         <textarea
           rows={5}
-          placeholder="Who you reach, why Mensa, anything else you want us to know."
+          placeholder="Who do you reach, why Mensa, anything else you want us to know."
           {...register('notes')}
         />
       </Field>

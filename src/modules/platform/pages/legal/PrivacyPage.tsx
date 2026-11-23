@@ -46,18 +46,18 @@ const SECTIONS: LegalSection[] = [
         <p>We share only the minimum data needed with the services that help us run Mensa:</p>
         <ul>
           <li>
-            <span>Paystack</span>: payment processing.
+            <span>Paystack</span> — payment processing.
           </li>
           <li>
-            <span>Sendbox</span>: nationwide shipping (your name, address, phone, and parcel
+            <span>Sendbox</span> — nationwide shipping (your name, address, phone, and parcel
             weight).
           </li>
           <li>
-            <span>Mailerlite</span>: newsletter delivery, if you have subscribed. We share only your
-            email and your subscribe source.
+            <span>Mailerlite</span> — newsletter delivery, if you have subscribed. We share only
+            your email and your subscribe source.
           </li>
           <li>
-            <span>Cloudinary</span>: image hosting (product photography and any cover images you
+            <span>Cloudinary</span> — image hosting (product photography and any cover images you
             upload).
           </li>
         </ul>

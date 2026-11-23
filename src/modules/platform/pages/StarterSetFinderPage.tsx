@@ -8,16 +8,13 @@ import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { toast } from 'sonner'
 
 import { useProducts } from '@/lib/network/api/product.api'
 import { useSubmitStarterSetLead, type LeadResultCode } from '@/lib/network/api/lead.api'
-import { useCartStore } from '@/lib/network/stores/cart.store'
 import { useFormatPrice } from '@/lib/currency'
 import type { Product } from '@/lib/network/types/product.types'
 import { useSeo } from '@/lib/seo'
 import { cn } from '@/lib/utils'
-import { priceRange, variantPrice } from '@/modules/platform/components/shop/ProductCard'
 
 // ─── Questions ───────────────────────────────────────────────────
 
@@ -361,7 +358,7 @@ export function StarterSetFinderPage() {
             )}
             {question ? (
               <span className="quiz__count">
-                {index + 1} of {total}
+                Question {index + 1} of {total}
               </span>
             ) : index === LEAD ? (
               <span className="quiz__count">Last step</span>
@@ -380,13 +377,12 @@ export function StarterSetFinderPage() {
           <div key={index} className={`quiz__panel quiz__panel--${dir}`}>
             {index < 0 ? (
               <div className="quiz__intro">
-                <span className="eyebrow">Starter set · 1 minute</span>
+                <span className="eyebrow">Starter set</span>
                 <h1>
-                  Find your <span className="accent">starter set.</span>
+                  Not sure what to buy first? <span className="accent">Answer 8 questions.</span>
                 </h1>
                 <p className="lede">
-                  Not sure what to buy first? Answer 8 quick questions about your flow and your
-                  days, and we'll tell you what to start with.
+                  It takes less than a minute. We will tell you what to start with.
                 </p>
                 <button type="button" className="btn" onClick={() => go(0)}>
                   Start the quiz{' '}
@@ -394,9 +390,6 @@ export function StarterSetFinderPage() {
                     <use href="#i-arrow" />
                   </svg>
                 </button>
-                <p className="quiz__fine">
-                  At the end we email you a personal code for 10% off your first order.
-                </p>
               </div>
             ) : null}
 
@@ -488,7 +481,7 @@ function QuestionStep({
       <h1 ref={heading} tabIndex={-1}>
         {question.question}
       </h1>
-      <p className="quiz__hint">{question.help ?? 'Pick the one that fits best.'}</p>
+      {question.help ? <p className="quiz__hint">{question.help}</p> : null}
       <div className={cn('quiz__opts', (n === 3 || n === 2) && 'quiz__opts--3')}>
         {question.options.map((o, i) => (
           <button
@@ -569,9 +562,7 @@ function LeadStep({
       <h1 ref={heading} tabIndex={-1}>
         Who is this starter set for?
       </h1>
-      <p className="quiz__hint">
-        Tell us your name and email and your recommendation is next, with 10% off your first order.
-      </p>
+      <p className="quiz__hint">Tell us your name and email and your recommendation is next.</p>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="mform mx-auto mt-8 w-full max-w-120 text-left"
@@ -635,7 +626,6 @@ function ResultStep({
   const products = spec.slugs
     .map((slug) => items.find((p) => p.slug === slug))
     .filter((p): p is Product => !!p)
-  const wantsPants = spec.slugs.some((s) => s.includes('pants'))
 
   return (
     <div className="results" aria-live="polite">
@@ -692,104 +682,37 @@ function ResultStep({
         </div>
       )}
 
-      {wantsPants ? (
-        <div className="results__note">
-          <span className="results__note-icon">
-            <svg>
-              <use href="#i-repeat" />
-            </svg>
-          </span>
-          <div>
-            <b>Not sure of your size?</b>
-            <p>
-              Each pant page has a size guide. Between two sizes, size up: it should feel like a
-              hug, not a squeeze.
-            </p>
-          </div>
-        </div>
-      ) : null}
-
       <div className="results__foot">
         <button type="button" className="btn btn--ghost" onClick={onRestart}>
-          Retake the quiz
+          Answer again
         </button>
-        <Link className="results__link" to="/shop">
-          Or browse everything{' '}
-          <svg className="arrow" width="16" height="16">
-            <use href="#i-arrow" />
-          </svg>
-        </Link>
       </div>
     </div>
   )
 }
 
-/** Sized products go to their page to pick a size; single option ones add straight to the bag. */
+/** One card per item in the set. Pants need a size, so the button goes to the product page. */
 function ResultCard({ product: p, primary }: { product: Product; primary: boolean }) {
   const formatPrice = useFormatPrice()
-  const addItem = useCartStore((s) => s.addItem)
-  const openCart = useCartStore((s) => s.openDrawer)
-  const [added, setAdded] = useState(false)
   const photo = [...(p.images ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))[0]
-  const variants = (p.variants ?? []).filter((v) => v.isActive !== false)
-  const single = variants.length === 1 ? variants[0] : null
-  const inStock = !p.isSoldOut && variants.some((v) => v.stockCount > 0)
-  const { min, max } = priceRange(p)
-
-  const add = () => {
-    if (!single) return
-    addItem({
-      productId: p.id,
-      variantId: single._id,
-      productName: p.name,
-      variantLabel: p.name,
-      unitPrice: variantPrice(p, single),
-      slug: p.slug,
-      imageUrl: photo?.url,
-    })
-    setAdded(true)
-    openCart()
-    toast.success(`${p.name} added to bag.`)
-  }
-
   return (
     <article className={`rcard${primary ? ' rcard--primary' : ''}`}>
       <Link to={`/shop/${p.slug}`} className="rcard__img" aria-label={p.name}>
         {photo ? <img src={photo.url} alt={p.name} className="absolute inset-0 size-full" /> : null}
-        {primary ? <span className="pbadge pbadge--dark">Best match</span> : null}
       </Link>
       <div className="rcard__body">
         <div className="rcard__row">
           <h2>
             <Link to={`/shop/${p.slug}`}>{p.name}</Link>
           </h2>
-          <b className="rcard__price">
-            {min !== max ? <small>From </small> : null}
-            {formatPrice(min)}
-          </b>
+          <b className="rcard__price">{formatPrice(p.salePrice ?? p.basePriceB2C)}</b>
         </div>
-        {p.subheading ? <span className="rcard__variant">{p.subheading}</span> : null}
-        {p.shortDescription ? <p>{p.shortDescription}</p> : null}
-        {!inStock ? (
-          <Link className="btn btn--ghost rcard__add" to={`/shop/${p.slug}`}>
-            Sold out for now: see the page
-          </Link>
-        ) : single ? (
-          <button
-            type="button"
-            className={`btn${primary ? '' : ' btn--ghost'} rcard__add${added ? ' is-added' : ''}`}
-            onClick={add}
-          >
-            {added ? 'Added to bag ✓' : 'Add to bag'}
-          </button>
-        ) : (
-          <Link className={`btn${primary ? '' : ' btn--ghost'} rcard__add`} to={`/shop/${p.slug}`}>
-            Choose your size{' '}
-            <svg className="arrow" width="18" height="18">
-              <use href="#i-arrow" />
-            </svg>
-          </Link>
-        )}
+        <Link className={`btn${primary ? '' : ' btn--ghost'} rcard__add`} to={`/shop/${p.slug}`}>
+          Buy this set{' '}
+          <svg className="arrow" width="18" height="18">
+            <use href="#i-arrow" />
+          </svg>
+        </Link>
       </div>
     </article>
   )

@@ -39,7 +39,7 @@ const SECTIONS: LegalSection[] = [
       <>
         <p>
           All prices are in Nigerian Naira. If you have selected a different display currency, you
-          are seeing an indicative conversion, your card is still charged in NGN by Paystack. Your
+          are seeing an indicative conversion — your card is still charged in NGN by Paystack. Your
           bank may apply a foreign-exchange fee.
         </p>
         <p>
@@ -57,7 +57,7 @@ const SECTIONS: LegalSection[] = [
       <>
         <p>
           We ship nationwide via Sendbox and offer an in-house rider in FCT (Abuja) and Lagos.
-          Delivery windows are estimates, not guarantees, most orders arrive within 1 to 5 working
+          Delivery windows are estimates, not guarantees — most orders arrive within 1 to 5 working
           days from dispatch.
         </p>
         <p>
@@ -162,7 +162,7 @@ export function TermsPage() {
   useSeo({
     title: 'Terms of service',
     description:
-      'The rules of using mensaproducts.com. Plain English, no surprises, covering accounts, orders, shipping, the partner programme, and acceptable use.',
+      'The rules of using mensaproducts.com. Plain English, no surprises — covering accounts, orders, shipping, the partner programme, and acceptable use.',
   })
   return (
     <LegalLayout
