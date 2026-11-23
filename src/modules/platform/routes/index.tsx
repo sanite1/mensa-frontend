@@ -16,6 +16,8 @@ import { AboutPage } from '@/modules/platform/pages/AboutPage'
 import { PartnershipsPage } from '@/modules/platform/pages/PartnershipsPage'
 import { ContactPage } from '@/modules/platform/pages/ContactPage'
 import { ReturnsPage } from '@/modules/platform/pages/ReturnsPage'
+import { HowItWorksPage } from '@/modules/platform/pages/HowItWorksPage'
+import { SizeGuidePage } from '@/modules/platform/pages/SizeGuidePage'
 import { NotFoundPage } from '@/modules/platform/pages/NotFoundPage'
 import { EducationIndexPage } from '@/modules/platform/pages/education/EducationIndexPage'
 import { EducationPostPage } from '@/modules/platform/pages/education/EducationPostPage'
@@ -73,6 +75,8 @@ export function PlatformRoutes() {
           <Route path="/partnerships" element={<PartnershipsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/returns" element={<ReturnsPage />} />
+          <Route path="/how-it-works" element={<HowItWorksPage />} />
+          <Route path="/size-guide" element={<SizeGuidePage />} />
           <Route path="/journal" element={<JournalIndexPage />} />
           <Route path="/journal/:slug" element={<JournalPostPage />} />
           <Route path="/education" element={<EducationIndexPage />} />
