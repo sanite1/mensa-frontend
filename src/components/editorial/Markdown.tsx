@@ -73,11 +73,7 @@ function renderInline(text: string): React.ReactNode {
     <>
       {parts.map((part, i) => {
         if (part.startsWith('**') && part.endsWith('**')) {
-          return (
-            <strong key={i} className="text-ink font-semibold">
-              {part.slice(2, -2)}
-            </strong>
-          )
+          return <strong key={i}>{part.slice(2, -2)}</strong>
         }
         if (part.startsWith('*') && part.endsWith('*')) {
           return <em key={i}>{part.slice(1, -1)}</em>
@@ -90,40 +86,22 @@ function renderInline(text: string): React.ReactNode {
 
 export function Markdown({ source }: { source: string }) {
   const blocks = parseBlocks(source)
+  // Rendered inside the design system's .prose block, which styles the tags.
   return (
-    <div className="flex flex-col gap-6 text-ink">
+    <div className="prose">
       {blocks.map((b, i) => {
-        if (b.kind === 'h2') {
-          return (
-            <h2
-              key={i}
-              className="m-0 font-display italic font-semibold text-[clamp(24px,3vw,36px)] leading-tight tracking-tight text-ink mt-6"
-            >
-              {b.text}
-            </h2>
-          )
-        }
-        if (b.kind === 'h3') {
-          return (
-            <h3 key={i} className="m-0 text-[20px] font-semibold text-ink mt-4">
-              {b.text}
-            </h3>
-          )
-        }
+        if (b.kind === 'h2') return <h2 key={i}>{b.text}</h2>
+        if (b.kind === 'h3') return <h3 key={i}>{b.text}</h3>
         if (b.kind === 'list') {
           return (
-            <ul key={i} className="m-0 pl-5 flex flex-col gap-2 t-body-l text-graphite">
+            <ul key={i} className="list-disc">
               {b.items.map((item, j) => (
                 <li key={j}>{renderInline(item)}</li>
               ))}
             </ul>
           )
         }
-        return (
-          <p key={i} className="m-0 t-body-l text-graphite leading-[1.7]">
-            {renderInline(b.text)}
-          </p>
-        )
+        return <p key={i}>{renderInline(b.text)}</p>
       })}
     </div>
   )

@@ -153,7 +153,8 @@
 .shop-cats::-webkit-scrollbar {
   display: none;
 }
-.shop-cats a {
+.shop-cats a,
+.shop-cats button {
   flex: none;
   display: inline-flex;
   align-items: center;
@@ -167,16 +168,19 @@
     color 0.3s,
     box-shadow 0.3s;
 }
-.shop-cats a span {
+.shop-cats a span,
+.shop-cats button span {
   font-size: var(--fs-xs);
   color: var(--mute);
   font-variant-numeric: tabular-nums;
   transition: color 0.3s;
 }
-.shop-cats a:hover {
+.shop-cats a:hover,
+.shop-cats button:hover {
   box-shadow: inset 0 0 0 1px var(--ink);
 }
-.shop-cats a.is-active {
+.shop-cats a.is-active,
+.shop-cats button.is-active {
   background: var(--ink);
   color: var(--white);
   box-shadow: none;
