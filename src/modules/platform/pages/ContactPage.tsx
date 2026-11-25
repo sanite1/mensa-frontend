@@ -5,20 +5,10 @@ import { useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import type { CSSProperties } from 'react'
 import { CheckCircle2, Mail } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { SectionEyebrow } from '@/components/editorial/SectionEyebrow'
+import { MField } from '@/components/design/MField'
 import { IconInstagram, IconTikTok } from '@/components/chrome/icons'
 
 import { useSubmitContact } from '@/lib/network/api/contact.api'
@@ -118,85 +108,81 @@ export function ContactPage() {
   }
 
   return (
-    <div className="bg-paper">
+    <>
       <Hero />
-      <Channels />
-      <FormSection
-        form={form}
-        onSubmit={onSubmit}
-        submitting={submit.isPending}
-        done={done}
-        onReset={() => setDone(false)}
-      />
-    </div>
+      <section id="message" className="section">
+        <div className="wrap track__grid">
+          <Channels />
+          <FormSection
+            form={form}
+            onSubmit={onSubmit}
+            submitting={submit.isPending}
+            done={done}
+            onReset={() => setDone(false)}
+          />
+        </div>
+      </section>
+    </>
   )
 }
 
 // ─── HERO ────────────────────────────────────────────────────────
 function Hero() {
   return (
-    <section className="bg-paper">
-      <div className="px-5 md:px-10 lg:px-16 pt-10 lg:pt-16 pb-3 flex flex-wrap items-center justify-between gap-4">
-        <div className="inline-flex items-center gap-3 text-coral">
-          <span aria-hidden className="w-7 h-px bg-current opacity-60" />
-          <span className="font-mono text-[11px] tracking-widest uppercase font-medium">
-            Contact · Real humans
-          </span>
+    <header className="fhero">
+      <div className="wrap fhero__inner">
+        <div>
+          <span className="eyebrow">Contact · Real humans</span>
+          <h1 className="split">
+            <span className="split-line">
+              <span>Say hello.</span>
+            </span>
+            <span className="split-line">
+              <span style={{ '--d': '.1s' } as CSSProperties}>
+                We will <span className="accent">say hello back.</span>
+              </span>
+            </span>
+          </h1>
         </div>
-        <span className="font-mono text-[10.5px] tracking-widest uppercase text-mute">
-          Replies within 3 working days
-        </span>
-      </div>
-
-      <div className="px-5 md:px-10 lg:px-16 py-10 lg:py-16">
-        <h1 className="m-0 font-display italic font-semibold text-[clamp(40px,8vw,128px)] leading-[0.95] tracking-tighter text-ink">
-          Say hello.
-          <br />
-          <span className="pl-[6%] lg:pl-[8%] block">
-            We will <span className="text-pink">say hello back.</span>
-          </span>
-        </h1>
-
-        <div className="mt-8 lg:mt-12 pt-5 flex flex-wrap items-baseline justify-between gap-5 border-t border-hairline">
-          <p className="m-0 max-w-140 text-graphite text-[clamp(15px,2vw,18px)] leading-[1.55]">
+        <div className="grid max-w-110 gap-5">
+          <p className="lede max-w-none!">
             Questions about your order, our products, or a partnership? Drop us a message and a real
             person on the Mensa team will reply, usually within 3 working days.
           </p>
-          <a
-            href="#message"
-            className="inline-flex items-center gap-2 no-underline text-ink text-[13.5px] font-medium py-2.5 px-4 rounded-full border border-ink"
-          >
-            Write a message
-          </a>
+          <div className="flex flex-wrap items-center gap-4">
+            <a href="#message" className="btn btn--ghost">
+              Write a message
+            </a>
+            <span className="text-(length:--fs-xs) font-medium uppercase tracking-[0.12em] text-(--mute)">
+              Replies within 3 working days
+            </span>
+          </div>
         </div>
       </div>
-    </section>
+    </header>
   )
 }
 
 // ─── CHANNELS ────────────────────────────────────────────────────
 function Channels() {
   return (
-    <section className="px-5 md:px-10 lg:px-16 py-16 lg:py-24 bg-cream">
-      <div className="mb-10 lg:mb-12">
-        <SectionEyebrow>Other ways</SectionEyebrow>
-        <h2 className="m-0 mt-3.5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-tight tracking-tight text-ink">
-          Or reach us directly.
-        </h2>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ChannelCard
-          icon={<Mail size={20} strokeWidth={1.6} />}
-          label="Email"
-          primary="hi@mensaproducts.com"
-          href="mailto:hi@mensaproducts.com"
-          note="Best for order issues and detailed questions."
-        />
-      </div>
+    <aside data-reveal>
+      <span className="eyebrow">Other ways</span>
+      <h2 className="mt-4 text-(length:--fs-h3) tracking-tight">Or reach us directly.</h2>
+      <a href="mailto:hi@mensaproducts.com" className="help-card mt-8 no-underline">
+        <span className="flex items-center justify-between">
+          <Mail size={20} strokeWidth={1.6} />
+          <span className="text-(length:--fs-xs) uppercase tracking-[0.12em]">Email</span>
+        </span>
+        <h3>hi@mensaproducts.com</h3>
+        <p>Best for order issues and detailed questions.</p>
+      </a>
 
       {/* Socials */}
-      <div className="mt-8 flex items-center gap-3">
-        <span className="t-eyebrow text-mute">DMs open</span>
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <span className="text-(length:--fs-xs) font-medium uppercase tracking-[0.12em] text-(--mute)">
+          DMs open
+        </span>
         {SOCIALS.map(({ label, handle, href, Icon }) => (
           <a
             key={label}
@@ -205,48 +191,14 @@ function Channels() {
             rel="noopener noreferrer"
             aria-label={`${label} ${handle}`}
             title={`${label} ${handle}`}
-            className="inline-flex items-center gap-2 px-3 py-1.5 border border-hairline bg-paper text-ink rounded-full text-[13px] hover:border-ink no-underline"
+            className="inline-flex items-center gap-2 rounded-full bg-(--white) px-3.5 py-2 text-(length:--fs-sm) text-(--ink) no-underline shadow-[inset_0_0_0_1px_var(--line)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--ink)]"
           >
             <Icon size={14} />
             {handle}
           </a>
         ))}
       </div>
-    </section>
-  )
-}
-
-function ChannelCard({
-  icon,
-  label,
-  primary,
-  href,
-  note,
-}: {
-  icon: React.ReactNode
-  label: string
-  primary: string
-  href?: string
-  note: string
-}) {
-  const body = (
-    <div className="bg-paper p-6 flex flex-col gap-3 h-full">
-      <div className="flex items-baseline justify-between">
-        <span className="text-pink-deep">{icon}</span>
-        <span className="t-eyebrow text-mute">{label}</span>
-      </div>
-      <div className="font-display italic font-semibold text-[20px] text-ink leading-tight">
-        {primary}
-      </div>
-      <p className="m-0 t-body-s text-graphite">{note}</p>
-    </div>
-  )
-  return href ? (
-    <a href={href} className="no-underline group">
-      {body}
-    </a>
-  ) : (
-    body
+    </aside>
   )
 }
 
@@ -265,182 +217,116 @@ function FormSection({
   onReset: () => void
 }) {
   const topic = form.watch('topic')
+  const errors = form.formState.errors
   return (
-    <section id="message" className="px-5 md:px-10 lg:px-16 py-20 lg:py-28 bg-paper">
-      <div className="max-w-200 mx-auto">
-        <SectionEyebrow color="var(--berry)">Write to us</SectionEyebrow>
-        <h2 className="m-0 mt-3.5 font-display italic font-semibold text-[clamp(28px,5vw,56px)] leading-tight tracking-tight text-ink">
-          Send a message.
-        </h2>
-        <p className="mt-4 max-w-150 text-graphite text-[16px] leading-relaxed">
-          The more context the better — order number if relevant, what happened, what you want us to
-          do. We reply from a real Mensa team inbox.
-        </p>
+    <div className="ptn-card" data-reveal>
+      <span className="eyebrow">Write to us</span>
+      <h2 className="mt-4 text-(length:--fs-h3) tracking-tight">Send a message.</h2>
+      <p className="mt-3 text-(--mute)">
+        The more context the better — order number if relevant, what happened, what you want us to
+        do. We reply from a real Mensa team inbox.
+      </p>
 
-        <div className="mt-10">
-          {done ? (
-            <SuccessPanel onReset={onReset} />
-          ) : (
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-6 bg-cream-soft border border-hairline-soft p-6 md:p-8"
+      <div className="mt-8">
+        {done ? (
+          <SuccessPanel onReset={onReset} />
+        ) : (
+          <form className="mform" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+            <div className="mform__row">
+              <MField label="Your name" error={errors.name}>
+                <input placeholder="Ada Okeke" autoComplete="name" {...form.register('name')} />
+              </MField>
+              <MField label="Email" error={errors.email}>
+                <input
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  {...form.register('email')}
+                />
+              </MField>
+            </div>
+
+            <fieldset className="grid gap-2.5">
+              <legend className="mb-2.5 text-(length:--fs-sm) font-medium">
+                What is this about?
+              </legend>
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                {TOPICS.map((t) => {
+                  const checked = topic === t.value
+                  return (
+                    <label
+                      key={t.value}
+                      className={cn('chip grid cursor-pointer gap-1 text-left', checked && 'is-on')}
+                    >
+                      <input
+                        type="radio"
+                        value={t.value}
+                        className="sr-only"
+                        {...form.register('topic')}
+                      />
+                      <span className="text-(--ink)">{t.label}</span>
+                      <span className="text-(length:--fs-xs) font-normal text-(--mute)">
+                        {t.helper}
+                      </span>
+                    </label>
+                  )
+                })}
+              </div>
+            </fieldset>
+
+            {topic === 'order' ? (
+              <MField
+                label="Order number"
+                error={errors.orderNumber}
+                hint="From your confirmation email."
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Your name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ada Okeke" autoComplete="name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            autoComplete="email"
-                            placeholder="you@example.com"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="topic"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>What is this about?</FormLabel>
-                      <FormControl>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                          {TOPICS.map((t) => {
-                            const checked = field.value === t.value
-                            return (
-                              <label
-                                key={t.value}
-                                className={cn(
-                                  'flex flex-col gap-1 border p-3.5 cursor-pointer transition-colors',
-                                  checked
-                                    ? 'border-ink bg-paper'
-                                    : 'border-hairline bg-paper hover:border-graphite',
-                                )}
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  <input
-                                    type="radio"
-                                    name="topic"
-                                    value={t.value}
-                                    checked={checked}
-                                    onChange={() => field.onChange(t.value)}
-                                    className="accent-pink"
-                                  />
-                                  <span className="text-ink font-medium text-[14px]">
-                                    {t.label}
-                                  </span>
-                                </div>
-                                <span className="text-[12px] text-mute pl-6">{t.helper}</span>
-                              </label>
-                            )
-                          })}
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                <input
+                  placeholder="MS-2026-00001"
+                  autoCapitalize="characters"
+                  className="uppercase"
+                  {...form.register('orderNumber', {
+                    setValueAs: (v: string) => (v ?? '').toUpperCase(),
+                  })}
                 />
+              </MField>
+            ) : null}
 
-                {/* Order number — conditional but always rendered to avoid
-                    layout jumps on the dropdown change. */}
-                {topic === 'order' ? (
-                  <FormField
-                    control={form.control}
-                    name="orderNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Order number</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="MS-2026-00001"
-                            autoCapitalize="characters"
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                          />
-                        </FormControl>
-                        <FormDescription>From your confirmation email.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ) : null}
+            <MField label="Message" error={errors.message}>
+              <textarea
+                rows={6}
+                placeholder="Tell us what happened, what you want us to do, and anything else that helps."
+                {...form.register('message')}
+              />
+            </MField>
 
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Message</FormLabel>
-                      <FormControl>
-                        <textarea
-                          rows={6}
-                          placeholder="Tell us what happened, what you want us to do, and anything else that helps."
-                          {...field}
-                          className="flex w-full border border-hairline bg-paper px-3.5 py-2.5 text-[15px] text-ink placeholder:text-mute focus-visible:outline-none focus-visible:border-ink resize-y"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button type="submit" variant="primary" size="lg" disabled={submitting}>
-                  {submitting ? 'Sending…' : 'Send message'}
-                </Button>
-                <p className="t-body-s text-mute m-0">
-                  By sending, you agree we may reply to you at the email address above. We never
-                  share contact details with anyone else.
-                </p>
-              </form>
-            </Form>
-          )}
-        </div>
+            <button type="submit" className="btn w-full" disabled={submitting}>
+              {submitting ? 'Sending…' : 'Send message'}
+            </button>
+            <p className="text-(length:--fs-sm) text-(--mute)">
+              By sending, you agree we may reply to you at the email address above. We never share
+              contact details with anyone else.
+            </p>
+          </form>
+        )}
       </div>
-    </section>
+    </div>
   )
 }
 
 function SuccessPanel({ onReset }: { onReset: () => void }) {
   return (
-    <div className="bg-cream-soft border border-hairline-soft p-8 md:p-12 text-center">
-      <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-ok/10 text-ok mb-5">
+    <div className="py-6 text-center">
+      <div className="mb-5 inline-flex size-14 items-center justify-center rounded-full bg-(--blush) text-(--berry)">
         <CheckCircle2 size={28} strokeWidth={1.6} />
       </div>
-      <h3 className="m-0 font-display italic font-semibold text-[clamp(24px,3vw,32px)] leading-tight tracking-tight text-ink">
-        Message received.
-      </h3>
-      <p className="mt-3 max-w-130 mx-auto t-body text-graphite">
+      <h3 className="text-(length:--fs-h3) tracking-tight">Message received.</h3>
+      <p className="mx-auto mt-3 max-w-130 text-(--mute)">
         Thank you. A real person on the Mensa team will reply within 3 working days, usually sooner.
         Check your inbox for a note from hi@mensaproducts.com.
       </p>
-      <div className="mt-6">
-        <Button type="button" variant="secondary" size="md" onClick={onReset}>
-          Send another message
-        </Button>
-      </div>
+      <button type="button" className="btn btn--ghost mt-6" onClick={onReset}>
+        Send another message
+      </button>
     </div>
   )
 }
