@@ -2,11 +2,10 @@
 // Fields mirror backend CheckoutAddressInput, country locked to "NG" while shipping is NG only.
 
 import { useEffect } from 'react'
-import { type Control, type FieldValues, type Path, type UseFormReturn } from 'react-hook-form'
+import { type FieldError, type FieldValues, type Path, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import { Input } from '@/components/ui/input'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { MField } from '@/components/design/MField'
 import { NG_STATES } from '@/data/nigerian-states'
 import { cn } from '@/lib/utils'
 
@@ -71,125 +70,50 @@ export function AddressForm<TFieldValues extends FieldValues>({
     }
   }, [form, namePrefix])
 
-  const control = form.control as unknown as Control<FieldValues>
-  const path = (suffix: string) => `${namePrefix}.${suffix}` as Path<FieldValues>
+  const path = (suffix: string) => `${namePrefix}.${suffix}` as Path<TFieldValues>
+  const reg = (suffix: string) => form.register(path(suffix))
+  const err = (suffix: string): FieldError | undefined =>
+    form.getFieldState(path(suffix), form.formState).error
 
   return (
-    <section className={cn('flex flex-col gap-5', className)}>
-      {heading ? <h2 className="font-serif italic text-2xl text-(--ink)">{heading}</h2> : null}
-
-      <FormField
-        control={control}
-        name={path('fullName')}
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel>Full name</FormLabel>
-            <FormControl>
-              <Input autoComplete="name" placeholder="Adaeze Okoro" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={control}
-        name={path('phone')}
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel>Phone</FormLabel>
-            <FormControl>
-              <Input type="tel" autoComplete="tel" placeholder="0801 234 5678" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={control}
-        name={path('line1')}
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel>Street address</FormLabel>
-            <FormControl>
-              <Input autoComplete="address-line1" placeholder="12 Aminu Kano Crescent" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={control}
-        name={path('line2')}
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel>Apartment, suite, etc. (optional)</FormLabel>
-            <FormControl>
-              <Input autoComplete="address-line2" placeholder="Flat 4B" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <FormField
-          control={control}
-          name={path('city')}
-          render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel>City</FormLabel>
-              <FormControl>
-                <Input autoComplete="address-level2" placeholder="Abuja" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+    <section className={cn('grid gap-5', className)}>
+      {heading ? <h2 className="text-(length:--fs-lg)">{heading}</h2> : null}
+      <MField label="Full name" error={err('fullName')}>
+        <input autoComplete="name" placeholder="Adaeze Okoro" {...reg('fullName')} />
+      </MField>
+      <MField label="Phone" error={err('phone')}>
+        <input type="tel" autoComplete="tel" placeholder="0801 234 5678" {...reg('phone')} />
+      </MField>
+      <MField label="Street address" error={err('line1')}>
+        <input
+          autoComplete="address-line1"
+          placeholder="12 Aminu Kano Crescent"
+          {...reg('line1')}
         />
-        <FormField
-          control={control}
-          name={path('state')}
-          render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel>State</FormLabel>
-              <FormControl>
-                <select
-                  autoComplete="address-level1"
-                  className="flex h-11 w-full border border-(--hairline) bg-(--paper) px-3 py-2 text-[15px] text-(--ink) focus-visible:outline-none focus-visible:border-(--ink) disabled:cursor-not-allowed disabled:opacity-50"
-                  {...field}
-                  value={field.value ?? ''}
-                >
-                  <option value="" disabled>
-                    Pick a state
-                  </option>
-                  {NG_STATES.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      </MField>
+      <MField label="Apartment, suite, etc. (optional)" error={err('line2')}>
+        <input autoComplete="address-line2" placeholder="Flat 4B" {...reg('line2')} />
+      </MField>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <MField label="City" error={err('city')}>
+          <input autoComplete="address-level2" placeholder="Abuja" {...reg('city')} />
+        </MField>
+        <MField label="State" error={err('state')}>
+          <select autoComplete="address-level1" {...reg('state')}>
+            <option value="" disabled>
+              Pick a state
+            </option>
+            {NG_STATES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </MField>
       </div>
-
-      <FormField
-        control={control}
-        name={path('postal')}
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel>Postal code (optional)</FormLabel>
-            <FormControl>
-              <Input autoComplete="postal-code" placeholder="900288" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <MField label="Postal code (optional)" error={err('postal')}>
+        <input autoComplete="postal-code" placeholder="900288" {...reg('postal')} />
+      </MField>
     </section>
   )
 }

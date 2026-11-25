@@ -1,10 +1,9 @@
 // /account, minimal account overview, to be expanded with preferences later.
 import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/lib/network/stores/auth.store'
 import { useGetMe, useLogout } from '@/lib/network/api/auth.api'
 import { useSeo } from '@/lib/seo'
-import { Spinner } from '@/components/ui/spinner'
+import { AccountCard, AccountShell } from '@/modules/platform/components/AccountShell'
 
 export function AccountPage() {
   useSeo({ title: 'Your account', noindex: true })
@@ -17,25 +16,21 @@ export function AccountPage() {
   if (!user) return null
 
   return (
-    <section className="bg-(--paper) px-6 md:px-12 py-16 md:py-24 max-w-240 mx-auto">
-      <div className="t-eyebrow text-(--mute) mb-4">Account</div>
-      <h1 className="font-display italic font-semibold text-[72px] leading-[0.98] tracking-tight text-ink">
-        Hi, {user.name.split(' ')[0]}.
-      </h1>
-      <p className="t-body-l mt-4 text-(--graphite) max-w-130">
-        Manage your orders, addresses, and preferences. Your switch is well underway.
-      </p>
-
+    <AccountShell
+      eyebrow="Account"
+      title={<>Hi, {user.name.split(' ')[0]}.</>}
+      lede="Manage your orders, addresses, and preferences. Your switch is well underway."
+    >
       {/* Profile card */}
-      <div className="mt-10 border border-(--hairline-soft) bg-(--cream-soft) p-6 md:p-8 grid gap-6 md:grid-cols-2">
+      <AccountCard className="grid gap-6 md:grid-cols-2">
         <Field label="Name" value={user.name} />
         <Field label="Email" value={user.email} />
         <Field label="Phone" value={user.phone} />
         <Field label="Account type" value={prettyRole(user.role)} />
-      </div>
+      </AccountCard>
 
       {/* Quick actions */}
-      <div className="mt-10 grid gap-4 md:grid-cols-2">
+      <div className="mt-6 grid gap-6 md:grid-cols-2">
         <ActionTile title="Orders" body="Track current and past orders." href="/account/orders" />
         <ActionTile
           title="Addresses"
@@ -44,34 +39,28 @@ export function AccountPage() {
         />
       </div>
 
-      <div className="mt-12 flex flex-wrap items-center gap-4">
-        <Button asChild variant="primary" size="lg">
-          <Link to="/shop">Continue shopping</Link>
-        </Button>
-        <Button
-          variant="secondary"
-          size="lg"
+      <div className="mt-10 flex flex-wrap items-center gap-4">
+        <Link className="btn" to="/shop">
+          Continue shopping
+        </Link>
+        <button
+          type="button"
+          className="btn btn--ghost"
           onClick={() => logout.mutate()}
           disabled={logout.isPending}
         >
-          {logout.isPending ? (
-            <>
-              <Spinner size={14} /> Signing out…
-            </>
-          ) : (
-            'Sign out'
-          )}
-        </Button>
+          {logout.isPending ? 'Signing out…' : 'Sign out'}
+        </button>
       </div>
-    </section>
+    </AccountShell>
   )
 }
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="t-eyebrow text-(--mute) mb-1.5">{label}</div>
-      <div className="t-body text-(--ink)">{value}</div>
+      <span className="eyebrow">{label}</span>
+      <div className="mt-2 text-(--ink)">{value}</div>
     </div>
   )
 }
@@ -80,10 +69,10 @@ function ActionTile({ title, body, href }: { title: string; body: string; href: 
   return (
     <Link
       to={href}
-      className="block border border-(--hairline-soft) bg-(--paper) p-6 hover:border-(--ink) transition-colors no-underline"
+      className="ptn-card block no-underline transition-transform duration-300 hover:-translate-y-1"
     >
-      <div className="t-h3 text-(--ink)">{title}</div>
-      <p className="t-body-s mt-2 text-(--graphite)">{body}</p>
+      <h3 className="text-(length:--fs-lg) text-(--ink)">{title}</h3>
+      <p className="mt-2 text-(length:--fs-sm) text-(--mute)">{body}</p>
     </Link>
   )
 }

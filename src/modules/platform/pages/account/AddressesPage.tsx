@@ -1,22 +1,12 @@
 // /account/addresses, saved address book. Reuses the checkout AddressForm so validation stays in sync.
 
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, MoreVertical } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { MField } from '@/components/design/MField'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,7 +27,7 @@ import {
 import type { UserAddress } from '@/lib/network/types/user.types'
 import { useSeo } from '@/lib/seo'
 import { confirm } from '@/components/ui/confirm'
-import { Spinner } from '@/components/ui/spinner'
+import { AccountShell } from '@/modules/platform/components/AccountShell'
 
 // Same shape as the checkout address fieldset, plus an optional label.
 const formSchema = z.object({
@@ -54,39 +44,27 @@ export function AddressesPage() {
   const [editing, setEditing] = useState<UserAddress | 'new' | null>(null)
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 lg:py-16">
-      <div className="mb-6">
-        <Link
-          to="/account"
-          className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium hover:text-(--ink)"
-        >
-          ← Back to account
-        </Link>
-      </div>
-
-      <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.12em] text-(--mute) font-medium">
-            Your account
-          </p>
-          <h1 className="mt-2 font-serif italic text-4xl text-(--ink)">Saved addresses.</h1>
-        </div>
-        <Button variant="primary" size="lg" onClick={() => setEditing('new')}>
+    <AccountShell
+      back={{ to: '/account', label: '← Back to account' }}
+      eyebrow="Your account"
+      title={<>Saved addresses.</>}
+      aside={
+        <button type="button" className="btn" onClick={() => setEditing('new')}>
           <Plus size={16} strokeWidth={2} />
           Add address
-        </Button>
-      </header>
-
+        </button>
+      }
+    >
       {query.isLoading ? (
-        <div className="text-[14px] text-(--mute)">Loading addresses…</div>
+        <p className="text-(--mute)">Loading addresses…</p>
       ) : query.isError ? (
-        <div className="border border-(--coral) bg-(--coral-soft) px-4 py-5 text-[14px] text-(--ink)">
+        <div className="ptn-card text-(--berry)">
           We could not load your saved addresses. Refresh and try again.
         </div>
       ) : addresses.length === 0 ? (
         <EmptyState onAdd={() => setEditing('new')} />
       ) : (
-        <ul className="m-0 p-0 list-none flex flex-col gap-3">
+        <ul className="m-0 flex list-none flex-col gap-4 p-0">
           {addresses.map((a) => (
             <AddressRow key={a._id} address={a} onEdit={() => setEditing(a)} />
           ))}
@@ -97,10 +75,10 @@ export function AddressesPage() {
       <Sheet open={editing !== null} onOpenChange={(o) => !o && setEditing(null)}>
         <SheetContent
           side="right"
-          className="w-full sm:max-w-md bg-(--paper) border-l border-(--hairline) overflow-y-auto"
+          className="w-full overflow-y-auto border-l-0 bg-(--white) sm:max-w-md"
         >
           <SheetHeader>
-            <SheetTitle className="font-display italic text-[28px] text-ink">
+            <SheetTitle className="text-(length:--fs-h3) font-medium tracking-tight text-(--ink)">
               {editing === 'new'
                 ? 'Add address'
                 : editing
@@ -117,7 +95,7 @@ export function AddressesPage() {
           ) : null}
         </SheetContent>
       </Sheet>
-    </div>
+    </AccountShell>
   )
 }
 
@@ -127,7 +105,7 @@ function AddressRow({ address, onEdit }: { address: UserAddress; onEdit: () => v
   const del = useDeleteMyAddress()
 
   return (
-    <li className="border border-(--hairline) bg-(--paper) p-5 flex justify-between gap-4">
+    <li className="ptn-card flex justify-between gap-4">
       <button type="button" onClick={onEdit} className="text-left flex-1 min-w-0 bg-transparent">
         <div className="flex items-center gap-2 mb-1.5">
           {address.label ? (
@@ -136,12 +114,12 @@ function AddressRow({ address, onEdit }: { address: UserAddress; onEdit: () => v
             <span className="text-[14px] text-(--ink) font-medium">{address.fullName}</span>
           )}
           {address.isDefault ? (
-            <span className="text-[10px] uppercase tracking-[0.12em] font-medium px-2 py-0.5 bg-blush text-berry">
+            <span className="rounded-full bg-(--blush) px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-(--berry)">
               Default
             </span>
           ) : null}
         </div>
-        <p className="m-0 text-[13px] text-(--graphite) leading-relaxed">
+        <p className="m-0 text-(length:--fs-sm) leading-relaxed text-(--mute)">
           {address.line1}
           {address.line2 ? `, ${address.line2}` : ''}
           <br />
@@ -157,7 +135,7 @@ function AddressRow({ address, onEdit }: { address: UserAddress; onEdit: () => v
             <button
               type="button"
               aria-label="Open address actions"
-              className="inline-flex h-8 w-8 items-center justify-center text-(--graphite) hover:bg-(--cream) rounded-sm"
+              className="inline-flex size-9 items-center justify-center rounded-full text-(--mute) hover:bg-(--blush) hover:text-(--ink)"
             >
               <MoreVertical size={16} strokeWidth={1.6} />
             </button>
@@ -263,56 +241,36 @@ function AddressEditor({ initial, onDone }: { initial: UserAddress | null; onDon
   const busy = add.isPending || update.isPending
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-5">
-        <FormField
-          control={form.control}
-          name="label"
-          render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel>Label (optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="Home" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <form onSubmit={form.handleSubmit(onSubmit)} className="mform mt-6 px-4 pb-8" noValidate>
+      <MField label="Label (optional)" error={form.formState.errors.label}>
+        <input placeholder="Home" {...form.register('label')} />
+      </MField>
 
-        <AddressForm form={form} namePrefix="address" />
+      <AddressForm form={form} namePrefix="address" />
 
-        <div className="flex items-center gap-3 mt-2">
-          <Button type="submit" variant="primary" size="lg" disabled={busy}>
-            {busy ? (
-              <>
-                <Spinner size={14} /> Saving…
-              </>
-            ) : isEdit ? (
-              'Save changes'
-            ) : (
-              'Add address'
-            )}
-          </Button>
-          <Button type="button" variant="secondary" size="lg" disabled={busy} onClick={onDone}>
-            Cancel
-          </Button>
-        </div>
-      </form>
-    </Form>
+      <div className="mt-2 flex items-center gap-3">
+        <button type="submit" className="btn" disabled={busy}>
+          {busy ? 'Saving…' : isEdit ? 'Save changes' : 'Add address'}
+        </button>
+        <button type="button" className="btn btn--ghost" disabled={busy} onClick={onDone}>
+          Cancel
+        </button>
+      </div>
+    </form>
   )
 }
 
 // ─────────────────────────────────────────────────────────────────
 function EmptyState({ onAdd }: { onAdd: () => void }) {
   return (
-    <div className="border border-dashed border-(--hairline) bg-(--cream-soft) p-8 text-center">
-      <p className="text-[14px] text-(--mute) m-0">You have not saved an address yet.</p>
-      <p className="text-[13px] text-(--graphite) mt-2 m-0">
+    <div className="ptn-card text-center">
+      <p className="m-0 text-(--ink)">You have not saved an address yet.</p>
+      <p className="m-0 mt-2 text-(length:--fs-sm) text-(--mute)">
         Save one here, or tick "Save this address" at checkout next time.
       </p>
-      <Button variant="primary" size="default" className="mt-5" onClick={onAdd}>
+      <button type="button" className="btn mt-6" onClick={onAdd}>
         <Plus size={14} strokeWidth={2} /> Add your first address
-      </Button>
+      </button>
     </div>
   )
 }
