@@ -1,23 +1,14 @@
 // /partner/onboarding?token=…, single use link from the approval email.
 // Verify token, collect password and bank details, complete, then auto sign in and redirect to /partner.
 
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { MField } from '@/components/design/MField'
+import { AccountCard, AccountShell } from '@/modules/platform/components/AccountShell'
 import {
   useCompletePartnerOnboarding,
   useVerifyOnboardingToken,
@@ -110,201 +101,126 @@ export function PartnerOnboardingPage() {
 
   if (!token) {
     return (
-      <PageShell>
-        <h1 className="m-0 font-display italic font-semibold text-[28px] leading-tight tracking-tight text-ink">
-          Missing onboarding link.
-        </h1>
-        <p className="mt-3 t-body text-graphite">
+      <AccountShell eyebrow="Partner onboarding" title="Missing onboarding link.">
+        <p className="lede max-w-130">
           The link you used does not include a token. Check the email we sent or contact
           partnerships@mensaproducts.com.
         </p>
-      </PageShell>
+      </AccountShell>
     )
   }
 
   if (verifyQuery.isLoading) {
     return (
-      <PageShell>
-        <p className="t-body-s text-mute">Checking your onboarding link…</p>
-      </PageShell>
+      <AccountShell eyebrow="Partner onboarding" title="Checking your onboarding link…">
+        {null}
+      </AccountShell>
     )
   }
 
   if (verifyQuery.isError || !verifyQuery.data?.data?.partner) {
     return (
-      <PageShell>
-        <h1 className="m-0 font-display italic font-semibold text-[28px] leading-tight tracking-tight text-ink">
-          This link is no longer valid.
-        </h1>
-        <p className="mt-3 t-body text-graphite">
+      <AccountShell eyebrow="Partner onboarding" title="This link is no longer valid.">
+        <p className="lede max-w-130">
           Onboarding links expire after seven days or after they have been used once. Email
           partnerships@mensaproducts.com to get a fresh one.
         </p>
-        <div className="mt-6">
-          <Button asChild variant="secondary" size="md">
-            <Link to="/">Back home</Link>
-          </Button>
-        </div>
-      </PageShell>
+        <Link className="btn btn--ghost mt-8" to="/">
+          Back home
+        </Link>
+      </AccountShell>
     )
   }
 
   const partner = verifyQuery.data.data.partner
   const submitting = completeMutation.isPending || loginMutation.isPending
+  const errors = form.formState.errors
 
   return (
-    <PageShell>
-      <div className="t-eyebrow text-mute mb-3">Partner onboarding</div>
-      <h1 className="m-0 font-display italic font-semibold text-[clamp(28px,5vw,44px)] leading-tight tracking-tight text-ink">
-        Welcome, {partner.name.split(' ')[0]}.
-      </h1>
-      <p className="mt-3 max-w-130 t-body text-graphite">
-        Your application is approved. You will earn <strong>{partner.commissionRate}%</strong> on
-        every paid order from your referral link. Finish setting up your account below.
-      </p>
+    <AccountShell
+      eyebrow="Partner onboarding"
+      title={<>Welcome, {partner.name.split(' ')[0]}.</>}
+      lede={
+        <>
+          Your application is approved. You will earn <strong>{partner.commissionRate}%</strong> on
+          every paid order from your referral link. Finish setting up your account below.
+        </>
+      }
+    >
+      <AccountCard className="max-w-180">
+        <form className="mform" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+          <StepLabel>01 · Set a password</StepLabel>
+          <MField label="Password" error={errors.password}>
+            <input
+              type="password"
+              placeholder="At least 8 characters"
+              autoComplete="new-password"
+              {...form.register('password')}
+            />
+          </MField>
+          <MField label="Confirm password" error={errors.confirmPassword}>
+            <input
+              type="password"
+              autoComplete="new-password"
+              {...form.register('confirmPassword')}
+            />
+          </MField>
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="mt-8 flex flex-col gap-6 bg-cream-soft border border-hairline-soft p-6 md:p-8"
-        >
-          {/* Password */}
-          <div className="flex flex-col gap-4">
-            <div className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono">
-              01 · Set a password
-            </div>
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="At least 8 characters"
-                      autoComplete="new-password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm password</FormLabel>
-                  <FormControl>
-                    <Input type="password" autoComplete="new-password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <div className="border-t border-(--line) pt-6">
+            <StepLabel>02 · Choose a referral code</StepLabel>
           </div>
-
-          {/* Referral code */}
-          <div className="flex flex-col gap-4 border-t border-hairline pt-6">
-            <div className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono">
-              02 · Choose a referral code
-            </div>
-            <FormField
-              control={form.control}
-              name="referralCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Referral code (optional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="ADAOK"
-                      autoCapitalize="characters"
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    3 to 16 letters or numbers, no spaces. Leave blank and we will generate one for
-                    you.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+          <MField
+            label="Referral code (optional)"
+            error={errors.referralCode}
+            hint="3 to 16 letters or numbers, no spaces. Leave blank and we will generate one for you."
+          >
+            <input
+              placeholder="ADAOK"
+              autoCapitalize="characters"
+              className="uppercase"
+              {...form.register('referralCode', {
+                setValueAs: (v: string) => (v ?? '').toUpperCase(),
+              })}
             />
+          </MField>
+
+          <div className="border-t border-(--line) pt-6">
+            <StepLabel>03 · Where should we pay you?</StepLabel>
           </div>
-
-          {/* Bank details */}
-          <div className="flex flex-col gap-4 border-t border-hairline pt-6">
-            <div className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono">
-              03 · Where should we pay you?
-            </div>
-            <FormField
-              control={form.control}
-              name="accountName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ada Okeke" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="accountNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Account number</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="0123456789"
-                        inputMode="numeric"
-                        autoComplete="off"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+          <MField label="Account name" error={errors.accountName}>
+            <input placeholder="Ada Okeke" {...form.register('accountName')} />
+          </MField>
+          <div className="mform__row">
+            <MField label="Account number" error={errors.accountNumber}>
+              <input
+                placeholder="0123456789"
+                inputMode="numeric"
+                autoComplete="off"
+                {...form.register('accountNumber')}
               />
-              <FormField
-                control={form.control}
-                name="bankName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Bank name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Access Bank" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <p className="t-body-s text-mute">
-              We use this to settle your commission payouts. You can update it later from your
-              partner dashboard.
-            </p>
+            </MField>
+            <MField label="Bank name" error={errors.bankName}>
+              <input placeholder="Access Bank" {...form.register('bankName')} />
+            </MField>
           </div>
+          <p className="text-(length:--fs-sm) text-(--mute)">
+            We use this to settle your commission payouts. You can update it later from your partner
+            dashboard.
+          </p>
 
-          <Button type="submit" variant="primary" size="lg" disabled={submitting}>
+          <button type="submit" className="btn w-full" disabled={submitting}>
             {submitting ? 'Activating…' : 'Activate my partner account'}
-          </Button>
+          </button>
         </form>
-      </Form>
-    </PageShell>
+      </AccountCard>
+    </AccountShell>
   )
 }
 
-function PageShell({ children }: { children: React.ReactNode }) {
+function StepLabel({ children }: { children: ReactNode }) {
   return (
-    <section className="px-5 md:px-10 lg:px-16 py-12 lg:py-20 bg-paper">
-      <div className="max-w-180 mx-auto">{children}</div>
-    </section>
+    <span className="text-(length:--fs-xs) font-medium uppercase tracking-[0.12em] text-(--mute)">
+      {children}
+    </span>
   )
 }

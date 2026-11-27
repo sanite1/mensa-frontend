@@ -1,22 +1,14 @@
 // /partner dashboard, role 'partner' only. Balances, referral link, commission and payout history.
 
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Copy, ExternalLink, Pencil } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { MField } from '@/components/design/MField'
+import { AccountCard, AccountShell } from '@/modules/platform/components/AccountShell'
 import {
   usePartnerDashboard,
   useRequestPayout,
@@ -29,17 +21,16 @@ import type {
 } from '@/lib/network/types/partner.types'
 import { formatNaira, cn } from '@/lib/utils'
 import { useSeo } from '@/lib/seo'
-import { Spinner } from '@/components/ui/spinner'
 
 const COMMISSION_BADGE: Record<string, { label: string; cls: string }> = {
-  pending: { label: 'Pending', cls: 'bg-cream text-mute' },
+  pending: { label: 'Pending', cls: 'bg-(--blush) text-(--mute)' },
   available: { label: 'Available', cls: 'bg-ok/10 text-ok' },
-  paid: { label: 'Paid', cls: 'bg-ink text-paper' },
+  paid: { label: 'Paid', cls: 'bg-(--ink) text-(--white)' },
   reversed: { label: 'Reversed', cls: 'bg-err/10 text-err' },
 }
 
 const PAYOUT_BADGE: Record<string, { label: string; cls: string }> = {
-  pending: { label: 'Pending', cls: 'bg-cream text-mute' },
+  pending: { label: 'Pending', cls: 'bg-(--blush) text-(--mute)' },
   paid: { label: 'Paid', cls: 'bg-ok/10 text-ok' },
   rejected: { label: 'Rejected', cls: 'bg-err/10 text-err' },
 }
@@ -51,13 +42,17 @@ export function PartnerDashboardPage() {
   const [copied, setCopied] = useState(false)
 
   if (query.isLoading) {
-    return <section className="px-4 md:px-6 lg:px-8 py-10 t-body-s text-mute">Loading…</section>
+    return (
+      <main className="section section--blush min-h-[70vh]">
+        <p className="wrap text-(--mute)">Loading…</p>
+      </main>
+    )
   }
   if (query.isError || !query.data?.data) {
     return (
-      <section className="px-4 md:px-6 lg:px-8 py-10">
-        <p className="t-body text-err">We could not load your partner dashboard.</p>
-      </section>
+      <main className="section section--blush min-h-[70vh]">
+        <p className="wrap text-err">We could not load your partner dashboard.</p>
+      </main>
     )
   }
 
@@ -84,25 +79,25 @@ export function PartnerDashboardPage() {
   }
 
   return (
-    <section className="px-4 md:px-6 lg:px-8 py-8 md:py-10 lg:py-14 max-w-6xl mx-auto">
-      <div className="t-eyebrow text-mute mb-3">Partner programme</div>
-      <h1 className="m-0 font-display italic font-semibold text-[clamp(32px,5vw,52px)] leading-[1.02] tracking-tight text-ink">
-        Hi, {partner.name.split(' ')[0]}.
-      </h1>
-      <p className="t-body-l mt-3 text-graphite max-w-150">
-        Share your referral link, earn {partner.commissionRate}% on every paid order, cash out when
-        you are ready.
-      </p>
-
+    <AccountShell
+      eyebrow="Partner programme"
+      title={<>Hi, {partner.name.split(' ')[0]}.</>}
+      lede={
+        <>
+          Share your referral link, earn {partner.commissionRate}% on every paid order, cash out
+          when you are ready.
+        </>
+      }
+    >
       {partner.status === 'suspended' ? (
-        <div className="mt-6 border border-err/40 bg-err/5 p-4 text-err t-body-s">
+        <div className="mb-6 rounded-(--r-md) bg-(--white) p-5 text-(length:--fs-sm) text-err shadow-(--shadow)">
           Your partner account is suspended. New commissions will not accrue. Contact
           partnerships@mensaproducts.com if this is unexpected.
         </div>
       ) : null}
 
       {partner.availableBalanceKobo < 0 ? (
-        <div className="mt-6 border border-coral/50 bg-blush p-4 text-berry t-body-s">
+        <div className="mb-6 rounded-(--r-md) bg-(--white) p-5 text-(length:--fs-sm) text-(--berry) shadow-(--shadow)">
           One or more orders you earned commission on were later cancelled or refunded after we had
           already paid you. Your available balance is currently in deficit by{' '}
           <strong>{formatNaira(Math.abs(partner.availableBalanceKobo))}</strong>. New commissions
@@ -111,7 +106,7 @@ export function PartnerDashboardPage() {
       ) : null}
 
       {/* Balance KPIs */}
-      <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Kpi
           label="Available"
           value={formatBalance(partner.availableBalanceKobo)}
@@ -123,105 +118,90 @@ export function PartnerDashboardPage() {
       </div>
 
       {/* Referral link */}
-      <div className="mt-8 border border-hairline-soft bg-paper p-5 md:p-6">
-        <div className="t-eyebrow text-mute mb-3">Your referral link</div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="flex-1 min-w-0 border border-hairline bg-cream-soft px-4 py-3 font-mono text-[13px] text-ink truncate">
+      <AccountCard className="mt-6">
+        <span className="eyebrow">Your referral link</span>
+        <div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+          <div className="min-w-0 flex-1 truncate rounded-full px-5 py-3 font-mono text-[13px] text-(--ink) shadow-[inset_0_0_0_1px_var(--line)]">
             {referralUrl || 'Awaiting referral code'}
           </div>
-          <Button
-            type="button"
-            variant="primary"
-            size="md"
-            onClick={onCopy}
-            disabled={!referralUrl}
-          >
+          <button type="button" className="btn" onClick={onCopy} disabled={!referralUrl}>
             <Copy size={14} strokeWidth={1.8} />
             {copied ? 'Copied' : 'Copy link'}
-          </Button>
+          </button>
           {referralUrl ? (
-            <Button asChild variant="secondary" size="md">
-              <a href={referralUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink size={14} strokeWidth={1.8} />
-                Open
-              </a>
-            </Button>
+            <a
+              className="btn btn--ghost"
+              href={referralUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ExternalLink size={14} strokeWidth={1.8} />
+              Open
+            </a>
           ) : null}
         </div>
-        <p className="mt-3 t-body-s text-mute">
+        <p className="mt-4 text-(length:--fs-sm) text-(--mute)">
           Share this anywhere — Instagram bio, TikTok, WhatsApp, group chats. Every paid order
           placed through it credits your balance once the customer receives their delivery.
         </p>
-      </div>
+      </AccountCard>
 
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Commissions */}
-        <div className="lg:col-span-2 border border-hairline-soft bg-paper">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-hairline-soft">
-            <div className="t-eyebrow text-mute">Recent commissions</div>
-            <div className="text-[11px] uppercase tracking-widest font-medium text-mute">
-              Last {recentCommissions.length}
-            </div>
+        <AccountCard className="p-0! lg:col-span-2">
+          <div className="flex items-center justify-between border-b border-(--line) px-6 py-5">
+            <span className="eyebrow">Recent commissions</span>
+            <Small>Last {recentCommissions.length}</Small>
           </div>
           {recentCommissions.length === 0 ? (
-            <div className="p-6 t-body-s text-mute">
+            <p className="p-6 text-(length:--fs-sm) text-(--mute)">
               No commissions yet. Share your link and they will show up here.
-            </div>
+            </p>
           ) : (
-            <ul className="divide-y divide-hairline-soft">
+            <ul className="divide-y divide-(--line)">
               {recentCommissions.map((c: PartnerCommissionRow) => {
                 const badge = COMMISSION_BADGE[c.status] ?? {
                   label: c.status,
-                  cls: 'bg-cream text-mute',
+                  cls: 'bg-(--blush) text-(--mute)',
                 }
                 return (
-                  <li key={c._id} className="px-5 py-3 flex items-center justify-between gap-3">
+                  <li key={c._id} className="flex items-center justify-between gap-3 px-6 py-4">
                     <div className="min-w-0">
-                      <div className="text-[13px] font-mono text-ink">{c.orderNumber}</div>
-                      <div className="text-[11px] uppercase tracking-widest font-medium text-mute">
+                      <div className="font-mono text-[13px] text-(--ink)">{c.orderNumber}</div>
+                      <Small>
                         {new Date(c.createdAt).toLocaleDateString('en-NG', {
                           day: '2-digit',
                           month: 'short',
                           year: 'numeric',
                         })}
-                      </div>
+                      </Small>
                     </div>
                     <div className="text-right">
-                      <div className="text-[14px] font-medium text-ink">
-                        {formatNaira(c.amountKobo)}
-                      </div>
-                      <span
-                        className={cn(
-                          'inline-flex items-center px-2 py-0.5 text-[10px] uppercase tracking-widest font-medium font-mono rounded-sm mt-1',
-                          badge.cls,
-                        )}
-                      >
+                      <div className="font-medium text-(--ink)">{formatNaira(c.amountKobo)}</div>
+                      <Badge cls={badge.cls} className="mt-1">
                         {badge.label}
-                      </span>
+                      </Badge>
                     </div>
                   </li>
                 )
               })}
             </ul>
           )}
-        </div>
+        </AccountCard>
 
         {/* Payouts */}
-        <div className="border border-hairline-soft bg-paper">
-          <div className="px-5 py-4 border-b border-hairline-soft">
-            <div className="t-eyebrow text-mute">Payouts</div>
+        <AccountCard className="p-0!">
+          <div className="border-b border-(--line) px-6 py-5">
+            <span className="eyebrow">Payouts</span>
           </div>
-          <div className="p-5 flex flex-col gap-4">
+          <div className="flex flex-col gap-5 p-6">
             <div>
-              <div className="text-[11px] uppercase tracking-widest font-medium text-mute mb-1">
-                Minimum cash out
-              </div>
-              <div className="text-[14px] text-ink">{formatNaira(minPayoutKobo)}</div>
+              <Small>Minimum cash out</Small>
+              <div className="mt-1 text-(--ink)">{formatNaira(minPayoutKobo)}</div>
             </div>
-            <Button
+            <button
               type="button"
-              variant={canRequest ? 'primary' : 'secondary'}
-              size="md"
+              className={cn('btn w-full', !canRequest && 'btn--ghost')}
               onClick={onRequestPayout}
               disabled={!canRequest || payout.isPending}
               title={
@@ -232,46 +212,31 @@ export function PartnerDashboardPage() {
                     : undefined
               }
             >
-              {payout.isPending ? (
-                <>
-                  <Spinner size={14} /> Requesting…
-                </>
-              ) : (
-                'Request payout'
-              )}
-            </Button>
+              {payout.isPending ? 'Requesting…' : 'Request payout'}
+            </button>
             {hasPendingPayout ? (
-              <p className="t-body-s text-mute">
+              <p className="text-(length:--fs-sm) text-(--mute)">
                 You already have a payout in review. We will get it out within five working days.
               </p>
             ) : null}
 
             {/* Recent payouts */}
             {payoutRequests.length > 0 ? (
-              <div className="border-t border-hairline-soft pt-4">
-                <div className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono mb-2">
-                  Recent payouts
-                </div>
-                <ul className="flex flex-col gap-2">
+              <div className="border-t border-(--line) pt-5">
+                <Small>Recent payouts</Small>
+                <ul className="mt-3 flex flex-col gap-2">
                   {payoutRequests.map((p: PartnerPayoutRow) => {
                     const badge = PAYOUT_BADGE[p.status] ?? {
                       label: p.status,
-                      cls: 'bg-cream text-mute',
+                      cls: 'bg-(--blush) text-(--mute)',
                     }
                     return (
                       <li
                         key={p._id}
-                        className="flex items-center justify-between gap-3 text-[13px]"
+                        className="flex items-center justify-between gap-3 text-(length:--fs-sm)"
                       >
-                        <div className="text-ink">{formatNaira(p.amountKobo)}</div>
-                        <span
-                          className={cn(
-                            'inline-flex items-center px-2 py-0.5 text-[10px] uppercase tracking-widest font-medium font-mono rounded-sm',
-                            badge.cls,
-                          )}
-                        >
-                          {badge.label}
-                        </span>
+                        <div className="text-(--ink)">{formatNaira(p.amountKobo)}</div>
+                        <Badge cls={badge.cls}>{badge.label}</Badge>
                       </li>
                     )
                   })}
@@ -282,29 +247,52 @@ export function PartnerDashboardPage() {
             {/* Bank account (editable) */}
             <BankAccountPanel bankAccount={partner.bankAccount} />
           </div>
-        </div>
+        </AccountCard>
       </div>
-    </section>
+    </AccountShell>
+  )
+}
+
+function Small({ children }: { children: ReactNode }) {
+  return (
+    <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-(--mute)">
+      {children}
+    </div>
+  )
+}
+
+function Badge({
+  cls,
+  className,
+  children,
+}: {
+  cls: string
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]',
+        cls,
+        className,
+      )}
+    >
+      {children}
+    </span>
   )
 }
 
 function Kpi({ label, value, tone }: { label: string; value: string; tone?: 'hero' | 'deficit' }) {
   return (
-    <div
-      className={cn(
-        'border p-4 md:p-5 flex flex-col gap-2',
-        tone === 'hero' && 'bg-blush border-pink/40',
-        tone === 'deficit' && 'bg-blush border-coral/50',
-        !tone && 'bg-paper border-hairline-soft',
-      )}
-    >
-      <div className="t-eyebrow text-mute text-[10.5px]">{label}</div>
+    <div className="flex flex-col gap-3 rounded-(--r-md) bg-(--white) p-5 shadow-(--shadow)">
+      <span className="eyebrow">{label}</span>
       <div
         className={cn(
-          'font-display italic font-semibold text-[clamp(22px,3vw,30px)] leading-none tracking-tight',
-          tone === 'hero' && 'text-berry',
+          'text-(length:--fs-h3) leading-none tracking-tight',
+          tone === 'hero' && 'text-(--berry)',
           tone === 'deficit' && 'text-coral',
-          !tone && 'text-ink',
+          !tone && 'text-(--ink)',
         )}
       >
         {value}
@@ -369,118 +357,78 @@ function BankAccountPanel({ bankAccount }: { bankAccount?: PartnerBankAccount })
     )
   }
 
+  const errors = form.formState.errors
+
   if (!bankAccount && !editing) {
     return (
-      <div className="border-t border-hairline-soft pt-4">
-        <div className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono mb-2">
-          Payout account
-        </div>
-        <p className="t-body-s text-mute mb-3">
+      <div className="border-t border-(--line) pt-5">
+        <Small>Payout account</Small>
+        <p className="mb-4 mt-2 text-(length:--fs-sm) text-(--mute)">
           No bank details on file. Add them so we can settle your payouts.
         </p>
-        <Button type="button" variant="secondary" size="sm" onClick={onEdit}>
+        <button type="button" className="btn btn--ghost" onClick={onEdit}>
           Add bank account
-        </Button>
+        </button>
       </div>
     )
   }
 
   if (editing) {
     return (
-      <div className="border-t border-hairline-soft pt-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono">
-            Payout account
-          </div>
+      <div className="border-t border-(--line) pt-5">
+        <div className="mb-4 flex items-center justify-between">
+          <Small>Payout account</Small>
           <button
             type="button"
             onClick={() => setEditing(false)}
-            className="text-[11px] uppercase tracking-widest font-medium text-mute hover:text-ink"
+            className="text-[11px] font-medium uppercase tracking-[0.12em] text-(--mute) hover:text-(--ink)"
           >
             Cancel
           </button>
         </div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-3">
-            <FormField
-              control={form.control}
-              name="accountName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[12px]">Account name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ada Okeke" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <form className="mform" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+          <MField label="Account name" error={errors.accountName}>
+            <input placeholder="Ada Okeke" {...form.register('accountName')} />
+          </MField>
+          <MField label="Account number" error={errors.accountNumber}>
+            <input
+              placeholder="0123456789"
+              inputMode="numeric"
+              autoComplete="off"
+              {...form.register('accountNumber')}
             />
-            <FormField
-              control={form.control}
-              name="accountNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[12px]">Account number</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="0123456789"
-                      inputMode="numeric"
-                      autoComplete="off"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="bankName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[12px]">Bank</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Access Bank" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" variant="primary" size="sm" disabled={update.isPending}>
-              {update.isPending ? (
-                <>
-                  <Spinner size={14} /> Saving…
-                </>
-              ) : (
-                'Save'
-              )}
-            </Button>
-          </form>
-        </Form>
+          </MField>
+          <MField label="Bank" error={errors.bankName}>
+            <input placeholder="Access Bank" {...form.register('bankName')} />
+          </MField>
+          <button type="submit" className="btn w-full" disabled={update.isPending}>
+            {update.isPending ? 'Saving…' : 'Save'}
+          </button>
+        </form>
       </div>
     )
   }
 
   // Read-only view (with edit button)
   return (
-    <div className="border-t border-hairline-soft pt-4">
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-[10.5px] uppercase tracking-widest font-medium text-mute font-mono">
-          Paid to
-        </div>
+    <div className="border-t border-(--line) pt-5">
+      <div className="mb-2 flex items-center justify-between">
+        <Small>Paid to</Small>
         <button
           type="button"
           onClick={onEdit}
           aria-label="Edit bank account"
-          className="inline-flex items-center gap-1 text-[11px] uppercase tracking-widest font-medium text-mute hover:text-ink"
+          className="inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.12em] text-(--mute) hover:text-(--ink)"
         >
           <Pencil size={12} strokeWidth={1.8} />
           Edit
         </button>
       </div>
-      <div className="text-[13px] text-ink">{bankAccount?.accountName}</div>
-      <div className="text-[12px] text-graphite">{bankAccount?.bankName}</div>
-      <div className="text-[12px] font-mono text-mute">{bankAccount?.accountNumber}</div>
+      <div className="text-(length:--fs-sm) text-(--ink)">{bankAccount?.accountName}</div>
+      <div className="text-(length:--fs-xs) text-(--mute)">{bankAccount?.bankName}</div>
+      <div className="font-mono text-(length:--fs-xs) text-(--mute)">
+        {bankAccount?.accountNumber}
+      </div>
     </div>
   )
 }
