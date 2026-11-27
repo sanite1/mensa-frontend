@@ -192,7 +192,7 @@ export function Hero() {
               </span>
               <span className="xl">
                 <span>
-                  Skip <em>250+ disposables.</em>
+                  Skip <em>300+ disposables.</em>
                 </span>
               </span>
             </h2>

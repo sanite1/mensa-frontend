@@ -51,7 +51,7 @@ export function AboutPage() {
   useSeo({
     title: 'Our story',
     description:
-      'Mensa was founded by Kehinde Abereoje in Abuja — a public-health advocate who turned a visit to a displaced persons camp at fourteen into a workshop, a brand, and an answer to period poverty in Nigeria.',
+      'Mensa was founded by Kehinde Abereoje in Abuja, a public health advocate who turned a visit to a displaced persons camp at fourteen into a workshop, a brand, and an answer to period poverty in Nigeria.',
   })
 
   return (

@@ -80,7 +80,7 @@ function ProductView({ product: p }: { product: Product }) {
   const inStock = (v?: ProductVariant | null) => !p.isSoldOut && !!v && v.stockCount > 0
 
   const description =
-    p.shortDescription || p.subheading || `${p.name} — reusable period products designed in Abuja.`
+    p.shortDescription || p.subheading || `${p.name}, reusable period products designed in Abuja.`
   useSeo({
     title: p.name,
     description,

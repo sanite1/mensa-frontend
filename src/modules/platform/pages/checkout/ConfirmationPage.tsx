@@ -216,7 +216,7 @@ export function ConfirmationPage() {
             <span className="eyebrow">
               {checking ? 'Verifying with Paystack' : 'Awaiting confirmation'}
             </span>
-            <b className="text-(length:--fs-lg)">Hold tight — confirming your payment.</b>
+            <b className="text-(length:--fs-lg)">Hold tight, confirming your payment.</b>
             <p className="max-w-[40ch] text-(length:--fs-sm) text-(--mute)">
               This usually takes a second or two. You can leave this page open; we will update it
               the moment Paystack responds.

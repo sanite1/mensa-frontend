@@ -57,7 +57,7 @@ const CATEGORY_SEO: Record<ProductCategory, { title: string; description: string
   education: {
     title: 'Education',
     description:
-      'My Cycoo guide, FLOW Game, and Period Conversations — Mensa education products for classrooms and homes across Nigeria.',
+      'My Cycoo guide, FLOW Game, and Period Conversations. Mensa education products for classrooms and homes across Nigeria.',
   },
   advocacy: {
     title: 'Fashion items · Period advocacy',

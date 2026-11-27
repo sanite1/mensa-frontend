@@ -261,7 +261,7 @@ export function HowItWorksPage() {
             </span>
             <span className="split-line">
               <span style={{ '--d': '.1s' } as CSSProperties}>
-                Skip <span className="accent">250+ disposables.</span>
+                Skip <span className="accent">300+ disposables.</span>
               </span>
             </span>
           </h2>

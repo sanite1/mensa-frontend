@@ -83,7 +83,7 @@ export function Story() {
             </p>
             <ul>
               <li>3 pants per cycle</li>
-              <li>Replaces 250+ pads each</li>
+              <li>Replaces 300+ pads each</li>
             </ul>
           </article>
         </div>

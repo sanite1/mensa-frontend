@@ -141,8 +141,8 @@ export function PartnerDashboardPage() {
           ) : null}
         </div>
         <p className="mt-4 text-(length:--fs-sm) text-(--mute)">
-          Share this anywhere — Instagram bio, TikTok, WhatsApp, group chats. Every paid order
-          placed through it credits your balance once the customer receives their delivery.
+          Share this anywhere: Instagram bio, TikTok, WhatsApp, group chats. Every paid order placed
+          through it credits your balance once the customer receives their delivery.
         </p>
       </AccountCard>
 

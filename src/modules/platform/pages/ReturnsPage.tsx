@@ -56,7 +56,7 @@ export function ReturnsPage() {
       <h2 id="report">Three things, one email.</h2>
       <ol>
         <li>
-          <strong>Email us:</strong> hi@mensaproducts.com — drop us a note within three days of
+          <strong>Email us:</strong> hi@mensaproducts.com. Drop us a note within three days of
           delivery.
         </li>
         <li>

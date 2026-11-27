@@ -47,7 +47,7 @@ const contactSchema = z
     email: z.string().trim().email('Please enter a valid email.'),
     topic: z.enum(['order', 'product', 'partnership', 'press', 'other']),
     orderNumber: z.string().trim().max(40).optional().or(z.literal('')),
-    message: z.string().trim().min(10, 'Tell us a bit more — at least 10 characters.').max(4000),
+    message: z.string().trim().min(10, 'Tell us a bit more, at least 10 characters.').max(4000),
   })
   // Order number is only required when the topic is 'order'.
   .refine((v) => v.topic !== 'order' || (v.orderNumber && v.orderNumber.length > 0), {
@@ -223,7 +223,7 @@ function FormSection({
       <span className="eyebrow">Write to us</span>
       <h2 className="mt-4 text-(length:--fs-h3) tracking-tight">Send a message.</h2>
       <p className="mt-3 text-(--mute)">
-        The more context the better — order number if relevant, what happened, what you want us to
+        The more context the better: order number if relevant, what happened, what you want us to
         do. We reply from a real Mensa team inbox.
       </p>
 
