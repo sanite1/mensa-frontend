@@ -1,9 +1,12 @@
-// AdminLayout — sidebar + topbar shell. Mobile menu state lives here because Topbar and Sidebar both read and write it.
+// AdminLayout: the design's Studio frame (a-root, a-app). Dark sidebar on
+// desktop, a drawer with a scrim and a slim top bar under 960px.
 import { useEffect, useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Menu, User } from 'lucide-react'
 import { Sidebar } from '@/modules/admin/components/Sidebar'
-import { Topbar } from '@/modules/admin/components/Topbar'
 import { clearStrayScrollLock, useScrollLock } from '@/lib/useScrollLock'
+import { cn } from '@/lib/utils'
+import logo from '@/assets/mensa_logo.png'
 
 export function AdminLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -29,15 +32,30 @@ export function AdminLayout() {
   }, [isMenuOpen])
 
   return (
-    // h-dvh, not h-screen: on mobile Safari 100vh runs under the browser
-    // chrome, which left dark bands above and below the drawer backdrop.
-    <div className="flex h-dvh bg-cream-soft">
-      <Sidebar isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
-      <div className="flex-1 flex flex-col min-w-0">
-        <Topbar onMenuClick={() => setIsMenuOpen(true)} />
-        <main className="flex-1 overflow-auto">
-          <Outlet />
-        </main>
+    <div className="a-root">
+      <div className={cn('a-app', isMenuOpen && 'is-menu-open')}>
+        <Sidebar onClose={() => setIsMenuOpen(false)} />
+        <div className="a-scrim" onClick={() => setIsMenuOpen(false)} aria-hidden="true" />
+        <div className="a-main">
+          <div className="a-topbar">
+            <button
+              type="button"
+              className="a-iconbtn"
+              onClick={() => setIsMenuOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu />
+            </button>
+            <img src={logo} alt="Mensa" width={78} />
+            <Link to="/profile" className="a-iconbtn" aria-label="Profile">
+              <User />
+            </Link>
+          </div>
+          {/* Keyed by path so the design's a-in entrance plays on every page. */}
+          <main key={location.pathname} className="a-content">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   )

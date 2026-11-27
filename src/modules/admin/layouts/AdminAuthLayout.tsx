@@ -1,9 +1,9 @@
-// AdminAuthLayout — full bleed ink wrapper for the admin sign in page, no sidebar or topbar.
+// AdminAuthLayout: the a-root frame for the admin sign in page, no sidebar.
 import { Outlet } from 'react-router-dom'
 
 export function AdminAuthLayout() {
   return (
-    <div className="min-h-dvh bg-ink flex items-center justify-center px-4 py-12">
+    <div className="a-root">
       <Outlet />
     </div>
   )

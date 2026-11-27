@@ -1,23 +1,15 @@
-// Admin /login — same /auth/login backend as platform, useLogin only lets role=admin through on this surface.
+// Admin /login, the design's split sign in screen. Same /auth/login backend as
+// platform; useLogin only lets role=admin through on this surface.
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { ArrowRight } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { MensaWordmark } from '@/components/chrome/MensaWordmark'
 import { useLogin } from '@/lib/network/api/auth.api'
 import { buildAppUrl } from '@/lib/network/helpers/buildAppUrl'
-import { PasswordField } from '@/modules/platform/components/PasswordField'
-import { Spinner } from '@/components/ui/spinner'
+import { AButton, AField, AInput } from '@/modules/admin/components/ui'
+import logo from '@/assets/mensa_logo.png'
+import photo from '@/assets/kenny-000.jpg'
 
 const schema = z.object({
   email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
@@ -31,86 +23,61 @@ export function AdminLoginPage() {
     resolver: zodResolver(schema),
     defaultValues: { email: '', password: '' },
   })
+  const errors = form.formState.errors
 
   const onSubmit = (values: Values) => login.mutate(values)
 
   return (
-    <div className="w-full max-w-110">
-      <div className="bg-paper border border-hairline-soft p-8 md:p-10">
-        <div className="flex flex-col items-start gap-6 mb-8">
-          <MensaWordmark height={32} tone="pink" />
-          <div>
-            <div className="t-eyebrow text-mute mb-2">Admin portal</div>
-            <h1 className="font-display italic font-semibold text-[36px] leading-[1.05] tracking-[-0.02em] text-ink">
-              Sign in.
-            </h1>
-          </div>
+    <div className="a-login">
+      <div className="a-login__art">
+        <img src={photo} alt="" className="a-login__photo" />
+        <img src={logo} alt="Mensa" width={110} className="a-login__logo" />
+        <div>
+          <h2>Every pant, pad and person, in one place.</h2>
+          <p>Orders, stock and customers for the Mensa studio in Abuja.</p>
         </div>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      autoComplete="email"
-                      placeholder="you@mensaproducts.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <PasswordField
-                      autoComplete="current-password"
-                      placeholder="••••••••"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button
-              type="submit"
-              variant="ink"
-              size="lg"
-              className="w-full mt-2"
-              disabled={login.isPending}
-            >
-              {login.isPending ? (
-                <>
-                  <Spinner size={14} /> Signing in…
-                </>
-              ) : (
-                'Sign in'
-              )}
-            </Button>
-          </form>
-        </Form>
       </div>
-
-      <p className="mt-5 text-center text-[13px] text-white/55">
-        Customers, head to{' '}
-        <a href={buildAppUrl('platform')} className="text-paper underline underline-offset-2">
-          mensaproducts.com
-        </a>
-        .
-      </p>
+      <div className="a-login__panel">
+        <form className="a-login__card" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+          <div>
+            <div className="a-eyebrow">Admin portal</div>
+            <h1>Sign in.</h1>
+          </div>
+          <AField label="Email" error={errors.email?.message}>
+            {(id) => (
+              <AInput
+                id={id}
+                type="email"
+                autoComplete="email"
+                placeholder="you@mensaproducts.com"
+                autoFocus
+                {...form.register('email')}
+              />
+            )}
+          </AField>
+          <AField label="Password" error={errors.password?.message}>
+            {(id) => (
+              <AInput
+                id={id}
+                type="password"
+                autoComplete="current-password"
+                placeholder="••••••••"
+                {...form.register('password')}
+              />
+            )}
+          </AField>
+          <AButton variant="primary" type="submit" loading={login.isPending}>
+            {login.isPending ? 'Signing in…' : 'Sign in'} <ArrowRight />
+          </AButton>
+          <p className="a-faint text-center text-[12.5px]">
+            Customers, head to{' '}
+            <a href={buildAppUrl('platform')} className="a-link">
+              mensaproducts.com
+            </a>
+            .
+          </p>
+        </form>
+      </div>
     </div>
   )
 }

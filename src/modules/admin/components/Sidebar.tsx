@@ -1,32 +1,32 @@
-// Admin sidebar — dark ink rail with section links.
+// Admin sidebar in the design's Studio look: dark rail, rounded nav links,
+// storefront link and the signed in admin at the foot.
 import { NavLink } from 'react-router-dom'
 import {
-  LayoutDashboard,
-  Package,
-  ShoppingBag,
-  Users,
-  Tag,
-  FileText,
   Briefcase,
+  ExternalLink,
+  FileText,
+  LayoutDashboard,
+  LogOut,
   Mail,
-  UserPlus,
-  Truck,
+  Package,
   Receipt,
+  Settings,
+  ShoppingBag,
+  Tag,
+  Truck,
+  UserPlus,
+  Users,
   X,
   type LucideIcon,
 } from 'lucide-react'
-import { MensaWordmark } from '@/components/chrome/MensaWordmark'
+import { useAuthStore } from '@/lib/network/stores/auth.store'
+import { useLogout } from '@/lib/network/api/auth.api'
+import { buildAppUrl } from '@/lib/network/helpers/buildAppUrl'
+import { Avatar } from '@/modules/admin/components/ui'
 import { cn } from '@/lib/utils'
+import logo from '@/assets/mensa_logo.png'
 
-interface NavItem {
-  label: string
-  href: string
-  icon: LucideIcon
-  /** When true the link is rendered but disabled (Sprint not yet shipped). */
-  comingSoon?: boolean
-}
-
-const items: NavItem[] = [
+const items: { label: string; href: string; icon: LucideIcon }[] = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
   { label: 'Orders', href: '/orders', icon: ShoppingBag },
   { label: 'Invoices', href: '/invoices', icon: Receipt },
@@ -40,95 +40,68 @@ const items: NavItem[] = [
   { label: 'Partnerships', href: '/partnerships', icon: Briefcase },
 ]
 
-interface SidebarProps {
-  isOpen: boolean
-  onClose: () => void
-}
+export function Sidebar({ onClose }: { onClose: () => void }) {
+  const user = useAuthStore((s) => s.user)
+  const logout = useLogout()
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
-    <>
-      {/* Overlay — mobile only */}
-      <div
-        onClick={onClose}
-        aria-hidden="true"
-        className={cn(
-          'fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 lg:hidden',
-          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',
-        )}
-      />
+    <aside className="a-side">
+      <div className="a-side__brand">
+        <NavLink to="/" className="a-side__logo">
+          <img src={logo} alt="Mensa" width={92} />
+        </NavLink>
+        <span className="a-side__tag">Admin</span>
+        <button type="button" className="a-side__close" onClick={onClose} aria-label="Close menu">
+          <X />
+        </button>
+      </div>
 
-      {/* Sidebar panel */}
-      <aside
-        className={cn(
-          // Desktop: in-flow, fixed width, always visible
-          'lg:static lg:translate-x-0 lg:z-auto lg:flex',
-          // Mobile: fixed position, slide in from left, drawer behaviour
-          'fixed inset-y-0 left-0 z-50 w-65 transition-transform duration-300 ease-out',
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-          // Shared styling
-          'shrink-0 bg-ink text-paper flex flex-col border-r border-white/10',
-        )}
-      >
-        <div className="h-17 flex items-center justify-between px-6 border-b border-white/10">
-          <MensaWordmark height={28} tone="paper" />
-          {/* Close button — mobile only */}
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close menu"
-            className="lg:hidden inline-flex h-9 w-9 items-center justify-center text-paper hover:bg-white/10"
+      <nav className="a-side__nav" aria-label="Admin">
+        {items.map(({ label, href, icon: Icon }) => (
+          <NavLink
+            key={href}
+            to={href}
+            end={href === '/'}
+            className={({ isActive }) => cn('a-navlink', isActive && 'is-active')}
           >
-            <X size={18} strokeWidth={1.6} />
-          </button>
-        </div>
+            <Icon />
+            <span>{label}</span>
+          </NavLink>
+        ))}
+      </nav>
 
-        <nav className="flex-1 py-4 overflow-y-auto">
-          {items.map((item) => {
-            const Icon = item.icon
-            if (item.comingSoon) {
-              return (
-                <div
-                  key={item.label}
-                  className="px-6 py-3 flex items-center gap-3 text-white/35 cursor-not-allowed select-none text-[14px]"
-                  title="Available in a later sprint"
-                >
-                  <Icon size={18} strokeWidth={1.6} />
-                  <span>{item.label}</span>
-                  <span className="ml-auto text-[10px] uppercase tracking-[0.12em] text-white/35 font-mono">
-                    Soon
-                  </span>
-                </div>
-              )
-            }
-            return (
-              <NavLink
-                key={item.label}
-                to={item.href}
-                end
-                onClick={onClose}
-                className={({ isActive }) =>
-                  cn(
-                    'px-6 py-3 flex items-center gap-3 text-[14px] transition-colors border-l-2 no-underline',
-                    isActive
-                      ? 'border-pink text-paper bg-white/5'
-                      : 'border-transparent text-white/70 hover:text-paper hover:bg-white/5',
-                  )
-                }
-              >
-                <Icon size={18} strokeWidth={1.6} />
-                <span>{item.label}</span>
-              </NavLink>
-            )
-          })}
-        </nav>
-
-        <div className="p-6 border-t border-white/10">
-          <div className="text-[10px] uppercase tracking-[0.12em] text-white/45 font-mono">
-            Mensa admin · v0.1
+      <div className="a-side__foot">
+        <a
+          href={buildAppUrl('platform')}
+          target="_blank"
+          rel="noreferrer"
+          className="a-navlink a-navlink--quiet"
+        >
+          <ExternalLink />
+          <span>View storefront</span>
+        </a>
+        {user ? (
+          <div className="a-me">
+            <Avatar name={user.name} size={34} />
+            <div className="a-me__text">
+              <strong>{user.name}</strong>
+              <span>{user.role}</span>
+            </div>
+            <NavLink to="/profile" className="a-iconbtn" aria-label="Profile" title="Profile">
+              <Settings />
+            </NavLink>
+            <button
+              type="button"
+              className="a-iconbtn"
+              onClick={() => logout.mutate()}
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              <LogOut />
+            </button>
           </div>
-        </div>
-      </aside>
-    </>
+        ) : null}
+      </div>
+    </aside>
   )
 }

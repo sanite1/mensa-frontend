@@ -10,6 +10,7 @@
 @import './styles/design/fit.css' layer(components);
 @import './styles/design/info.css' layer(components);
 @import './styles/design/forms.css' layer(components);
+@import './styles/design/admin.css' layer(components);
 
 /* ─── Mensa Design Tokens ────────────────────────────────────────────────── */
 @theme {
