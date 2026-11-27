@@ -8,8 +8,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
 import { MensaWordmark } from '@/components/chrome/MensaWordmark'
 import {
   usePayInvoice,
@@ -110,23 +108,27 @@ export function InvoicePage() {
 
   if (query.isLoading) {
     return (
-      <div className="bg-paper min-h-[60vh] flex items-center justify-center t-body text-mute">
-        Loading your invoice…
-      </div>
+      <main className="section section--blush min-h-[60vh]">
+        <p className="wrap text-center text-(--mute)">Loading your invoice…</p>
+      </main>
     )
   }
 
   if (!data) {
     return (
-      <div className="bg-paper min-h-[60vh] px-5 py-16 flex flex-col items-center text-center gap-3">
-        <h1 className="m-0 font-display italic font-semibold text-[clamp(28px,5vw,44px)] leading-[1.05] tracking-tight text-ink">
-          We could not find that invoice.
-        </h1>
-        <p className="m-0 t-body text-graphite max-w-120">
-          The link may be incomplete or the invoice may have been cancelled. Reach us at
-          support@mensaproducts.com and we will sort it out.
-        </p>
-      </div>
+      <main className="section section--blush min-h-[60vh]">
+        <div className="wrap grid justify-items-center gap-4 text-center">
+          <h1 className="split text-(length:--fs-h2)">
+            <span className="split-line">
+              <span>We could not find that invoice.</span>
+            </span>
+          </h1>
+          <p className="lede max-w-120">
+            The link may be incomplete or the invoice may have been cancelled. Reach us at
+            support@mensaproducts.com and we will sort it out.
+          </p>
+        </div>
+      </main>
     )
   }
 
@@ -136,61 +138,36 @@ export function InvoicePage() {
   const checking = verify.isPending && !paying
 
   return (
-    <div className="bg-cream-soft min-h-[70vh] px-4 md:px-8 py-8 md:py-14">
-      <div className="max-w-190 mx-auto">
+    <main className="section section--blush min-h-[70vh]">
+      <div className="wrap max-w-190">
         <StatusBanner invoice={invoice} overdue={overdue} />
 
         <div className="mb-4 flex justify-end">
-          <Button
+          <button
             type="button"
-            variant="secondary"
-            size="md"
+            className="btn btn--ghost"
             onClick={onDownloadPdf}
             disabled={downloading}
           >
-            {downloading ? (
-              <>
-                <Spinner size={14} /> Building PDF…
-              </>
-            ) : (
-              'Download PDF'
-            )}
-          </Button>
+            {downloading ? 'Building PDF…' : 'Download PDF'}
+          </button>
         </div>
 
         {payable ? (
-          <div className="mb-4 bg-paper border border-hairline-soft px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-(--r-md) bg-(--white) px-6 py-5 shadow-(--shadow)">
             <div>
-              <div className="text-[11px] uppercase tracking-widest font-medium text-mute font-mono">
-                Amount due
-              </div>
-              <div className="font-display italic font-semibold text-[28px] leading-none text-ink mt-1">
+              <span className="eyebrow">Amount due</span>
+              <div className="mt-2 text-(length:--fs-h3) font-medium leading-none tracking-tight text-(--ink)">
                 {formatNaira(invoice.totals.total)}
               </div>
             </div>
-            <Button
-              type="button"
-              variant="primary"
-              size="lg"
-              onClick={onPay}
-              disabled={paying || checking}
-            >
-              {paying ? (
-                <>
-                  <Spinner size={14} /> Opening Paystack…
-                </>
-              ) : checking ? (
-                <>
-                  <Spinner size={14} /> Checking payment…
-                </>
-              ) : (
-                'Pay now'
-              )}
-            </Button>
+            <button type="button" className="btn" onClick={onPay} disabled={paying || checking}>
+              {paying ? 'Opening Paystack…' : checking ? 'Checking payment…' : 'Pay now'}
+            </button>
           </div>
         ) : null}
 
-        <article className="bg-paper border border-hairline-soft px-6 py-8 md:px-12 md:py-12">
+        <article className="rounded-(--r-md) bg-(--white) px-6 py-8 shadow-(--shadow) md:px-12 md:py-12">
           {/* Title row */}
           <header className="flex items-start justify-between gap-6">
             <h1 className="m-0 font-sans font-bold text-[clamp(34px,7vw,56px)] leading-none tracking-tight text-ink">
@@ -331,28 +308,28 @@ export function InvoicePage() {
           </footer>
         </article>
       </div>
-    </div>
+    </main>
   )
 }
 
 function StatusBanner({ invoice, overdue }: { invoice: Invoice; overdue: boolean }) {
   if (invoice.status === 'paid') {
     return (
-      <div className="mb-4 border border-ok/30 bg-ok/10 px-5 py-3 text-[14px] text-ok">
+      <div className="mb-4 rounded-(--r-sm) bg-ok/10 px-5 py-3 text-(length:--fs-sm) font-medium text-ok">
         Paid on {formatDate(invoice.paidAt)}. Thank you.
       </div>
     )
   }
   if (invoice.status === 'void') {
     return (
-      <div className="mb-4 border border-hairline bg-cream px-5 py-3 text-[14px] text-graphite">
+      <div className="mb-4 rounded-(--r-sm) bg-(--white) px-5 py-3 text-(length:--fs-sm) text-(--mute)">
         This invoice was cancelled and no payment is due.
       </div>
     )
   }
   if (overdue) {
     return (
-      <div className="mb-4 border border-coral bg-blush px-5 py-3 text-[14px] text-berry">
+      <div className="mb-4 rounded-(--r-sm) bg-(--white) px-5 py-3 text-(length:--fs-sm) font-medium text-(--berry)">
         This invoice was due on {formatDate(invoice.dueDate)}.
       </div>
     )
